@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  benchmark-php81:
+    build:
+      context: ./docker/php81
+      dockerfile: Dockerfile
+    container_name: helix-benchmark-php81
+    environment:
+      - PHP_VERSION=8.1
+      - PHP_MEMORY_LIMIT=512M
+      - OPCACHE_ENABLE=1
+      - OPCACHE_JIT=1255
+      - OPCACHE_JIT_BUFFER_SIZE=128M
+      - OPCACHE_MEMORY_CONSUMPTION=256
+      - OPCACHE_MAX_ACCELERATED_FILES=20000
+    volumes:
+      - ./benchmarks:/benchmarks
+      - ./results:/results
+    working_dir: /benchmarks
+    cpus: '2.0'
+    mem_limit: 1g
+    mem_reservation: 512m
+    networks:
+      - benchmark-network
+
+  benchmark-php82:
+    build:
+      context: ./docker/php82
+      dockerfile: Dockerfile
+    container_name: helix-benchmark-php82
+    environment:
+      - PHP_VERSION=8.2
+      - PHP_MEMORY_LIMIT=512M
+      - OPCACHE_ENABLE=1
+      - OPCACHE_JIT=1255
+      - OPCACHE_JIT_BUFFER_SIZE=128M
+      - OPCACHE_MEMORY_CONSUMPTION=256
+      - OPCACHE_MAX_ACCELERATED_FILES=20000
+    volumes:
+      - ./benchmarks:/benchmarks
+      - ./results:/results
+    working_dir: /benchmarks
+    cpus: '2.0'
+    mem_limit: 1g
+    mem_reservation: 512m
+    networks:
+      - benchmark-network
+
+  benchmark-php83:
+    build:
+      context: ./docker/php83
+      dockerfile: Dockerfile
+    container_name: helix-benchmark-php83
+    environment:
+      - PHP_VERSION=8.3
+      - PHP_MEMORY_LIMIT=512M
+      - OPCACHE_ENABLE=1
+      - OPCACHE_JIT=1255
+      - OPCACHE_JIT_BUFFER_SIZE=128M
+      - OPCACHE_MEMORY_CONSUMPTION=256
+      - OPCACHE_MAX_ACCELERATED_FILES=20000
+    volumes:
+      - ./benchmarks:/benchmarks
+      - ./results:/results
+    working_dir: /benchmarks
+    cpus: '2.0'
+    mem_limit: 1g
+    mem_reservation: 512m
+    networks:
+      - benchmark-network
+
+  benchmark-db:
+    image: mysql:8.0
+    container_name: helix-benchmark-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=benchmark
+      - MYSQL_DATABASE=benchmark_db
+      - MYSQL_USER=benchmark
+      - MYSQL_PASSWORD=benchmark
+    ports:
+      - "3307:3306"
+    volumes:
+      - benchmark-db-data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - benchmark-network
+    cpus: '1.0'
+    mem_limit: 512m
+
+  benchmark-redis:
+    image: redis:7-alpine
+    container_name: helix-benchmark-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - benchmark-network
+    cpus: '0.5'
+    mem_limit: 256m
+
+networks:
+  benchmark-network:
+    driver: bridge
+
+volumes:
+  benchmark-db-data:

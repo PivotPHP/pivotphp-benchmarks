@@ -1,0 +1,44 @@
+{
+    "name": "helixphp/benchmarks",
+    "description": "Performance benchmarks for HelixPHP and comparative frameworks",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Caio Alberto Fernandes",
+            "email": "your-email@example.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "helixphp/core": "^1.0",
+        "helixphp/cycle-orm": "^1.0",
+        "slim/slim": "^4.0",
+        "slim/psr7": "^1.0",
+        "laravel/lumen-framework": "^10.0",
+        "mikecao/flight": "^3.0",
+        "symfony/console": "^6.0",
+        "phpbench/phpbench": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HelixBenchmark\\": "src/"
+        }
+    },
+    "scripts": {
+        "benchmark": "php scripts/run-benchmarks.php",
+        "benchmark:all": "php scripts/run-benchmarks.php --all",
+        "benchmark:helix": "php scripts/run-benchmarks.php --framework=helix-core",
+        "benchmark:comparative": "php scripts/run-benchmarks.php --comparative",
+        "report": "php scripts/generate-report.php"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
