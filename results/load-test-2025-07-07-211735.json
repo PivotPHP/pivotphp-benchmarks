@@ -1,0 +1,232 @@
+{
+    "framework": "PivotPHP Core",
+    "version": "1.0.0",
+    "php_version": "8.4.8",
+    "timestamp": "2025-07-07T21:17:35+00:00",
+    "results": {
+        "simple": {
+            "500": {
+                "type": "simple",
+                "requests": 500,
+                "total_time_s": 0.065,
+                "requests_per_second": 7686.52,
+                "latency_ms": {
+                    "min": 0.082,
+                    "avg": 0.129,
+                    "max": 0.746,
+                    "p50": 0.112,
+                    "p95": 0.221,
+                    "p99": 0.443
+                },
+                "memory_mb": {
+                    "used": 2,
+                    "peak": 8
+                }
+            },
+            "1000": {
+                "type": "simple",
+                "requests": 1000,
+                "total_time_s": -14.023,
+                "requests_per_second": -71.31,
+                "latency_ms": {
+                    "min": -7084.651,
+                    "avg": -14.025,
+                    "max": 5.907,
+                    "p50": 0.098,
+                    "p95": 0.255,
+                    "p99": 0.801
+                },
+                "memory_mb": {
+                    "used": 2,
+                    "peak": 8
+                }
+            },
+            "1500": {
+                "type": "simple",
+                "requests": 1500,
+                "total_time_s": 7.221,
+                "requests_per_second": 207.73,
+                "latency_ms": {
+                    "min": 0.081,
+                    "avg": 4.813,
+                    "max": 7036.618,
+                    "p50": 0.091,
+                    "p95": 0.188,
+                    "p99": 0.352
+                },
+                "memory_mb": {
+                    "used": 2,
+                    "peak": 8
+                }
+            }
+        },
+        "data": {
+            "500": {
+                "type": "data",
+                "requests": 500,
+                "total_time_s": 0.148,
+                "requests_per_second": 3384.16,
+                "latency_ms": {
+                    "min": 0.217,
+                    "avg": 0.294,
+                    "max": 2.53,
+                    "p50": 0.261,
+                    "p95": 0.419,
+                    "p99": 0.658
+                },
+                "memory_mb": {
+                    "used": 2,
+                    "peak": 8
+                }
+            },
+            "1000": {
+                "type": "data",
+                "requests": 1000,
+                "total_time_s": 0.299,
+                "requests_per_second": 3344.91,
+                "latency_ms": {
+                    "min": 0.217,
+                    "avg": 0.298,
+                    "max": 2.505,
+                    "p50": 0.25,
+                    "p95": 0.473,
+                    "p99": 0.812
+                },
+                "memory_mb": {
+                    "used": 2,
+                    "peak": 8
+                }
+            },
+            "1500": {
+                "type": "data",
+                "requests": 1500,
+                "total_time_s": 0.587,
+                "requests_per_second": 2555.51,
+                "latency_ms": {
+                    "min": 0.217,
+                    "avg": 0.39,
+                    "max": 35.42,
+                    "p50": 0.269,
+                    "p95": 0.551,
+                    "p99": 1.969
+                },
+                "memory_mb": {
+                    "used": 2,
+                    "peak": 8
+                }
+            }
+        },
+        "post": {
+            "500": {
+                "type": "post",
+                "requests": 500,
+                "total_time_s": 0.192,
+                "requests_per_second": 2608.72,
+                "latency_ms": {
+                    "min": 0.204,
+                    "avg": 0.381,
+                    "max": 4.877,
+                    "p50": 0.324,
+                    "p95": 0.611,
+                    "p99": 1.038
+                },
+                "memory_mb": {
+                    "used": 0,
+                    "peak": 8
+                }
+            },
+            "1000": {
+                "type": "post",
+                "requests": 1000,
+                "total_time_s": 0.414,
+                "requests_per_second": 2414.8,
+                "latency_ms": {
+                    "min": 0.202,
+                    "avg": 0.412,
+                    "max": 7.4,
+                    "p50": 0.308,
+                    "p95": 0.638,
+                    "p99": 2.844
+                },
+                "memory_mb": {
+                    "used": 0,
+                    "peak": 8
+                }
+            },
+            "1500": {
+                "type": "post",
+                "requests": 1500,
+                "total_time_s": 0.596,
+                "requests_per_second": 2516.62,
+                "latency_ms": {
+                    "min": 0.203,
+                    "avg": 0.395,
+                    "max": 6.38,
+                    "p50": 0.307,
+                    "p95": 0.608,
+                    "p99": 2.382
+                },
+                "memory_mb": {
+                    "used": 0,
+                    "peak": 8
+                }
+            }
+        },
+        "compute": {
+            "500": {
+                "type": "compute",
+                "requests": 500,
+                "total_time_s": 0.085,
+                "requests_per_second": 5864.49,
+                "latency_ms": {
+                    "min": 0.108,
+                    "avg": 0.169,
+                    "max": 2.575,
+                    "p50": 0.118,
+                    "p95": 0.259,
+                    "p99": 1.013
+                },
+                "memory_mb": {
+                    "used": 0,
+                    "peak": 8
+                }
+            },
+            "1000": {
+                "type": "compute",
+                "requests": 1000,
+                "total_time_s": 0.162,
+                "requests_per_second": 6169.07,
+                "latency_ms": {
+                    "min": 0.107,
+                    "avg": 0.161,
+                    "max": 7.633,
+                    "p50": 0.114,
+                    "p95": 0.223,
+                    "p99": 0.53
+                },
+                "memory_mb": {
+                    "used": 0,
+                    "peak": 8
+                }
+            },
+            "1500": {
+                "type": "compute",
+                "requests": 1500,
+                "total_time_s": 0.227,
+                "requests_per_second": 6597.96,
+                "latency_ms": {
+                    "min": 0.107,
+                    "avg": 0.151,
+                    "max": 6.861,
+                    "p50": 0.114,
+                    "p95": 0.221,
+                    "p99": 0.422
+                },
+                "memory_mb": {
+                    "used": 0,
+                    "peak": 8
+                }
+            }
+        }
+    }
+}

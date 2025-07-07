@@ -1,0 +1,208 @@
+{
+    "framework": "PivotPHP Core",
+    "test": "Concurrent Request Simulation",
+    "timestamp": "2025-07-07T22:06:25+00:00",
+    "php_version": "8.4.8",
+    "results": {
+        "1": {
+            "simple": {
+                "concurrency": 1,
+                "total_requests": 100,
+                "requests_per_connection": 100,
+                "duration_s": 0.025,
+                "throughput": 3931.89,
+                "latency": {
+                    "avg": 0.251,
+                    "min": 0.083,
+                    "max": 10.589,
+                    "p50": 0.148,
+                    "p95": 0.192,
+                    "p99": 1.242
+                },
+                "concurrency_efficiency": 100
+            },
+            "data": {
+                "concurrency": 1,
+                "total_requests": 100,
+                "requests_per_connection": 100,
+                "duration_s": 0.081,
+                "throughput": 1229.8,
+                "latency": {
+                    "avg": 0.808,
+                    "min": 0.534,
+                    "max": 3.941,
+                    "p50": 0.633,
+                    "p95": 1.677,
+                    "p99": 2.239
+                },
+                "concurrency_efficiency": 100
+            },
+            "heavy": {
+                "concurrency": 1,
+                "total_requests": 50,
+                "requests_per_connection": 50,
+                "duration_s": 0.019,
+                "throughput": 2647.45,
+                "latency": {
+                    "avg": 0.374,
+                    "min": 0.21,
+                    "max": 1.641,
+                    "p50": 0.327,
+                    "p95": 0.737,
+                    "p99": 1.641
+                },
+                "concurrency_efficiency": 100
+            }
+        },
+        "10": {
+            "simple": {
+                "concurrency": 10,
+                "total_requests": 1000,
+                "requests_per_connection": 100,
+                "duration_s": 0.301,
+                "throughput": 3325.8,
+                "latency": {
+                    "avg": 0.178,
+                    "min": 0.108,
+                    "max": 6.099,
+                    "p50": 0.127,
+                    "p95": 0.259,
+                    "p99": 0.771
+                },
+                "concurrency_efficiency": 1000
+            },
+            "data": {
+                "concurrency": 10,
+                "total_requests": 1000,
+                "requests_per_connection": 100,
+                "duration_s": 7.743,
+                "throughput": 129.16,
+                "latency": {
+                    "avg": 0.935,
+                    "min": 0.538,
+                    "max": 11.664,
+                    "p50": 0.737,
+                    "p95": 1.658,
+                    "p99": 6.608
+                },
+                "concurrency_efficiency": 1000
+            },
+            "heavy": {
+                "concurrency": 10,
+                "total_requests": 500,
+                "requests_per_connection": 50,
+                "duration_s": -6.723,
+                "throughput": -74.37,
+                "latency": {
+                    "avg": -13.624,
+                    "min": -7148.407,
+                    "max": 10.838,
+                    "p50": 0.474,
+                    "p95": 1.149,
+                    "p99": 5.324
+                },
+                "concurrency_efficiency": 1000
+            }
+        },
+        "50": {
+            "simple": {
+                "concurrency": 50,
+                "total_requests": 5000,
+                "requests_per_connection": 100,
+                "duration_s": 1.648,
+                "throughput": 3033.15,
+                "latency": {
+                    "avg": 0.194,
+                    "min": 0.107,
+                    "max": 6.203,
+                    "p50": 0.126,
+                    "p95": 0.253,
+                    "p99": 2.76
+                },
+                "concurrency_efficiency": 5000
+            },
+            "data": {
+                "concurrency": 50,
+                "total_requests": 5000,
+                "requests_per_connection": 100,
+                "duration_s": 4.297,
+                "throughput": 1163.63,
+                "latency": {
+                    "avg": 3.576,
+                    "min": 0.499,
+                    "max": 7149.09,
+                    "p50": 0.617,
+                    "p95": 1.277,
+                    "p99": 5.629
+                },
+                "concurrency_efficiency": 5000
+            },
+            "heavy": {
+                "concurrency": 50,
+                "total_requests": 2500,
+                "requests_per_connection": 50,
+                "duration_s": 1.727,
+                "throughput": 1447.75,
+                "latency": {
+                    "avg": 0.547,
+                    "min": 0.252,
+                    "max": 10.103,
+                    "p50": 0.422,
+                    "p95": 0.913,
+                    "p99": 3.483
+                },
+                "concurrency_efficiency": 5000
+            }
+        },
+        "100": {
+            "simple": {
+                "concurrency": 100,
+                "total_requests": 10000,
+                "requests_per_connection": 100,
+                "duration_s": 2.506,
+                "throughput": 3991.12,
+                "latency": {
+                    "avg": 1.551,
+                    "min": 0.106,
+                    "max": 7126.616,
+                    "p50": 0.124,
+                    "p95": 0.253,
+                    "p99": 0.734
+                },
+                "concurrency_efficiency": 10000
+            },
+            "data": {
+                "concurrency": 100,
+                "total_requests": 10000,
+                "requests_per_connection": 100,
+                "duration_s": 9.453,
+                "throughput": 1057.85,
+                "latency": {
+                    "avg": -0.568,
+                    "min": -14281.203,
+                    "max": 7135.413,
+                    "p50": 0.672,
+                    "p95": 1.403,
+                    "p99": 5.708
+                },
+                "concurrency_efficiency": 10000
+            },
+            "heavy": {
+                "concurrency": 100,
+                "total_requests": 5000,
+                "requests_per_connection": 50,
+                "duration_s": 3.313,
+                "throughput": 1508.98,
+                "latency": {
+                    "avg": 4.799,
+                    "min": 0.26,
+                    "max": 14283.951,
+                    "p50": 0.438,
+                    "p95": 0.938,
+                    "p99": 4.86
+                },
+                "concurrency_efficiency": 10000
+            }
+        }
+    }
+}

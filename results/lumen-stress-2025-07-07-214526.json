@@ -1,0 +1,140 @@
+{
+    "framework": "Laravel Lumen",
+    "test": "Synchronous Load Test",
+    "timestamp": "2025-07-07T21:45:26+00:00",
+    "php_version": "8.4.8",
+    "results": {
+        "100": {
+            "simple": {
+                "requests": 100,
+                "duration_s": 0.046,
+                "throughput": 2182.21,
+                "latency": {
+                    "avg": 0.457,
+                    "min": 0.247,
+                    "max": 1.42,
+                    "p50": 0.458,
+                    "p95": 0.749,
+                    "p99": 1.368
+                },
+                "memory_mb": 0
+            },
+            "json": {
+                "requests": 100,
+                "duration_s": 0.067,
+                "throughput": 1498.96,
+                "latency": {
+                    "avg": 0.665,
+                    "min": 0.335,
+                    "max": 8.663,
+                    "p50": 0.516,
+                    "p95": 1.253,
+                    "p99": 1.711
+                },
+                "memory_mb": 0
+            },
+            "complex": {
+                "requests": 100,
+                "duration_s": 6.96,
+                "throughput": 14.37,
+                "latency": {
+                    "avg": 69.603,
+                    "min": 0.699,
+                    "max": 6854.558,
+                    "p50": 0.801,
+                    "p95": 2.496,
+                    "p99": 5.659
+                },
+                "memory_mb": 0
+            }
+        },
+        "1000": {
+            "simple": {
+                "requests": 1000,
+                "duration_s": -6.692,
+                "throughput": -149.43,
+                "latency": {
+                    "avg": -6.693,
+                    "min": -7111.243,
+                    "max": 13.487,
+                    "p50": 0.341,
+                    "p95": 0.692,
+                    "p99": 1.893
+                },
+                "memory_mb": 0
+            },
+            "json": {
+                "requests": 1000,
+                "duration_s": 0.432,
+                "throughput": 2313.66,
+                "latency": {
+                    "avg": 0.431,
+                    "min": 0.267,
+                    "max": 15.097,
+                    "p50": 0.363,
+                    "p95": 0.627,
+                    "p99": 1.532
+                },
+                "memory_mb": 0
+            },
+            "complex": {
+                "requests": 1000,
+                "duration_s": 1.19,
+                "throughput": 840.45,
+                "latency": {
+                    "avg": 1.188,
+                    "min": 0.7,
+                    "max": 18.991,
+                    "p50": 0.874,
+                    "p95": 1.865,
+                    "p99": 9.571
+                },
+                "memory_mb": 0
+            }
+        },
+        "10000": {
+            "simple": {
+                "requests": 10000,
+                "duration_s": 3.434,
+                "throughput": 2912,
+                "latency": {
+                    "avg": 0.342,
+                    "min": -7125.921,
+                    "max": 6882.388,
+                    "p50": 0.275,
+                    "p95": 0.59,
+                    "p99": 1.612
+                },
+                "memory_mb": 0
+            },
+            "json": {
+                "requests": 10000,
+                "duration_s": 3.693,
+                "throughput": 2708.08,
+                "latency": {
+                    "avg": 0.368,
+                    "min": -7108.611,
+                    "max": 6641.741,
+                    "p50": 0.308,
+                    "p95": 0.676,
+                    "p99": 1.983
+                },
+                "memory_mb": 0
+            },
+            "complex": {
+                "requests": 10000,
+                "duration_s": -3.408,
+                "throughput": -2934.63,
+                "latency": {
+                    "avg": -0.342,
+                    "min": -21337.258,
+                    "max": 10707.892,
+                    "p50": 0.877,
+                    "p95": 2.587,
+                    "p99": 6.815
+                },
+                "memory_mb": 0
+            }
+        }
+    }
+}
