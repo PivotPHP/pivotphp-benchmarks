@@ -1,0 +1,19 @@
+{
+    "name": "helixphp-benchmarks/helix-orm",
+    "description": "HelixPHP benchmark application with Cycle ORM",
+    "type": "project",
+    "require": {
+        "php": "^8.1",
+        "helixphp/core": "^1.0",
+        "helixphp/cycle-orm": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

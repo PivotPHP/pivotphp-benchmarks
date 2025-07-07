@@ -51,23 +51,32 @@
 
 ### Comparative Framework Benchmarks
 
-#### Slim 4 (1/4 implemented)
+#### Slim 4 (3/3 implemented)
 - ✅ `routing.php` - Route matching comparison
-- ❌ Middleware comparison
-- ❌ JSON response comparison
-- ❌ Database query comparison
+- ✅ `middleware.php` - Middleware execution comparison
+- ✅ `json-api.php` - JSON API response comparison
 
-#### Other Frameworks (0% implemented)
-- ❌ Lumen benchmarks
-- ❌ Flight benchmarks
-- ❌ Symfony Flex benchmarks
+#### Lumen (3/3 implemented)
+- ✅ `routing.php` - Route matching comparison
+- ✅ `middleware.php` - Middleware execution comparison
+- ✅ `json-api.php` - JSON API response comparison
+
+#### Flight (3/3 implemented)
+- ✅ `routing.php` - Route matching comparison
+- ✅ `middleware.php` - Filter/middleware execution comparison
+- ✅ `json-api.php` - JSON API response comparison
+
+#### Symfony (3/3 implemented)
+- ✅ `routing.php` - Route matching comparison
+- ✅ `middleware.php` - Event listener execution comparison
+- ✅ `json-api.php` - JSON API response comparison
 
 ## 📊 Current Coverage
 
 - **HelixPHP Core**: 10/12 benchmarks (83%)
 - **HelixPHP ORM**: 3/9 benchmarks (33%)
-- **Comparative**: 1/14 benchmarks (7%)
-- **Overall**: 14/35 planned benchmarks (40%)
+- **Comparative**: 12/12 benchmarks (100%)
+- **Overall**: 25/33 planned benchmarks (76%)
 
 ## 🚀 Quick Start
 

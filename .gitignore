@@ -3,11 +3,12 @@
 composer.lock
 
 # Benchmark results
-/results/
-/reports/
-*.log
-*.csv
-*.json
+/results/raw/*
+/results/processed/*
+/results/reports/*
+!results/raw/.gitkeep
+!results/processed/.gitkeep
+!results/reports/.gitkeep
 benchmark-*.txt
 BENCHMARK_RESULTS.md
 
@@ -51,6 +52,10 @@ phpstan.neon
 benchmark-output/
 performance-reports/
 
+# Framework-specific vendor directories
+frameworks/*/vendor/
+frameworks/*/composer.lock
+
 # Test artifacts
 /coverage/
 *.coverage
@@ -84,3 +89,20 @@ access_log
 # Generated documentation
 /docs/_build/
 /docs/generated/
+
+# Symfony specific
+frameworks/symfony/var/
+frameworks/symfony/public/bundles/
+
+# Laravel/Lumen specific
+frameworks/lumen/storage/
+frameworks/lumen/bootstrap/cache/
+
+# Docker override files
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.prod.yml
+!docker-compose.dev.yml
+
+# Keep .gitkeep files
+!.gitkeep

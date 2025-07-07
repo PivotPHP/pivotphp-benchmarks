@@ -1,106 +1,168 @@
 version: '3.8'
 
 services:
-  benchmark-php81:
-    build:
-      context: ./docker/php81
-      dockerfile: Dockerfile
-    container_name: helix-benchmark-php81
-    environment:
-      - PHP_VERSION=8.1
-      - PHP_MEMORY_LIMIT=512M
-      - OPCACHE_ENABLE=1
-      - OPCACHE_JIT=1255
-      - OPCACHE_JIT_BUFFER_SIZE=128M
-      - OPCACHE_MEMORY_CONSUMPTION=256
-      - OPCACHE_MAX_ACCELERATED_FILES=20000
-    volumes:
-      - ./benchmarks:/benchmarks
-      - ./results:/results
-    working_dir: /benchmarks
-    cpus: '2.0'
-    mem_limit: 1g
-    mem_reservation: 512m
-    networks:
-      - benchmark-network
-
-  benchmark-php82:
-    build:
-      context: ./docker/php82
-      dockerfile: Dockerfile
-    container_name: helix-benchmark-php82
-    environment:
-      - PHP_VERSION=8.2
-      - PHP_MEMORY_LIMIT=512M
-      - OPCACHE_ENABLE=1
-      - OPCACHE_JIT=1255
-      - OPCACHE_JIT_BUFFER_SIZE=128M
-      - OPCACHE_MEMORY_CONSUMPTION=256
-      - OPCACHE_MAX_ACCELERATED_FILES=20000
-    volumes:
-      - ./benchmarks:/benchmarks
-      - ./results:/results
-    working_dir: /benchmarks
-    cpus: '2.0'
-    mem_limit: 1g
-    mem_reservation: 512m
-    networks:
-      - benchmark-network
-
-  benchmark-php83:
-    build:
-      context: ./docker/php83
-      dockerfile: Dockerfile
-    container_name: helix-benchmark-php83
-    environment:
-      - PHP_VERSION=8.3
-      - PHP_MEMORY_LIMIT=512M
-      - OPCACHE_ENABLE=1
-      - OPCACHE_JIT=1255
-      - OPCACHE_JIT_BUFFER_SIZE=128M
-      - OPCACHE_MEMORY_CONSUMPTION=256
-      - OPCACHE_MAX_ACCELERATED_FILES=20000
-    volumes:
-      - ./benchmarks:/benchmarks
-      - ./results:/results
-    working_dir: /benchmarks
-    cpus: '2.0'
-    mem_limit: 1g
-    mem_reservation: 512m
-    networks:
-      - benchmark-network
-
-  benchmark-db:
+  # Database for ORM tests
+  mysql:
     image: mysql:8.0
-    container_name: helix-benchmark-db
     environment:
-      - MYSQL_ROOT_PASSWORD=benchmark
-      - MYSQL_DATABASE=benchmark_db
-      - MYSQL_USER=benchmark
-      - MYSQL_PASSWORD=benchmark
+      MYSQL_ROOT_PASSWORD: benchmark
+      MYSQL_DATABASE: benchmark
+      MYSQL_USER: benchmark
+      MYSQL_PASSWORD: benchmark
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
-      - benchmark-db-data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
-    networks:
-      - benchmark-network
-    cpus: '1.0'
-    mem_limit: 512m
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  benchmark-redis:
+  # Redis for cache tests
+  redis:
     image: redis:7-alpine
-    container_name: helix-benchmark-redis
     ports:
-      - "6380:6379"
-    networks:
-      - benchmark-network
-    cpus: '0.5'
-    mem_limit: 256m
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-networks:
-  benchmark-network:
-    driver: bridge
+  # HelixPHP Core (without ORM)
+  helix-core:
+    build:
+      context: ./frameworks/helix-core
+      dockerfile: Dockerfile
+    volumes:
+      - ./frameworks/helix-core:/app
+      - ./shared:/shared
+      - ./results:/results
+    environment:
+      - FRAMEWORK_NAME=helix-core
+      - PHP_VERSION=8.2
+    depends_on:
+      - redis
+    cpus: 2
+    mem_limit: 1g
+
+  # HelixPHP with Cycle ORM
+  helix-orm:
+    build:
+      context: ./frameworks/helix-orm
+      dockerfile: Dockerfile
+    volumes:
+      - ./frameworks/helix-orm:/app
+      - ./shared:/shared
+      - ./results:/results
+    environment:
+      - FRAMEWORK_NAME=helix-orm
+      - PHP_VERSION=8.2
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=benchmark
+      - DB_USERNAME=benchmark
+      - DB_PASSWORD=benchmark
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    cpus: 2
+    mem_limit: 1g
+
+  # Slim 4
+  slim4:
+    build:
+      context: ./frameworks/slim4
+      dockerfile: Dockerfile
+    volumes:
+      - ./frameworks/slim4:/app
+      - ./shared:/shared
+      - ./results:/results
+    environment:
+      - FRAMEWORK_NAME=slim4
+      - PHP_VERSION=8.2
+    depends_on:
+      - redis
+    cpus: 2
+    mem_limit: 1g
+
+  # Lumen
+  lumen:
+    build:
+      context: ./frameworks/lumen
+      dockerfile: Dockerfile
+    volumes:
+      - ./frameworks/lumen:/app
+      - ./shared:/shared
+      - ./results:/results
+    environment:
+      - FRAMEWORK_NAME=lumen
+      - PHP_VERSION=8.2
+    depends_on:
+      - redis
+    cpus: 2
+    mem_limit: 1g
+
+  # Flight
+  flight:
+    build:
+      context: ./frameworks/flight
+      dockerfile: Dockerfile
+    volumes:
+      - ./frameworks/flight:/app
+      - ./shared:/shared
+      - ./results:/results
+    environment:
+      - FRAMEWORK_NAME=flight
+      - PHP_VERSION=8.2
+    depends_on:
+      - redis
+    cpus: 2
+    mem_limit: 1g
+
+  # Symfony
+  symfony:
+    build:
+      context: ./frameworks/symfony
+      dockerfile: Dockerfile
+    volumes:
+      - ./frameworks/symfony:/app
+      - ./shared:/shared
+      - ./results:/results
+    environment:
+      - FRAMEWORK_NAME=symfony
+      - PHP_VERSION=8.2
+    depends_on:
+      - redis
+    cpus: 2
+    mem_limit: 1g
+
+  # Benchmark orchestrator
+  orchestrator:
+    build:
+      context: .
+      dockerfile: docker/orchestrator/Dockerfile
+    volumes:
+      - ./scripts:/scripts
+      - ./results:/results
+      - ./shared:/shared
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-helixphp-benchmarks}
+    depends_on:
+      - helix-core
+      - helix-orm
+      - slim4
+      - lumen
+      - flight
+      - symfony
 
 volumes:
-  benchmark-db-data:
+  mysql_data:
+
+networks:
+  default:
+    name: benchmark-network
