@@ -10,6 +10,7 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
 use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
 use PivotPHP\Core\Http\Psr7\Factory\UriFactory;
 use PivotPHP\Core\Http\Psr15\AbstractMiddleware;
@@ -49,8 +50,13 @@ class SingleMiddlewareBenchmark extends BenchmarkBase
         $this->requestFactory = new ServerRequestFactory();
         $this->uriFactory = new UriFactory();
         
-        // Add single middleware
-        $this->app->use(new TimingMiddleware());
+        // Add single middleware as callable
+        $this->app->use(function($request, $response, $next) {
+            $start = microtime(true);
+            $response = $next($request, $response);
+            $duration = (microtime(true) - $start) * 1000;
+            return $response->withHeader('X-Response-Time', sprintf('%.3fms', $duration));
+        });
         
         // Setup test routes
         $this->app->get('/ping', function($request, $response) {
@@ -82,19 +88,22 @@ class SingleMiddlewareBenchmark extends BenchmarkBase
         ];
         
         $route = $routes[array_rand($routes)];
-        $uri = $this->uriFactory->createUri($route[1]);
+        $path = $route[1];
+        
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = $route[0];
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
         
         if ($route[0] === 'POST') {
-            $request = $this->requestFactory->createServerRequest($route[0], $uri)
-                ->withHeader('Content-Type', 'application/json');
-            
-            $body = json_encode(['data' => 'test-' . rand(1, 100)]);
-            $request->getBody()->write($body);
-            $request->getBody()->rewind();
+            $_POST = ['data' => 'test-' . rand(1, 100)];
+            $_SERVER['CONTENT_TYPE'] = 'application/json';
         } else {
-            $request = $this->requestFactory->createServerRequest($route[0], $uri);
+            $_POST = [];
         }
         
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
 }

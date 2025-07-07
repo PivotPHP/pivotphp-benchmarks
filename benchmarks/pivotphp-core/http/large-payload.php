@@ -10,19 +10,12 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use PivotPHP\Core\Core\Application;
-use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
-use PivotPHP\Core\Http\Psr7\Factory\ResponseFactory;
-use PivotPHP\Core\Http\Psr7\Factory\StreamFactory;
-use PivotPHP\Core\Http\Psr7\Factory\UriFactory;
+use PivotPHP\Core\Http\Request;
 use PivotBenchmark\BenchmarkBase;
 
 class LargePayloadBenchmark extends BenchmarkBase
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
-    private ResponseFactory $responseFactory;
-    private StreamFactory $streamFactory;
-    private UriFactory $uriFactory;
     private array $payloads = [];
     
     protected function getName(): string
@@ -33,10 +26,6 @@ class LargePayloadBenchmark extends BenchmarkBase
     protected function setup(): void
     {
         $this->app = new Application();
-        $this->requestFactory = new ServerRequestFactory();
-        $this->responseFactory = new ResponseFactory();
-        $this->streamFactory = new StreamFactory();
-        $this->uriFactory = new UriFactory();
         
         // Generate different sized payloads
         $this->generatePayloads();
@@ -214,41 +203,50 @@ class LargePayloadBenchmark extends BenchmarkBase
     
     private function uploadJson(string $size): void
     {
-        $uri = $this->uriFactory->createUri('/api/upload/json');
-        $request = $this->requestFactory->createServerRequest('POST', $uri)
-            ->withHeader('Content-Type', 'application/json');
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['REQUEST_URI'] = '/api/upload/json';
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['CONTENT_TYPE'] = 'application/json';
         
-        $stream = $this->streamFactory->createStream($this->payloads[$size]);
-        $request = $request->withBody($stream);
+        // Simulate POST data
+        $_POST = ['data' => $this->payloads[$size]];
         
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
     
     private function uploadForm(): void
     {
-        $uri = $this->uriFactory->createUri('/api/upload/form');
-        $request = $this->requestFactory->createServerRequest('POST', $uri)
-            ->withHeader('Content-Type', 'application/x-www-form-urlencoded');
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['REQUEST_URI'] = '/api/upload/form';
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
         
-        $stream = $this->streamFactory->createStream($this->payloads['form']);
-        $request = $request->withBody($stream);
-        
-        // Parse form data
+        // Parse form data and set POST
         parse_str($this->payloads['form'], $parsedBody);
-        $request = $request->withParsedBody($parsedBody);
+        $_POST = $parsedBody;
         
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
     
     private function uploadBinary(): void
     {
-        $uri = $this->uriFactory->createUri('/api/upload/binary');
-        $request = $this->requestFactory->createServerRequest('POST', $uri)
-            ->withHeader('Content-Type', 'application/octet-stream');
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['REQUEST_URI'] = '/api/upload/binary';
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['CONTENT_TYPE'] = 'application/octet-stream';
         
-        $stream = $this->streamFactory->createStream($this->payloads['binary']);
-        $request = $request->withBody($stream);
+        // Simulate binary POST data
+        $_POST = ['binary' => $this->payloads['binary']];
         
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
     
@@ -257,9 +255,15 @@ class LargePayloadBenchmark extends BenchmarkBase
         $sizes = ['small', 'medium', 'large'];
         $size = $sizes[array_rand($sizes)];
         
-        $uri = $this->uriFactory->createUri('/api/download/large?size=' . $size);
-        $request = $this->requestFactory->createServerRequest('GET', $uri);
+        $path = '/api/download/large?size=' . $size;
         
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
         
         // Simulate client reading the response
@@ -268,14 +272,20 @@ class LargePayloadBenchmark extends BenchmarkBase
     
     private function uploadChunked(): void
     {
-        $uri = $this->uriFactory->createUri('/api/upload/chunked');
-        $request = $this->requestFactory->createServerRequest('POST', $uri)
-            ->withHeader('Content-Type', 'application/octet-stream')
-            ->withHeader('Transfer-Encoding', 'chunked');
+        $path = '/api/upload/chunked';
         
-        $stream = $this->streamFactory->createStream($this->payloads['medium']);
-        $request = $request->withBody($stream);
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['CONTENT_TYPE'] = 'application/octet-stream';
+        $_SERVER['HTTP_TRANSFER_ENCODING'] = 'chunked';
         
+        // Simulate POST data
+        $_POST = ['data' => $this->payloads['medium']];
+        
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
 }

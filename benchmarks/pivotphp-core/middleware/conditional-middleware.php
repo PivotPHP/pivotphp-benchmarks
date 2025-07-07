@@ -10,158 +10,13 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use PivotPHP\Core\Core\Application;
-use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
-use PivotPHP\Core\Http\Psr7\Factory\UriFactory;
-use PivotPHP\Core\Http\Psr15\AbstractMiddleware;
+use PivotPHP\Core\Http\Request;
 use PivotBenchmark\BenchmarkBase;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
-class ConditionalAuthMiddleware extends AbstractMiddleware
-{
-    private array $protectedPaths = ['/admin', '/api/private'];
-    
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $path = $request->getUri()->getPath();
-        
-        // Check if path requires authentication
-        $requiresAuth = false;
-        foreach ($this->protectedPaths as $protectedPath) {
-            if (strpos($path, $protectedPath) === 0) {
-                $requiresAuth = true;
-                break;
-            }
-        }
-        
-        if ($requiresAuth) {
-            $authHeader = $request->getHeaderLine('Authorization');
-            if (!$authHeader || !$this->validateToken($authHeader)) {
-                $response = (new \PivotPHP\Core\Http\Psr7\Factory\ResponseFactory())
-                    ->createResponse(401)
-                    ->withHeader('Content-Type', 'application/json');
-                $response->getBody()->write(json_encode(['error' => 'Unauthorized']));
-                return $response;
-            }
-            
-            $request = $request->withAttribute('user_id', $this->extractUserId($authHeader));
-        }
-        
-        return $handler->handle($request);
-    }
-    
-    private function validateToken(string $authHeader): bool
-    {
-        // Simulate token validation
-        return strpos($authHeader, 'Bearer valid-') === 0;
-    }
-    
-    private function extractUserId(string $authHeader): int
-    {
-        // Simulate user ID extraction
-        return rand(1, 1000);
-    }
-}
-
-class ConditionalCacheMiddleware extends AbstractMiddleware
-{
-    private array $cacheablePaths = ['/api/public', '/static'];
-    
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $path = $request->getUri()->getPath();
-        $method = $request->getMethod();
-        
-        // Only cache GET requests to specific paths
-        if ($method !== 'GET') {
-            return $handler->handle($request);
-        }
-        
-        $shouldCache = false;
-        foreach ($this->cacheablePaths as $cacheablePath) {
-            if (strpos($path, $cacheablePath) === 0) {
-                $shouldCache = true;
-                break;
-            }
-        }
-        
-        if ($shouldCache) {
-            // Simulate cache check
-            $cacheKey = md5($path . serialize($request->getQueryParams()));
-            
-            // Simulate cache miss (in real scenario, would check actual cache)
-            $response = $handler->handle($request);
-            
-            // Add cache headers
-            return $response
-                ->withHeader('X-Cache-Status', 'MISS')
-                ->withHeader('Cache-Control', 'public, max-age=3600');
-        }
-        
-        return $handler->handle($request);
-    }
-}
-
-class ConditionalRateLimitMiddleware extends AbstractMiddleware
-{
-    private array $rateLimitedPaths = ['/api'];
-    private array $limits = [
-        '/api/public' => 1000,
-        '/api/private' => 100,
-        '/api' => 500 // default
-    ];
-    
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $path = $request->getUri()->getPath();
-        
-        $shouldRateLimit = false;
-        foreach ($this->rateLimitedPaths as $limitedPath) {
-            if (strpos($path, $limitedPath) === 0) {
-                $shouldRateLimit = true;
-                break;
-            }
-        }
-        
-        if ($shouldRateLimit) {
-            $limit = $this->getLimit($path);
-            $remaining = rand(0, $limit);
-            
-            if ($remaining === 0) {
-                $response = (new \PivotPHP\Core\Http\Psr7\Factory\ResponseFactory())
-                    ->createResponse(429)
-                    ->withHeader('Content-Type', 'application/json');
-                $response->getBody()->write(json_encode(['error' => 'Rate limit exceeded']));
-                return $response;
-            }
-            
-            $response = $handler->handle($request);
-            
-            return $response
-                ->withHeader('X-RateLimit-Limit', (string) $limit)
-                ->withHeader('X-RateLimit-Remaining', (string) $remaining);
-        }
-        
-        return $handler->handle($request);
-    }
-    
-    private function getLimit(string $path): int
-    {
-        foreach ($this->limits as $limitPath => $limit) {
-            if (strpos($path, $limitPath) === 0) {
-                return $limit;
-            }
-        }
-        return 500;
-    }
-}
 
 class ConditionalMiddlewareBenchmark extends BenchmarkBase
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
-    private UriFactory $uriFactory;
     
     protected function getName(): string
     {
@@ -171,13 +26,11 @@ class ConditionalMiddlewareBenchmark extends BenchmarkBase
     protected function setup(): void
     {
         $this->app = new Application();
-        $this->requestFactory = new ServerRequestFactory();
-        $this->uriFactory = new UriFactory();
         
         // Add conditional middleware
-        $this->app->use(new ConditionalAuthMiddleware());
-        $this->app->use(new ConditionalCacheMiddleware());
-        $this->app->use(new ConditionalRateLimitMiddleware());
+        $this->app->use($this->createAuthMiddleware());
+        $this->app->use($this->createCacheMiddleware());
+        $this->app->use($this->createRateLimitMiddleware());
         
         // Public routes (no auth, but cached and rate limited)
         $this->app->get('/api/public/posts', function($request, $response) {
@@ -227,24 +80,163 @@ class ConditionalMiddlewareBenchmark extends BenchmarkBase
         ];
         
         $route = $routes[array_rand($routes)];
-        $uri = $this->uriFactory->createUri($route[1]);
+        $path = $route[1];
         
-        $request = $this->requestFactory->createServerRequest($route[0], $uri);
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = $route[0];
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
         
         // Add auth header for protected routes
         if ($route[2]) {
             $token = rand(0, 10) > 1 ? 'valid-token-' . rand(1, 100) : 'invalid-token';
-            $request = $request->withHeader('Authorization', 'Bearer ' . $token);
+            $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
         }
         
         if ($route[0] === 'POST') {
-            $request = $request->withHeader('Content-Type', 'application/json');
-            $body = json_encode(['setting' => 'value']);
-            $request->getBody()->write($body);
-            $request->getBody()->rewind();
+            $_POST = ['setting' => 'value'];
+            $_SERVER['CONTENT_TYPE'] = 'application/json';
+        } else {
+            $_POST = [];
         }
         
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
+    }
+    
+    private function createAuthMiddleware(): callable
+    {
+        $protectedPaths = ['/admin', '/api/private'];
+        
+        return function($request, $response, $next) use ($protectedPaths) {
+            $path = $request->getUri()->getPath();
+            
+            // Check if path requires authentication
+            $requiresAuth = false;
+            foreach ($protectedPaths as $protectedPath) {
+                if (strpos($path, $protectedPath) === 0) {
+                    $requiresAuth = true;
+                    break;
+                }
+            }
+            
+            if ($requiresAuth) {
+                $authHeader = $request->getHeaderLine('Authorization');
+                if (!$authHeader || !$this->validateToken($authHeader)) {
+                    return new \PivotPHP\Core\Http\Psr7\Response(401, 
+                        ['Content-Type' => 'application/json'], 
+                        json_encode(['error' => 'Unauthorized'])
+                    );
+                }
+                
+                $request = $request->withAttribute('user_id', $this->extractUserId($authHeader));
+            }
+            
+            return $next($request, $response);
+        };
+    }
+    
+    private function createCacheMiddleware(): callable
+    {
+        $cacheablePaths = ['/api/public', '/static'];
+        
+        return function($request, $response, $next) use ($cacheablePaths) {
+            $path = $request->getUri()->getPath();
+            $method = $request->getMethod();
+            
+            // Only cache GET requests to specific paths
+            if ($method !== 'GET') {
+                return $next($request, $response);
+            }
+            
+            $shouldCache = false;
+            foreach ($cacheablePaths as $cacheablePath) {
+                if (strpos($path, $cacheablePath) === 0) {
+                    $shouldCache = true;
+                    break;
+                }
+            }
+            
+            if ($shouldCache) {
+                // Simulate cache check
+                $cacheKey = md5($path . serialize($request->getQueryParams()));
+                
+                // Simulate cache miss (in real scenario, would check actual cache)
+                $response = $next($request, $response);
+                
+                // Add cache headers
+                return $response
+                    ->withHeader('X-Cache-Status', 'MISS')
+                    ->withHeader('Cache-Control', 'public, max-age=3600');
+            }
+            
+            return $next($request, $response);
+        };
+    }
+    
+    private function createRateLimitMiddleware(): callable
+    {
+        $rateLimitedPaths = ['/api'];
+        $limits = [
+            '/api/public' => 1000,
+            '/api/private' => 100,
+            '/api' => 500 // default
+        ];
+        
+        return function($request, $response, $next) use ($rateLimitedPaths, $limits) {
+            $path = $request->getUri()->getPath();
+            
+            $shouldRateLimit = false;
+            foreach ($rateLimitedPaths as $limitedPath) {
+                if (strpos($path, $limitedPath) === 0) {
+                    $shouldRateLimit = true;
+                    break;
+                }
+            }
+            
+            if ($shouldRateLimit) {
+                $limit = $this->getLimit($path, $limits);
+                $remaining = rand(0, $limit);
+                
+                if ($remaining === 0) {
+                    return new \PivotPHP\Core\Http\Psr7\Response(429, 
+                        ['Content-Type' => 'application/json'], 
+                        json_encode(['error' => 'Rate limit exceeded'])
+                    );
+                }
+                
+                $response = $next($request, $response);
+                
+                return $response
+                    ->withHeader('X-RateLimit-Limit', (string) $limit)
+                    ->withHeader('X-RateLimit-Remaining', (string) $remaining);
+            }
+            
+            return $next($request, $response);
+        };
+    }
+    
+    private function validateToken(string $authHeader): bool
+    {
+        // Simulate token validation
+        return strpos($authHeader, 'Bearer valid-') === 0;
+    }
+    
+    private function extractUserId(string $authHeader): int
+    {
+        // Simulate user ID extraction
+        return rand(1, 1000);
+    }
+    
+    private function getLimit(string $path, array $limits): int
+    {
+        foreach ($limits as $limitPath => $limit) {
+            if (strpos($path, $limitPath) === 0) {
+                return $limit;
+            }
+        }
+        return 500;
     }
 }
 

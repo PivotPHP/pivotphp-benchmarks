@@ -9,14 +9,10 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use PivotPHP\Core\Http\Psr7\Factory\ResponseFactory;
-use PivotPHP\Core\Http\Psr7\Factory\StreamFactory;
 use PivotBenchmark\BenchmarkBase;
 
 class JsonProcessingBenchmark extends BenchmarkBase
 {
-    private ResponseFactory $responseFactory;
-    private StreamFactory $streamFactory;
     private array $smallPayload;
     private array $mediumPayload;
     private array $largePayload;
@@ -28,8 +24,6 @@ class JsonProcessingBenchmark extends BenchmarkBase
     
     protected function setup(): void
     {
-        $this->responseFactory = new ResponseFactory();
-        $this->streamFactory = new StreamFactory();
         
         // Small payload (typical API response)
         $this->smallPayload = [
@@ -124,25 +118,20 @@ class JsonProcessingBenchmark extends BenchmarkBase
     
     private function processPayload(array $data): void
     {
-        // Create response with JSON
-        $response = $this->responseFactory->createResponse(200);
-        $response = $response->withHeader('Content-Type', 'application/json');
-        
-        // Encode to JSON
+        // Encode to JSON (what server does)
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         
-        // Create stream and attach to response
-        $stream = $this->streamFactory->createStream($json);
-        $response = $response->withBody($stream);
-        
-        // Simulate reading and parsing (what a client would do)
-        $responseBody = (string) $response->getBody();
-        $parsed = json_decode($responseBody, true);
+        // Simulate network transfer and parsing (what client does)
+        $parsed = json_decode($json, true);
         
         // Verify parsing worked
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException('JSON parsing error: ' . json_last_error_msg());
         }
+        
+        // Simulate some processing on parsed data
+        $processed = array_keys($parsed);
+        count($processed); // Force some work
     }
 }
 
