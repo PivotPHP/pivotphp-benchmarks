@@ -1,0 +1,86 @@
+# Composer
+/vendor/
+composer.lock
+
+# Benchmark results
+/results/
+/reports/
+*.log
+*.csv
+*.json
+benchmark-*.txt
+BENCHMARK_RESULTS.md
+
+# Docker volumes
+/docker/mysql/data/
+/docker/redis/data/
+/docker/volumes/
+
+# IDE and system files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Cache and temporary files
+/cache/
+/tmp/
+/temp/
+*.tmp
+*.cache
+
+# PHP specific
+*.phar
+.phpunit.result.cache
+.php_cs.cache
+.php-cs-fixer.cache
+phpunit.xml
+phpstan.neon
+
+# Benchmark specific
+/benchmarks/comparative/vendor/
+/benchmarks/helix-orm/vendor/
+benchmark-output/
+performance-reports/
+
+# Test artifacts
+/coverage/
+*.coverage
+*.profraw
+*.profdata
+
+# Build artifacts
+/build/
+/dist/
+
+# Local configuration
+config.local.php
+benchmarks.local.php
+
+# Logs
+/logs/
+*.log
+error_log
+access_log
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Generated documentation
+/docs/_build/
+/docs/generated/

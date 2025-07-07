@@ -27,64 +27,36 @@ class BenchmarkCommand extends Command
             'routing' => [
                 'simple-route',
                 'route-with-params',
-                'wildcard-route',
-                'route-groups',
-                'middleware-chain'
+                'wildcard-route'
             ],
             'middleware' => [
+                'pipeline',
                 'single-middleware',
-                'five-middlewares',
-                'ten-middlewares',
                 'conditional-middleware'
             ],
             'container' => [
-                'simple-resolution',
-                'dependency-injection',
-                'singleton-resolution',
-                'tagged-services'
+                'resolution'
             ],
             'http' => [
-                'request-creation',
-                'response-json',
-                'large-payload',
-                'file-upload'
+                'request-response',
+                'json-processing',
+                'large-payload'
             ]
         ],
         'helix-orm' => [
             'queries' => [
-                'simple-select',
-                'complex-join',
-                'bulk-insert',
-                'pagination'
+                'select'
             ],
             'hydration' => [
-                'single-entity',
-                'collection-100',
-                'collection-1000',
-                'nested-relations'
+                'entity'
             ],
             'transactions' => [
-                'single-operation',
-                'bulk-operations',
-                'nested-transactions'
+                'bulk'
             ]
         ],
         'comparative' => [
             'slim4' => [
-                'routing',
-                'middleware',
-                'json-response',
-                'database-query'
-            ],
-            'lumen' => [
-                'routing',
-                'middleware',
-                'json-response',
-                'database-query'
-            ],
-            'flight' => [
-                'routing',
-                'json-response'
+                'routing'
             ]
         ]
     ];
@@ -188,7 +160,7 @@ class BenchmarkCommand extends Command
         int $iterations,
         int $warmup
     ): array {
-        $benchmarkFile = "/benchmarks/$framework/$category/$benchmark.php";
+        $benchmarkFile = __DIR__ . "/../benchmarks/$framework/$category/$benchmark.php";
         
         if (!file_exists($benchmarkFile)) {
             return [
@@ -233,8 +205,14 @@ class BenchmarkCommand extends Command
     
     private function saveResult(array $result): void
     {
+        $resultsDir = __DIR__ . '/../results/raw';
+        if (!is_dir($resultsDir)) {
+            mkdir($resultsDir, 0777, true);
+        }
+        
         $filename = sprintf(
-            '/results/raw/%s_%s_%s_%s.json',
+            '%s/%s_%s_%s_%s.json',
+            $resultsDir,
             $result['framework'],
             $result['category'],
             $result['benchmark'],
@@ -257,8 +235,8 @@ class BenchmarkCommand extends Command
                     $result['framework'],
                     $result['category'],
                     $result['benchmark'],
-                    number_format($result['ops_per_second'] ?? 0),
-                    number_format($result['memory_peak_mb'] ?? 0, 2),
+                    number_format($result['results']['operations_per_second'] ?? 0),
+                    number_format($result['results']['memory_peak_mb'] ?? 0, 2),
                     '<info>✓</info>'
                 ]);
             } else {

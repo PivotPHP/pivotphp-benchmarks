@@ -9,9 +9,24 @@
 
 class ReportGenerator
 {
-    private string $rawDir = '/results/raw';
-    private string $processedDir = '/results/processed';
-    private string $reportsDir = '/results/reports';
+    private string $rawDir;
+    private string $processedDir;
+    private string $reportsDir;
+    
+    public function __construct()
+    {
+        $baseDir = __DIR__ . '/..';
+        $this->rawDir = $baseDir . '/results/raw';
+        $this->processedDir = $baseDir . '/results/processed';
+        $this->reportsDir = $baseDir . '/results/reports';
+        
+        // Ensure directories exist
+        foreach ([$this->rawDir, $this->processedDir, $this->reportsDir] as $dir) {
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
+        }
+    }
     
     public function run(): void
     {
@@ -93,8 +108,8 @@ class ReportGenerator
             }
             
             $summary[$framework]['total_benchmarks']++;
-            $summary[$framework]['avg_ops_per_second'] += $result['ops_per_second'];
-            $summary[$framework]['avg_memory_mb'] += $result['memory_peak_mb'];
+            $summary[$framework]['avg_ops_per_second'] += $result['results']['operations_per_second'];
+            $summary[$framework]['avg_memory_mb'] += $result['results']['memory_peak_mb'];
             $summary[$framework]['benchmarks'][] = $result['benchmark'];
         }
         
@@ -128,10 +143,10 @@ class ReportGenerator
                 
                 // Use HelixPHP as baseline if available
                 if (isset($frameworks['helix-core'])) {
-                    $baseline = $frameworks['helix-core']['ops_per_second'];
+                    $baseline = $frameworks['helix-core']['results']['operations_per_second'];
                 } else {
                     // Use the first framework as baseline
-                    $baseline = reset($frameworks)['ops_per_second'];
+                    $baseline = reset($frameworks)['results']['operations_per_second'];
                 }
                 
                 $comparison = [
@@ -141,9 +156,9 @@ class ReportGenerator
                 
                 foreach ($frameworks as $framework => $result) {
                     $comparison['frameworks'][$framework] = [
-                        'ops_per_second' => $result['ops_per_second'],
-                        'relative_performance' => round(($result['ops_per_second'] / $baseline) * 100, 1),
-                        'memory_mb' => $result['memory_peak_mb']
+                        'ops_per_second' => $result['results']['operations_per_second'],
+                        'relative_performance' => round(($result['results']['operations_per_second'] / $baseline) * 100, 1),
+                        'memory_mb' => $result['results']['memory_peak_mb']
                     ];
                 }
                 
@@ -183,9 +198,9 @@ class ReportGenerator
                     "| %s | %s | %s | %.2f | %.3f |\n",
                     $result['benchmark'],
                     $result['category'],
-                    number_format($result['ops_per_second']),
-                    $result['memory_peak_mb'],
-                    $result['avg_time_ms']
+                    number_format($result['results']['operations_per_second']),
+                    $result['results']['memory_peak_mb'],
+                    $result['results']['avg_time_ms']
                 );
             }
             $markdown .= "\n";

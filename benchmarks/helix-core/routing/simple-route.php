@@ -10,15 +10,12 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
-use Helix\Http\Psr7\Factory\UriFactory;
+use Helix\Http\Request;
 use HelixBenchmark\BenchmarkBase;
 
 class SimpleRouteBenchmark extends BenchmarkBase
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
-    private UriFactory $uriFactory;
     
     protected function getName(): string
     {
@@ -28,8 +25,6 @@ class SimpleRouteBenchmark extends BenchmarkBase
     protected function setup(): void
     {
         $this->app = new Application();
-        $this->requestFactory = new ServerRequestFactory();
-        $this->uriFactory = new UriFactory();
         
         // Setup routes
         for ($i = 0; $i < 100; $i++) {
@@ -47,10 +42,19 @@ class SimpleRouteBenchmark extends BenchmarkBase
     protected function runSingleIteration(): void
     {
         $routeNum = rand(0, 99);
-        $uri = $this->uriFactory->createUri("/route-{$routeNum}");
+        $path = "/route-{$routeNum}";
         
-        $request = $this->requestFactory->createServerRequest('GET', $uri);
+        // Create a mock request using Helix's Request class
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
+        
+        // Consume response to avoid output
+        $response->getBody();
     }
 }
 

@@ -15,7 +15,7 @@ abstract class BenchmarkBase
     {
         $this->iterations = (int) ($options['iterations'] ?? 10000);
         $this->warmup = (int) ($options['warmup'] ?? 1000);
-        $this->jsonOutput = (bool) ($options['json'] ?? false);
+        $this->jsonOutput = isset($options['json']);
         $this->timer = new Timer();
     }
     
@@ -28,6 +28,9 @@ abstract class BenchmarkBase
         $this->setup();
         $this->doWarmup();
         
+        // Capture output to avoid interference
+        ob_start();
+        
         $this->timer->start();
         
         for ($i = 0; $i < $this->iterations; $i++) {
@@ -35,6 +38,9 @@ abstract class BenchmarkBase
         }
         
         $this->timer->stop();
+        
+        // Discard captured output
+        ob_end_clean();
         
         return $this->generateResults();
     }
@@ -45,9 +51,15 @@ abstract class BenchmarkBase
             echo "Warming up with {$this->warmup} iterations...\n";
         }
         
+        // Capture output during warmup
+        ob_start();
+        
         for ($i = 0; $i < $this->warmup; $i++) {
             $this->runSingleIteration();
         }
+        
+        // Discard warmup output
+        ob_end_clean();
     }
     
     protected function generateResults(): array

@@ -1,0 +1,288 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Large Payload Benchmark
+ * 
+ * Tests the performance of handling large HTTP payloads
+ */
+
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
+use Helix\Core\Application;
+use Helix\Http\Psr7\Factory\ServerRequestFactory;
+use Helix\Http\Psr7\Factory\ResponseFactory;
+use Helix\Http\Psr7\Factory\StreamFactory;
+use Helix\Http\Psr7\Factory\UriFactory;
+use HelixBenchmark\BenchmarkBase;
+
+class LargePayloadBenchmark extends BenchmarkBase
+{
+    private Application $app;
+    private ServerRequestFactory $requestFactory;
+    private ResponseFactory $responseFactory;
+    private StreamFactory $streamFactory;
+    private UriFactory $uriFactory;
+    private array $payloads = [];
+    
+    protected function getName(): string
+    {
+        return 'http/large-payload';
+    }
+    
+    protected function setup(): void
+    {
+        $this->app = new Application();
+        $this->requestFactory = new ServerRequestFactory();
+        $this->responseFactory = new ResponseFactory();
+        $this->streamFactory = new StreamFactory();
+        $this->uriFactory = new UriFactory();
+        
+        // Generate different sized payloads
+        $this->generatePayloads();
+        
+        // Route for handling large JSON uploads
+        $this->app->post('/api/upload/json', function($request, $response) {
+            $body = (string) $request->getBody();
+            $data = json_decode($body, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return $response->withStatus(400)->json(['error' => 'Invalid JSON']);
+            }
+            
+            return $response->json([
+                'received' => true,
+                'size' => strlen($body),
+                'items' => count($data['items'] ?? [])
+            ]);
+        });
+        
+        // Route for handling large form data
+        $this->app->post('/api/upload/form', function($request, $response) {
+            $parsedBody = $request->getParsedBody();
+            
+            return $response->json([
+                'received' => true,
+                'fields' => count($parsedBody ?? [])
+            ]);
+        });
+        
+        // Route for streaming large responses
+        $this->app->get('/api/download/large', function($request, $response) {
+            $size = $request->getQueryParams()['size'] ?? 'medium';
+            $data = $this->payloads[$size] ?? $this->payloads['medium'];
+            
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withHeader('Content-Length', (string) strlen($data))
+                ->write($data);
+        });
+        
+        // Route for handling chunked uploads
+        $this->app->post('/api/upload/chunked', function($request, $response) {
+            $totalSize = 0;
+            $chunks = 0;
+            
+            // Simulate processing chunked data
+            $body = $request->getBody();
+            while (!$body->eof()) {
+                $chunk = $body->read(8192); // 8KB chunks
+                $totalSize += strlen($chunk);
+                $chunks++;
+            }
+            
+            return $response->json([
+                'received' => true,
+                'total_size' => $totalSize,
+                'chunks' => $chunks
+            ]);
+        });
+        
+        // Route for binary data
+        $this->app->post('/api/upload/binary', function($request, $response) {
+            $contentType = $request->getHeaderLine('Content-Type');
+            $body = (string) $request->getBody();
+            
+            // Simulate processing binary data
+            $checksum = md5($body);
+            
+            return $response->json([
+                'received' => true,
+                'content_type' => $contentType,
+                'size' => strlen($body),
+                'checksum' => $checksum
+            ]);
+        });
+    }
+    
+    private function generatePayloads(): void
+    {
+        // Small payload (1KB)
+        $small = ['items' => []];
+        for ($i = 0; $i < 10; $i++) {
+            $small['items'][] = [
+                'id' => $i,
+                'name' => "Item {$i}",
+                'data' => str_repeat('x', 50)
+            ];
+        }
+        $this->payloads['small'] = json_encode($small);
+        
+        // Medium payload (100KB)
+        $medium = ['items' => []];
+        for ($i = 0; $i < 500; $i++) {
+            $medium['items'][] = [
+                'id' => $i,
+                'name' => "Item {$i}",
+                'description' => str_repeat("Description {$i} ", 10),
+                'metadata' => [
+                    'created' => date('c'),
+                    'tags' => ['tag1', 'tag2', 'tag3'],
+                    'attributes' => array_fill(0, 5, str_repeat('attr', 10))
+                ]
+            ];
+        }
+        $this->payloads['medium'] = json_encode($medium);
+        
+        // Large payload (1MB)
+        $large = ['items' => []];
+        for ($i = 0; $i < 5000; $i++) {
+            $large['items'][] = [
+                'id' => $i,
+                'name' => "Item {$i}",
+                'description' => str_repeat("Description {$i} ", 20),
+                'content' => base64_encode(random_bytes(100)),
+                'metadata' => [
+                    'created' => date('c'),
+                    'modified' => date('c'),
+                    'tags' => array_fill(0, 10, "tag{$i}"),
+                    'attributes' => array_fill(0, 10, str_repeat('attribute', 5))
+                ]
+            ];
+        }
+        $this->payloads['large'] = json_encode($large);
+        
+        // Binary payload (500KB)
+        $this->payloads['binary'] = random_bytes(500 * 1024);
+        
+        // Form data payload
+        $formData = [];
+        for ($i = 0; $i < 100; $i++) {
+            $formData["field_{$i}"] = str_repeat("value{$i}", 50);
+        }
+        $this->payloads['form'] = http_build_query($formData);
+    }
+    
+    protected function runSingleIteration(): void
+    {
+        $operations = [
+            'upload_json_small',
+            'upload_json_medium',
+            'upload_json_large',
+            'upload_form',
+            'upload_binary',
+            'download_large',
+            'upload_chunked'
+        ];
+        
+        $operation = $operations[array_rand($operations)];
+        
+        switch ($operation) {
+            case 'upload_json_small':
+                $this->uploadJson('small');
+                break;
+            case 'upload_json_medium':
+                $this->uploadJson('medium');
+                break;
+            case 'upload_json_large':
+                $this->uploadJson('large');
+                break;
+            case 'upload_form':
+                $this->uploadForm();
+                break;
+            case 'upload_binary':
+                $this->uploadBinary();
+                break;
+            case 'download_large':
+                $this->downloadLarge();
+                break;
+            case 'upload_chunked':
+                $this->uploadChunked();
+                break;
+        }
+    }
+    
+    private function uploadJson(string $size): void
+    {
+        $uri = $this->uriFactory->createUri('/api/upload/json');
+        $request = $this->requestFactory->createServerRequest('POST', $uri)
+            ->withHeader('Content-Type', 'application/json');
+        
+        $stream = $this->streamFactory->createStream($this->payloads[$size]);
+        $request = $request->withBody($stream);
+        
+        $response = $this->app->handle($request);
+    }
+    
+    private function uploadForm(): void
+    {
+        $uri = $this->uriFactory->createUri('/api/upload/form');
+        $request = $this->requestFactory->createServerRequest('POST', $uri)
+            ->withHeader('Content-Type', 'application/x-www-form-urlencoded');
+        
+        $stream = $this->streamFactory->createStream($this->payloads['form']);
+        $request = $request->withBody($stream);
+        
+        // Parse form data
+        parse_str($this->payloads['form'], $parsedBody);
+        $request = $request->withParsedBody($parsedBody);
+        
+        $response = $this->app->handle($request);
+    }
+    
+    private function uploadBinary(): void
+    {
+        $uri = $this->uriFactory->createUri('/api/upload/binary');
+        $request = $this->requestFactory->createServerRequest('POST', $uri)
+            ->withHeader('Content-Type', 'application/octet-stream');
+        
+        $stream = $this->streamFactory->createStream($this->payloads['binary']);
+        $request = $request->withBody($stream);
+        
+        $response = $this->app->handle($request);
+    }
+    
+    private function downloadLarge(): void
+    {
+        $sizes = ['small', 'medium', 'large'];
+        $size = $sizes[array_rand($sizes)];
+        
+        $uri = $this->uriFactory->createUri('/api/download/large?size=' . $size);
+        $request = $this->requestFactory->createServerRequest('GET', $uri);
+        
+        $response = $this->app->handle($request);
+        
+        // Simulate client reading the response
+        $body = (string) $response->getBody();
+    }
+    
+    private function uploadChunked(): void
+    {
+        $uri = $this->uriFactory->createUri('/api/upload/chunked');
+        $request = $this->requestFactory->createServerRequest('POST', $uri)
+            ->withHeader('Content-Type', 'application/octet-stream')
+            ->withHeader('Transfer-Encoding', 'chunked');
+        
+        $stream = $this->streamFactory->createStream($this->payloads['medium']);
+        $request = $request->withBody($stream);
+        
+        $response = $this->app->handle($request);
+    }
+}
+
+// Parse command line arguments
+$options = getopt('', ['iterations:', 'warmup:', 'json']);
+
+// Run benchmark
+$benchmark = new LargePayloadBenchmark($options);
+$benchmark->run();
