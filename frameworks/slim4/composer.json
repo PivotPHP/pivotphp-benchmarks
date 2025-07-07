@@ -1,5 +1,5 @@
 {
-    "name": "helixphp-benchmarks/slim4",
+    "name": "pivotphp-benchmarks/slim4",
     "description": "Slim 4 benchmark application",
     "type": "project",
     "require": {

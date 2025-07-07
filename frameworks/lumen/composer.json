@@ -1,5 +1,5 @@
 {
-    "name": "helixphp-benchmarks/lumen",
+    "name": "pivotphp-benchmarks/lumen",
     "description": "Lumen benchmark application",
     "type": "project",
     "require": {

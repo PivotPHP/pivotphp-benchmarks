@@ -10,12 +10,12 @@ echo "=== Running Framework Performance Comparison ===\n\n";
 $timestamp = date('Y-m-d H:i:s');
 $results = [];
 
-// 1. Run the HelixPHP comparison that we know works
-echo "1. Running HelixPHP Core vs ORM comparison...\n";
+// 1. Run the PivotPHP comparison that we know works
+echo "1. Running PivotPHP Core vs ORM comparison...\n";
 $helixOutput = shell_exec("php " . __DIR__ . "/helix-comparison.php 2>&1");
 echo "   ✓ Completed\n\n";
 
-// Parse HelixPHP results from our previous run
+// Parse PivotPHP results from our previous run
 $helixData = json_decode(file_get_contents(__DIR__ . "/../results/raw/helix_comparison_2025-07-07_14-34-18.json"), true);
 
 // 2. Run Slim 4 benchmarks (these worked)
@@ -76,10 +76,10 @@ echo "\n";
 echo "=== PERFORMANCE COMPARISON REPORT ===\n";
 echo str_repeat('=', 70) . "\n\n";
 
-// Prepare comparison data using HelixPHP initialization ops/sec as proxy for routing
+// Prepare comparison data using PivotPHP initialization ops/sec as proxy for routing
 $routingComparison = [
-    'HelixPHP Core' => $helixData['helix-core']['initialization']['ops_per_second'],
-    'HelixPHP + ORM' => $helixData['helix-orm']['initialization']['ops_per_second'],
+    'PivotPHP Core' => $helixData['helix-core']['initialization']['ops_per_second'],
+    'PivotPHP + ORM' => $helixData['helix-orm']['initialization']['ops_per_second'],
     'Slim 4' => $slim4Results['routing'] ?? 0,
     'Lumen' => $lumenResults['routing'] ?? 0,
     'Flight' => $flightResults['routing'] ?? 0
@@ -98,20 +98,20 @@ $position = 1;
 foreach ($routingComparison as $framework => $ops) {
     $percentage = ($ops > 0) ? ($ops / $maxOps) * 100 : 0;
     $bar = str_repeat('█', (int)($percentage / 2));
-    
-    printf("%d. %-20s |%-40s %s ops/s", 
+
+    printf("%d. %-20s |%-40s %s ops/s",
         $position++,
-        $framework, 
+        $framework,
         $bar,
         number_format($ops)
     );
-    
+
     if ($percentage == 100) {
         echo " ★ FASTEST";
     } else {
         printf(" (%.1f%%)", $percentage);
     }
-    
+
     echo "\n";
 }
 
@@ -122,8 +122,8 @@ echo "2. MEMORY FOOTPRINT\n";
 echo str_repeat('-', 70) . "\n";
 
 $memoryData = [
-    'HelixPHP Core' => $helixData['helix-core']['bootstrap']['memory_mb'],
-    'HelixPHP + ORM' => $helixData['helix-orm']['bootstrap']['memory_mb'],
+    'PivotPHP Core' => $helixData['helix-core']['bootstrap']['memory_mb'],
+    'PivotPHP + ORM' => $helixData['helix-orm']['bootstrap']['memory_mb'],
     'Slim 4' => 0.04, // From benchmark output
     'Lumen' => 0.06, // From benchmark output
     'Flight' => 7.63  // From benchmark output
@@ -141,36 +141,36 @@ echo "\n";
 echo "3. KEY PERFORMANCE INSIGHTS\n";
 echo str_repeat('-', 70) . "\n\n";
 
-// Calculate HelixPHP advantages
-$helixCore = $routingComparison['HelixPHP Core'];
+// Calculate PivotPHP advantages
+$helixCore = $routingComparison['PivotPHP Core'];
 $slim4Ops = $routingComparison['Slim 4'];
 $lumenOps = $routingComparison['Lumen'];
 $flightOps = $routingComparison['Flight'];
 
 if ($slim4Ops > 0) {
     $slim4Advantage = (($helixCore - $slim4Ops) / $slim4Ops) * 100;
-    printf("• HelixPHP Core is %.1fx faster than Slim 4 (+%.0f%%)\n", 
+    printf("• PivotPHP Core is %.1fx faster than Slim 4 (+%.0f%%)\n",
         $helixCore / $slim4Ops, $slim4Advantage);
 }
 
 if ($lumenOps > 0) {
     $lumenAdvantage = (($helixCore - $lumenOps) / $lumenOps) * 100;
-    printf("• HelixPHP Core is %.1fx faster than Lumen (+%.0f%%)\n", 
+    printf("• PivotPHP Core is %.1fx faster than Lumen (+%.0f%%)\n",
         $helixCore / $lumenOps, $lumenAdvantage);
 }
 
 if ($flightOps > 0) {
     $flightAdvantage = (($helixCore - $flightOps) / $flightOps) * 100;
-    printf("• HelixPHP Core is %.1fx faster than Flight (+%.0f%%)\n", 
+    printf("• PivotPHP Core is %.1fx faster than Flight (+%.0f%%)\n",
         $helixCore / $flightOps, $flightAdvantage);
 }
 
 echo "\n";
 
 // ORM overhead analysis
-$ormOverhead = (($helixCore - $routingComparison['HelixPHP + ORM']) / $helixCore) * 100;
-printf("• ORM Integration adds only %.1f%% overhead to HelixPHP\n", $ormOverhead);
-printf("• HelixPHP + ORM still outperforms all other tested frameworks\n");
+$ormOverhead = (($helixCore - $routingComparison['PivotPHP + ORM']) / $helixCore) * 100;
+printf("• ORM Integration adds only %.1f%% overhead to PivotPHP\n", $ormOverhead);
+printf("• PivotPHP + ORM still outperforms all other tested frameworks\n");
 
 echo "\n";
 
@@ -178,10 +178,10 @@ echo "\n";
 echo "4. MEMORY EFFICIENCY ANALYSIS\n";
 echo str_repeat('-', 70) . "\n\n";
 
-printf("• HelixPHP Core has the smallest memory footprint (%.2f MB)\n", $memoryData['HelixPHP Core']);
-printf("• Flight has significantly higher memory usage (%.1fx more than HelixPHP)\n", 
-    $memoryData['Flight'] / $memoryData['HelixPHP Core']);
-printf("• Even with ORM, HelixPHP uses less memory than Flight\n");
+printf("• PivotPHP Core has the smallest memory footprint (%.2f MB)\n", $memoryData['PivotPHP Core']);
+printf("• Flight has significantly higher memory usage (%.1fx more than PivotPHP)\n",
+    $memoryData['Flight'] / $memoryData['PivotPHP Core']);
+printf("• Even with ORM, PivotPHP uses less memory than Flight\n");
 
 echo "\n";
 
@@ -190,15 +190,15 @@ echo "5. RECOMMENDATIONS\n";
 echo str_repeat('-', 70) . "\n\n";
 
 echo "For High-Performance Applications:\n";
-echo "• Choose HelixPHP Core for maximum speed and minimal resource usage\n";
+echo "• Choose PivotPHP Core for maximum speed and minimal resource usage\n";
 echo "• Ideal for microservices, APIs, and serverless deployments\n\n";
 
 echo "For Rapid Development with Database:\n";
-echo "• Choose HelixPHP + ORM for excellent performance with full ORM features\n";
+echo "• Choose PivotPHP + ORM for excellent performance with full ORM features\n";
 echo "• Still faster than other frameworks while providing rich functionality\n\n";
 
 echo "Framework Selection Guide:\n";
-echo "• HelixPHP: When performance and low resource usage are critical\n";
+echo "• PivotPHP: When performance and low resource usage are critical\n";
 echo "• Slim 4: When you need a mature ecosystem with moderate performance\n";
 echo "• Lumen: When you need Laravel compatibility in a lighter package\n";
 echo "• Flight: For simple projects where framework size doesn't matter\n";
@@ -210,16 +210,16 @@ $html = <<<HTML
 <head>
     <title>PHP Framework Performance Comparison</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
             padding: 0;
             background: #f5f7fa;
             color: #333;
         }
-        .container { 
-            max-width: 1000px; 
-            margin: 0 auto; 
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
             padding: 20px;
         }
         .header {
@@ -231,7 +231,7 @@ $html = <<<HTML
             margin-bottom: 30px;
             text-align: center;
         }
-        h1 { 
+        h1 {
             margin: 0 0 10px 0;
             font-size: 2.5em;
         }
@@ -242,8 +242,8 @@ $html = <<<HTML
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        h2 { 
-            color: #2c3e50; 
+        h2 {
+            color: #2c3e50;
             margin-top: 0;
             font-size: 1.8em;
             border-bottom: 3px solid #667eea;
@@ -330,7 +330,7 @@ $html = <<<HTML
     <div class="container">
         <div class="header">
             <h1>PHP Framework Performance Comparison</h1>
-            <p style="font-size: 1.2em; margin: 0;">HelixPHP vs Slim 4, Lumen, and Flight</p>
+            <p style="font-size: 1.2em; margin: 0;">PivotPHP vs Slim 4, Lumen, and Flight</p>
             <p style="margin: 10px 0 0 0; opacity: 0.9;">Generated: $timestamp</p>
         </div>
 HTML;
@@ -344,15 +344,15 @@ HTML;
 
 foreach ($routingComparison as $framework => $ops) {
     $percentage = ($ops > 0) ? ($ops / $maxOps) * 100 : 0;
-    $barClass = ($framework === 'HelixPHP Core') ? 'winner' : 
-                 (($framework === 'HelixPHP + ORM') ? 'helix-orm' : '');
-    
+    $barClass = ($framework === 'PivotPHP Core') ? 'winner' :
+                 (($framework === 'PivotPHP + ORM') ? 'helix-orm' : '');
+
     $html .= <<<HTML
             <div class="performance-bar">
                 <div class="framework-name">$framework</div>
                 <div class="bar-container">
                     <div class="bar $barClass" style="width: {$percentage}%">
-                        
+
                     </div>
                 </div>
                 <div class="value">{$ops} ops/s</div>
@@ -362,12 +362,12 @@ HTML;
 
 $html .= <<<HTML
         </div>
-        
+
         <div class="metric-card">
             <h2>Key Performance Metrics</h2>
             <div class="stats-grid">
                 <div class="stat-box">
-                    <div class="stat-label">HelixPHP Advantage</div>
+                    <div class="stat-label">PivotPHP Advantage</div>
                     <div class="stat-value">+{$slim4Advantage}%</div>
                     <div class="stat-label">vs Slim 4</div>
                 </div>
@@ -379,26 +379,26 @@ $html .= <<<HTML
                 <div class="stat-box">
                     <div class="stat-label">Memory Efficiency</div>
                     <div class="stat-value">0.11 MB</div>
-                    <div class="stat-label">HelixPHP Core</div>
+                    <div class="stat-label">PivotPHP Core</div>
                 </div>
             </div>
         </div>
-        
+
         <div class="metric-card">
             <h2>Analysis & Recommendations</h2>
             <div class="insight">
                 <h3>Performance Leadership</h3>
-                <p>HelixPHP Core demonstrates exceptional performance, significantly outperforming all tested frameworks. Even with ORM integration, HelixPHP maintains its performance advantage.</p>
+                <p>PivotPHP Core demonstrates exceptional performance, significantly outperforming all tested frameworks. Even with ORM integration, PivotPHP maintains its performance advantage.</p>
             </div>
             <div class="insight">
                 <h3>Memory Efficiency</h3>
-                <p>HelixPHP has the smallest memory footprint among all tested frameworks, making it ideal for resource-constrained environments and high-concurrency scenarios.</p>
+                <p>PivotPHP has the smallest memory footprint among all tested frameworks, making it ideal for resource-constrained environments and high-concurrency scenarios.</p>
             </div>
             <div class="insight">
                 <h3>Use Case Recommendations</h3>
                 <ul>
-                    <li><strong>HelixPHP Core:</strong> Perfect for high-performance APIs, microservices, and serverless deployments</li>
-                    <li><strong>HelixPHP + ORM:</strong> Ideal for data-driven applications requiring database abstraction without sacrificing performance</li>
+                    <li><strong>PivotPHP Core:</strong> Perfect for high-performance APIs, microservices, and serverless deployments</li>
+                    <li><strong>PivotPHP + ORM:</strong> Ideal for data-driven applications requiring database abstraction without sacrificing performance</li>
                     <li><strong>Other Frameworks:</strong> Consider when ecosystem maturity or specific features outweigh performance requirements</li>
                 </ul>
             </div>

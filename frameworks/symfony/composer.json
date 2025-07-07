@@ -1,5 +1,5 @@
 {
-    "name": "helixphp-benchmarks/symfony",
+    "name": "pivotphp-benchmarks/symfony",
     "description": "Symfony benchmark application",
     "type": "project",
     "require": {

@@ -1,6 +1,6 @@
 {
-    "name": "helixphp/benchmarks",
-    "description": "Performance benchmarks for HelixPHP and comparative frameworks",
+    "name": "pivotphp/benchmarks",
+    "description": "Performance benchmarks for PivotPHP and comparative frameworks",
     "type": "project",
     "license": "MIT",
     "authors": [
@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": "^8.1",
-        "helixphp/core": "^1.0",
-        "helixphp/cycle-orm": "^1.0",
+        "pivotphp/core": "^1.0",
+        "pivotphp/cycle-orm": "^1.0",
         "slim/slim": "^4.0",
         "slim/psr7": "^1.0",
         "laravel/lumen-framework": "^10.0",

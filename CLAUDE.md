@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is the HelixPHP benchmarking suite - a private repository for performance testing the HelixPHP ecosystem against other PHP microframeworks. It uses an isolated structure where each framework has its own directory, dependencies, and Docker container to ensure fair and conflict-free comparisons.
+This is the PivotPHP benchmarking suite - a private repository for performance testing the PivotPHP ecosystem against other PHP microframeworks. It uses an isolated structure where each framework has its own directory, dependencies, and Docker container to ensure fair and conflict-free comparisons.
 
 ## Essential Commands
 
@@ -16,8 +16,8 @@ make build
 # Run complete benchmark suite
 make benchmark-all              # All benchmarks on all frameworks
 make benchmark-helix            # Both helix-core and helix-orm
-make benchmark-core             # Only HelixPHP Core (without ORM)
-make benchmark-orm              # Only HelixPHP with Cycle ORM
+make benchmark-core             # Only PivotPHP Core (without ORM)
+make benchmark-orm              # Only PivotPHP with Cycle ORM
 make benchmark-comparative      # Slim4, Lumen, Flight, Symfony
 make benchmark-matrix           # Run across PHP 8.1, 8.2, 8.3
 
@@ -30,8 +30,8 @@ make down                       # Stop benchmark environment
 make clean                      # Clean all results and containers
 
 # Debug/Development access
-make shell-helix-core           # Shell access to HelixPHP Core container
-make shell-helix-orm            # Shell access to HelixPHP ORM container
+make shell-helix-core           # Shell access to PivotPHP Core container
+make shell-helix-orm            # Shell access to PivotPHP ORM container
 make shell-slim4                # Shell access to Slim 4 container
 make db-shell                   # Access MySQL shell
 make redis-cli                  # Access Redis CLI
@@ -50,8 +50,8 @@ php scripts/run-benchmarks-new.php --frameworks=helix-core,slim4 --iterations=50
 ### Isolated Framework Structure
 ```
 frameworks/
-├── helix-core/             # HelixPHP without ORM
-│   ├── composer.json       # Only helixphp/core dependency
+├── helix-core/             # PivotPHP without ORM
+│   ├── composer.json       # Only pivotphp/core dependency
 │   ├── Dockerfile          # Optimized container
 │   ├── public/             # Entry points
 │   ├── src/                # Application code
@@ -60,8 +60,8 @@ frameworks/
 │       ├── middleware.php
 │       └── json-api.php
 │
-├── helix-orm/              # HelixPHP with Cycle ORM
-│   ├── composer.json       # helixphp/core + helixphp/cycle-orm
+├── helix-orm/              # PivotPHP with Cycle ORM
+│   ├── composer.json       # pivotphp/core + pivotphp/cycle-orm
 │   ├── Dockerfile          # Includes PDO extensions
 │   └── benchmarks/
 │       ├── routing.php
@@ -87,12 +87,12 @@ frameworks/
    - Bootstrap and configuration
    - Benchmark implementations
 
-2. **Fair Comparison**: 
+2. **Fair Comparison**:
    - All containers have identical resource limits (2 CPUs, 1GB RAM)
    - Same OPcache and JIT configuration
    - Identical benchmark scenarios across frameworks
 
-3. **HelixPHP Core vs ORM**: 
+3. **PivotPHP Core vs ORM**:
    - Separate projects to measure ORM overhead
    - Allows testing performance impact of Cycle ORM
    - Both use identical application structure for fair comparison
@@ -118,4 +118,4 @@ Framework isolation structure is complete with:
 - Centralized benchmark runner
 - Example benchmarks for routing comparison
 
-This structure eliminates dependency conflicts and provides accurate performance comparisons between HelixPHP (with and without ORM) and other popular PHP microframeworks.
+This structure eliminates dependency conflicts and provides accurate performance comparisons between PivotPHP (with and without ORM) and other popular PHP microframeworks.

@@ -2,8 +2,8 @@
 <?php
 
 /**
- * HelixPHP Benchmark Runner
- * 
+ * PivotPHP Benchmark Runner
+ *
  * This script orchestrates the execution of all benchmarks
  * and collects results in a standardized format.
  */
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 class BenchmarkCommand extends Command
 {
     protected static $defaultName = 'benchmark:run';
-    
+
     private array $benchmarks = [
         'helix-core' => [
             'routing' => [
@@ -60,41 +60,41 @@ class BenchmarkCommand extends Command
             ]
         ]
     ];
-    
+
     protected function configure(): void
     {
         $this
-            ->setDescription('Run HelixPHP benchmarks')
+            ->setDescription('Run PivotPHP benchmarks')
             ->addOption('all', 'a', InputOption::VALUE_NONE, 'Run all benchmarks')
             ->addOption('framework', 'f', InputOption::VALUE_REQUIRED, 'Run benchmarks for specific framework')
             ->addOption('comparative', 'c', InputOption::VALUE_NONE, 'Run comparative benchmarks only')
             ->addOption('iterations', 'i', InputOption::VALUE_REQUIRED, 'Number of iterations', 10000)
             ->addOption('warmup', 'w', InputOption::VALUE_REQUIRED, 'Number of warmup iterations', 1000);
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('<info>HelixPHP Benchmark Runner</info>');
+        $output->writeln('<info>PivotPHP Benchmark Runner</info>');
         $output->writeln('PHP Version: ' . PHP_VERSION);
         $output->writeln('Date: ' . date('Y-m-d H:i:s'));
         $output->writeln('');
-        
+
         $iterations = (int) $input->getOption('iterations');
         $warmup = (int) $input->getOption('warmup');
-        
+
         $benchmarksToRun = $this->selectBenchmarks($input);
         $totalBenchmarks = $this->countBenchmarks($benchmarksToRun);
-        
+
         $progressBar = new ProgressBar($output, $totalBenchmarks);
         $progressBar->start();
-        
+
         $results = [];
-        
+
         foreach ($benchmarksToRun as $framework => $categories) {
             foreach ($categories as $category => $benchmarks) {
                 foreach ($benchmarks as $benchmark) {
                     $progressBar->advance();
-                    
+
                     $result = $this->runBenchmark(
                         $framework,
                         $category,
@@ -102,46 +102,46 @@ class BenchmarkCommand extends Command
                         $iterations,
                         $warmup
                     );
-                    
+
                     $results[] = $result;
                     $this->saveResult($result);
                 }
             }
         }
-        
+
         $progressBar->finish();
         $output->writeln('');
         $output->writeln('');
-        
+
         $this->displaySummary($output, $results);
-        
+
         return Command::SUCCESS;
     }
-    
+
     private function selectBenchmarks(InputInterface $input): array
     {
         if ($input->getOption('all')) {
             return $this->benchmarks;
         }
-        
+
         if ($input->getOption('comparative')) {
             return ['comparative' => $this->benchmarks['comparative']];
         }
-        
+
         if ($framework = $input->getOption('framework')) {
             if (!isset($this->benchmarks[$framework])) {
                 throw new \InvalidArgumentException("Unknown framework: $framework");
             }
             return [$framework => $this->benchmarks[$framework]];
         }
-        
-        // Default: run only HelixPHP benchmarks
+
+        // Default: run only PivotPHP benchmarks
         return [
             'helix-core' => $this->benchmarks['helix-core'],
             'helix-orm' => $this->benchmarks['helix-orm']
         ];
     }
-    
+
     private function countBenchmarks(array $benchmarks): int
     {
         $count = 0;
@@ -152,7 +152,7 @@ class BenchmarkCommand extends Command
         }
         return $count;
     }
-    
+
     private function runBenchmark(
         string $framework,
         string $category,
@@ -161,7 +161,7 @@ class BenchmarkCommand extends Command
         int $warmup
     ): array {
         $benchmarkFile = __DIR__ . "/../benchmarks/$framework/$category/$benchmark.php";
-        
+
         if (!file_exists($benchmarkFile)) {
             return [
                 'framework' => $framework,
@@ -171,7 +171,7 @@ class BenchmarkCommand extends Command
                 'reason' => 'File not found'
             ];
         }
-        
+
         // Execute benchmark in isolated process
         $command = sprintf(
             'php %s --iterations=%d --warmup=%d --json',
@@ -179,10 +179,10 @@ class BenchmarkCommand extends Command
             $iterations,
             $warmup
         );
-        
+
         $output = shell_exec($command);
         $result = json_decode($output, true);
-        
+
         if (!$result) {
             return [
                 'framework' => $framework,
@@ -192,7 +192,7 @@ class BenchmarkCommand extends Command
                 'reason' => 'Failed to parse output'
             ];
         }
-        
+
         return array_merge([
             'framework' => $framework,
             'category' => $category,
@@ -202,14 +202,14 @@ class BenchmarkCommand extends Command
             'php_version' => PHP_VERSION
         ], $result);
     }
-    
+
     private function saveResult(array $result): void
     {
         $resultsDir = __DIR__ . '/../results/raw';
         if (!is_dir($resultsDir)) {
             mkdir($resultsDir, 0777, true);
         }
-        
+
         $filename = sprintf(
             '%s/%s_%s_%s_%s.json',
             $resultsDir,
@@ -218,17 +218,17 @@ class BenchmarkCommand extends Command
             $result['benchmark'],
             date('Y-m-d_H-i-s')
         );
-        
+
         file_put_contents($filename, json_encode($result, JSON_PRETTY_PRINT));
     }
-    
+
     private function displaySummary(OutputInterface $output, array $results): void
     {
         $output->writeln('<info>Benchmark Summary</info>');
-        
+
         $table = new Table($output);
         $table->setHeaders(['Framework', 'Category', 'Benchmark', 'Ops/sec', 'Memory (MB)', 'Status']);
-        
+
         foreach ($results as $result) {
             if ($result['status'] === 'success') {
                 $table->addRow([
@@ -250,16 +250,16 @@ class BenchmarkCommand extends Command
                 ]);
             }
         }
-        
+
         $table->render();
-        
+
         $output->writeln('');
         $output->writeln('Results saved to: /results/raw/');
     }
 }
 
 // Create and run the console application
-$application = new Application('HelixPHP Benchmark Runner', '1.0.0');
+$application = new Application('PivotPHP Benchmark Runner', '1.0.0');
 $application->add(new BenchmarkCommand());
 $application->setDefaultCommand('benchmark:run', true);
 $application->run();

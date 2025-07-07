@@ -5,7 +5,7 @@
  * Quick test to verify benchmark setup
  */
 
-echo "Testing HelixPHP Benchmark Setup...\n\n";
+echo "Testing PivotPHP Benchmark Setup...\n\n";
 
 // Check if vendor directory exists
 if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
@@ -38,16 +38,16 @@ echo "\nTrying to run a simple benchmark test...\n";
 $benchmarkFile = __DIR__ . '/benchmarks/helix-core/routing/simple-route.php';
 if (file_exists($benchmarkFile)) {
     echo "✅ Found simple-route.php benchmark\n";
-    
+
     // Try to run it with minimal iterations
     $command = sprintf(
         'php %s --iterations=10 --warmup=5 --json 2>&1',
         escapeshellarg($benchmarkFile)
     );
-    
+
     echo "\nRunning: $command\n";
     $output = shell_exec($command);
-    
+
     if ($output) {
         $result = json_decode($output, true);
         if ($result && isset($result['results'])) {

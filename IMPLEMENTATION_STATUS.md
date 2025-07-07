@@ -1,4 +1,4 @@
-# HelixPHP Benchmarks - Implementation Status
+# PivotPHP Benchmarks - Implementation Status
 
 ## ✅ Completed Components
 
@@ -10,7 +10,7 @@
 - ✅ Test setup script (test-setup.php)
 - ✅ Local runner script (run-local.sh)
 
-### HelixPHP Core Benchmarks
+### PivotPHP Core Benchmarks
 
 #### Routing (3/3 implemented)
 - ✅ `simple-route.php` - Basic route matching
@@ -32,7 +32,7 @@
 - ✅ `json-processing.php` - JSON encoding/decoding
 - ✅ `large-payload.php` - Large payload handling
 
-### HelixPHP ORM Benchmarks
+### PivotPHP ORM Benchmarks
 
 #### Queries (1/3 implemented)
 - ✅ `select.php` - SELECT query performance
@@ -73,8 +73,8 @@
 
 ## 📊 Current Coverage
 
-- **HelixPHP Core**: 10/12 benchmarks (83%)
-- **HelixPHP ORM**: 3/9 benchmarks (33%)
+- **PivotPHP Core**: 10/12 benchmarks (83%)
+- **PivotPHP ORM**: 3/9 benchmarks (33%)
 - **Comparative**: 12/12 benchmarks (100%)
 - **Overall**: 25/33 planned benchmarks (76%)
 
@@ -85,7 +85,7 @@
 # Run all implemented benchmarks
 ./run-local.sh --all --iterations=1000 --warmup=100
 
-# Run only HelixPHP core benchmarks
+# Run only PivotPHP core benchmarks
 ./run-local.sh --framework=helix-core
 
 # Run with custom settings

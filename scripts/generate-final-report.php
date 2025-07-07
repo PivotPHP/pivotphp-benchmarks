@@ -16,7 +16,7 @@ $workingData = json_decode(file_get_contents(__DIR__ . "/../results/raw/working_
 // Prepare comprehensive results
 $results = [
     'helix-core' => [
-        'name' => 'HelixPHP Core',
+        'name' => 'PivotPHP Core',
         'routing' => $helixData['helix-core']['initialization']['ops_per_second'],
         'middleware' => $helixData['helix-core']['initialization']['ops_per_second'] * 0.85, // Estimate
         'json' => $helixData['helix-core']['initialization']['ops_per_second'] * 0.75, // Estimate
@@ -24,7 +24,7 @@ $results = [
         'bootstrap' => $helixData['helix-core']['bootstrap']['time_ms']
     ],
     'helix-orm' => [
-        'name' => 'HelixPHP + ORM',
+        'name' => 'PivotPHP + ORM',
         'routing' => $helixData['helix-orm']['initialization']['ops_per_second'],
         'middleware' => $helixData['helix-orm']['initialization']['ops_per_second'] * 0.85,
         'json' => $helixData['helix-orm']['initialization']['ops_per_second'] * 0.75,
@@ -86,16 +86,16 @@ $html = <<<HTML
 <head>
     <title>PHP Framework Performance Comparison - Complete Report</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
             padding: 0;
             background: #f5f7fa;
             color: #333;
         }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
         .header {
@@ -107,7 +107,7 @@ $html = <<<HTML
             margin-bottom: 30px;
             text-align: center;
         }
-        h1 { 
+        h1 {
             margin: 0 0 10px 0;
             font-size: 2.5em;
         }
@@ -118,15 +118,15 @@ $html = <<<HTML
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        h2 { 
-            color: #2c3e50; 
+        h2 {
+            color: #2c3e50;
             margin-top: 0;
             font-size: 1.8em;
             border-bottom: 3px solid #667eea;
             padding-bottom: 10px;
         }
-        .chart { 
-            margin: 20px 0; 
+        .chart {
+            margin: 20px 0;
         }
         .bar-container {
             display: flex;
@@ -148,12 +148,12 @@ $html = <<<HTML
             height: 35px;
             margin: 0 10px;
         }
-        .bar { 
+        .bar {
             height: 100%;
             border-radius: 5px;
             display: flex;
             align-items: center;
-            color: white; 
+            color: white;
             padding: 0 10px;
             font-weight: 500;
             transition: width 0.3s ease;
@@ -164,7 +164,7 @@ $html = <<<HTML
         .bar-lumen { background: #e74c3c; }
         .bar-flight { background: #f39c12; }
         .bar-symfony { background: #1abc9c; }
-        
+
         .value-label {
             margin-left: auto;
             color: #2c3e50;
@@ -172,28 +172,28 @@ $html = <<<HTML
             min-width: 100px;
             text-align: right;
         }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 20px 0; 
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
-        th, td { 
-            padding: 12px; 
-            text-align: left; 
-            border-bottom: 1px solid #ecf0f1; 
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
         }
-        th { 
-            background: #34495e; 
+        th {
+            background: #34495e;
             color: white;
             font-weight: 600;
         }
         tr:hover {
             background: #f8f9fa;
         }
-        .winner { 
-            color: #27ae60; 
-            font-weight: bold; 
+        .winner {
+            color: #27ae60;
+            font-weight: bold;
         }
         .summary-grid {
             display: grid;
@@ -234,53 +234,53 @@ $html = <<<HTML
         .badge-best { background: #27ae60; color: white; }
         .badge-good { background: #3498db; color: white; }
         .badge-average { background: #f39c12; color: white; }
-        
+
         .concurrency-results {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin: 20px 0;
         }
-        
+
         .concurrency-card {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
         }
-        
+
         .concurrency-title {
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 10px;
         }
-        
+
         .performance-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-top: 15px;
         }
-        
+
         .perf-item {
             background: white;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
+
         .perf-label {
             color: #7f8c8d;
             font-size: 0.9em;
             margin-bottom: 5px;
         }
-        
+
         .perf-value {
             font-size: 1.8em;
             font-weight: bold;
             color: #2c3e50;
         }
-        
+
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .framework-label { width: 120px; font-size: 0.9em; }
@@ -296,7 +296,7 @@ $html = <<<HTML
             <h1>PHP Framework Performance Comparison</h1>
             <p style="font-size: 1.2em; margin: 10px 0;">Complete Benchmark Report</p>
             <p style="opacity: 0.9;">Generated: $timestamp</p>
-            <p style="opacity: 0.9;">Comparing HelixPHP against Slim 4, Lumen, Flight, and Symfony</p>
+            <p style="opacity: 0.9;">Comparing PivotPHP against Slim 4, Lumen, Flight, and Symfony</p>
         </div>
 HTML;
 
@@ -321,7 +321,7 @@ foreach ($routingData as $key => $value) {
     $class = 'bar-' . str_replace('-', '-', $key);
     $formattedValue = formatNumber($value);
     $badge = ($key === key($routingData)) ? '<span class="badge badge-best">BEST</span>' : '';
-    
+
     $html .= <<<HTML
                 <div class="bar-container">
                     <div class="framework-label">{$framework['name']}$badge</div>
@@ -361,7 +361,7 @@ foreach ($middlewareData as $key => $value) {
     $class = 'bar-' . str_replace('-', '-', $key);
     $formattedValue = formatNumber($value);
     $badge = ($key === key($middlewareData)) ? '<span class="badge badge-best">BEST</span>' : '';
-    
+
     $html .= <<<HTML
                 <div class="bar-container">
                     <div class="framework-label">{$framework['name']}$badge</div>
@@ -401,7 +401,7 @@ foreach ($jsonData as $key => $value) {
     $class = 'bar-' . str_replace('-', '-', $key);
     $formattedValue = formatNumber($value);
     $badge = ($key === key($jsonData)) ? '<span class="badge badge-best">BEST</span>' : '';
-    
+
     $html .= <<<HTML
                 <div class="bar-container">
                     <div class="framework-label">{$framework['name']}$badge</div>
@@ -446,7 +446,7 @@ foreach ($memoryData as $key => $memory) {
     $framework = $results[$key];
     $memoryFormatted = formatDecimal($memory, 2) . ' MB';
     $bootstrapFormatted = formatDecimal($framework['bootstrap'], 2) . ' ms';
-    
+
     $efficiency = '';
     if ($memory <= 0.5) {
         $efficiency = '<span class="badge badge-best">Excellent</span>';
@@ -455,7 +455,7 @@ foreach ($memoryData as $key => $memory) {
     } else {
         $efficiency = '<span class="badge badge-average">Average</span>';
     }
-    
+
     $html .= <<<HTML
                     <tr>
                         <td><strong>{$framework['name']}</strong></td>
@@ -481,7 +481,7 @@ $html .= <<<HTML
                 <div class="concurrency-card">
                     <div class="concurrency-title">Low Load (10 connections)</div>
                     <div class="perf-item">
-                        <div class="perf-label">HelixPHP Core</div>
+                        <div class="perf-label">PivotPHP Core</div>
                         <div class="perf-value">58K req/s</div>
                     </div>
                     <div class="perf-item">
@@ -492,7 +492,7 @@ $html .= <<<HTML
                 <div class="concurrency-card">
                     <div class="concurrency-title">Normal Load (50 connections)</div>
                     <div class="perf-item">
-                        <div class="perf-label">HelixPHP Core</div>
+                        <div class="perf-label">PivotPHP Core</div>
                         <div class="perf-value">52K req/s</div>
                     </div>
                     <div class="perf-item">
@@ -503,7 +503,7 @@ $html .= <<<HTML
                 <div class="concurrency-card">
                     <div class="concurrency-title">High Load (100 connections)</div>
                     <div class="perf-item">
-                        <div class="perf-label">HelixPHP Core</div>
+                        <div class="perf-label">PivotPHP Core</div>
                         <div class="perf-value">45K req/s</div>
                     </div>
                     <div class="perf-item">
@@ -524,7 +524,7 @@ $html .= <<<HTML
             <h2>6. Performance Summary</h2>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="summary-label">HelixPHP Core Speed</div>
+                    <div class="summary-label">PivotPHP Core Speed</div>
                     <div class="summary-value">{$results['helix-core']['routing']}</div>
                     <div class="summary-label">operations/second</div>
                 </div>
@@ -562,7 +562,7 @@ HTML;
 foreach ($routingData as $key => $routing) {
     $framework = $results[$key];
     $relativePerf = ($routing / $results['helix-core']['routing']) * 100;
-    
+
     $html .= <<<HTML
                     <tr>
                         <td><strong>{$framework['name']}</strong></td>
@@ -587,12 +587,12 @@ $html .= <<<HTML
             <div style="line-height: 1.8;">
                 <h3>Performance Analysis</h3>
                 <ul>
-                    <li>HelixPHP Core is <strong>{$helixAdvantage}x faster</strong> than Slim 4</li>
-                    <li>HelixPHP maintains <strong>sub-3ms bootstrap time</strong></li>
+                    <li>PivotPHP Core is <strong>{$helixAdvantage}x faster</strong> than Slim 4</li>
+                    <li>PivotPHP maintains <strong>sub-3ms bootstrap time</strong></li>
                     <li>ORM integration adds only <strong>{$ormOverhead}% overhead</strong></li>
                     <li>Memory footprint remains <strong>under 0.5MB</strong> even with ORM</li>
                 </ul>
-                
+
                 <h3>Use Case Recommendations</h3>
                 <table style="margin-top: 20px;">
                     <tr>
@@ -601,12 +601,12 @@ $html .= <<<HTML
                         <th>Key Advantages</th>
                     </tr>
                     <tr>
-                        <td><strong>HelixPHP Core</strong></td>
+                        <td><strong>PivotPHP Core</strong></td>
                         <td>High-performance APIs, Microservices, Serverless</td>
                         <td>Maximum speed, Minimal resources</td>
                     </tr>
                     <tr>
-                        <td><strong>HelixPHP + ORM</strong></td>
+                        <td><strong>PivotPHP + ORM</strong></td>
                         <td>Data-driven applications, CRUD APIs</td>
                         <td>Performance + Productivity</td>
                     </tr>
@@ -628,7 +628,7 @@ $html .= <<<HTML
                 </table>
             </div>
         </div>
-        
+
         <div class="footer">
             <p><strong>Benchmark Environment:</strong> PHP 8.2, OPcache enabled, JIT active</p>
             <p>Docker containers with 2 CPUs and 1GB RAM allocated</p>
@@ -691,9 +691,9 @@ foreach ($routingData as $key => $routing) {
 }
 
 echo "\nKey Metrics:\n";
-echo "• HelixPHP Advantage over Slim 4: +" . formatDecimal($helixAdvantage, 2) . "%\n";
+echo "• PivotPHP Advantage over Slim 4: +" . formatDecimal($helixAdvantage, 2) . "%\n";
 echo "• ORM Integration Overhead: " . formatDecimal($ormOverhead, 2) . "%\n";
-echo "• HelixPHP Core Memory: " . formatDecimal($results['helix-core']['memory'], 2) . " MB\n";
-echo "• HelixPHP Core Bootstrap: " . formatDecimal($results['helix-core']['bootstrap'], 2) . " ms\n";
+echo "• PivotPHP Core Memory: " . formatDecimal($results['helix-core']['memory'], 2) . " MB\n";
+echo "• PivotPHP Core Bootstrap: " . formatDecimal($results['helix-core']['bootstrap'], 2) . " ms\n";
 
 echo "\nReports generated successfully!\n";

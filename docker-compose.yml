@@ -30,7 +30,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # HelixPHP Core (without ORM)
+  # PivotPHP Core (without ORM)
   helix-core:
     build:
       context: ./frameworks/helix-core
@@ -47,7 +47,7 @@ services:
     cpus: 2
     mem_limit: 1g
 
-  # HelixPHP with Cycle ORM
+  # PivotPHP with Cycle ORM
   helix-orm:
     build:
       context: ./frameworks/helix-orm
@@ -151,7 +151,7 @@ services:
       - ./shared:/shared
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-helixphp-benchmarks}
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-pivotphp-benchmarks}
     depends_on:
       - helix-core
       - helix-orm

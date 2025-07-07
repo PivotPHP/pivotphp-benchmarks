@@ -2,15 +2,15 @@
 
 # Default target
 help:
-	@echo "HelixPHP Benchmarks - Available Commands:"
+	@echo "PivotPHP Benchmarks - Available Commands:"
 	@echo ""
 	@echo "  make build                - Build all Docker containers"
 	@echo "  make up                   - Start all services"
 	@echo "  make down                 - Stop all services"
 	@echo "  make benchmark-all        - Run all benchmarks"
-	@echo "  make benchmark-helix      - Run HelixPHP benchmarks (core + orm)"
-	@echo "  make benchmark-core       - Run only HelixPHP Core benchmarks"
-	@echo "  make benchmark-orm        - Run only HelixPHP ORM benchmarks"
+	@echo "  make benchmark-helix      - Run PivotPHP benchmarks (core + orm)"
+	@echo "  make benchmark-core       - Run only PivotPHP Core benchmarks"
+	@echo "  make benchmark-orm        - Run only PivotPHP ORM benchmarks"
 	@echo "  make benchmark-comparative - Run comparative framework benchmarks"
 	@echo "  make benchmark-matrix     - Run benchmarks across all PHP versions"
 	@echo "  make benchmark-concurrency - Run in-process concurrency benchmarks"
@@ -19,8 +19,8 @@ help:
 	@echo "  make clean               - Clean all results and containers"
 	@echo ""
 	@echo "  Container Access:"
-	@echo "  make shell-helix-core    - Open shell in HelixPHP Core container"
-	@echo "  make shell-helix-orm     - Open shell in HelixPHP ORM container"
+	@echo "  make shell-helix-core    - Open shell in PivotPHP Core container"
+	@echo "  make shell-helix-orm     - Open shell in PivotPHP ORM container"
 	@echo "  make shell-slim4         - Open shell in Slim 4 container"
 	@echo "  make shell-lumen         - Open shell in Lumen container"
 	@echo "  make shell-flight        - Open shell in Flight container"
@@ -29,8 +29,8 @@ help:
 	@echo "  make redis-cli           - Access Redis CLI"
 	@echo ""
 	@echo "  Logs:"
-	@echo "  make logs-helix-core     - View HelixPHP Core logs"
-	@echo "  make logs-helix-orm      - View HelixPHP ORM logs"
+	@echo "  make logs-helix-core     - View PivotPHP Core logs"
+	@echo "  make logs-helix-orm      - View PivotPHP ORM logs"
 	@echo "  make logs-all            - View all container logs"
 
 # Build all containers
@@ -56,19 +56,19 @@ benchmark-all: up
 	@echo "Running all benchmarks..."
 	docker-compose exec orchestrator php /scripts/run-benchmarks.php --all
 
-# Run HelixPHP benchmarks (both core and orm)
+# Run PivotPHP benchmarks (both core and orm)
 benchmark-helix: up
-	@echo "Running HelixPHP benchmarks..."
+	@echo "Running PivotPHP benchmarks..."
 	docker-compose exec orchestrator php /scripts/run-benchmarks.php --frameworks=helix-core,helix-orm
 
-# Run only HelixPHP Core benchmarks
+# Run only PivotPHP Core benchmarks
 benchmark-core: up
-	@echo "Running HelixPHP Core benchmarks..."
+	@echo "Running PivotPHP Core benchmarks..."
 	docker-compose exec helix-core php benchmarks/run.php
 
-# Run only HelixPHP ORM benchmarks
+# Run only PivotPHP ORM benchmarks
 benchmark-orm: up
-	@echo "Running HelixPHP ORM benchmarks..."
+	@echo "Running PivotPHP ORM benchmarks..."
 	docker-compose exec helix-orm php benchmarks/run.php
 
 # Run comparative framework benchmarks
@@ -76,8 +76,8 @@ benchmark-comparative: up
 	@echo "Running comparative framework benchmarks..."
 	docker-compose exec orchestrator php /scripts/run-benchmarks.php --frameworks=slim4,lumen,flight,symfony
 
-# Run full comparison report (HelixPHP vs market frameworks)
-benchmark-comparison: 
+# Run full comparison report (PivotPHP vs market frameworks)
+benchmark-comparison:
 	@echo "Running full framework comparison..."
 	php scripts/generate-comparative-report.php
 

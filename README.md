@@ -1,10 +1,10 @@
-# HelixPHP Benchmarks 🧬⚡
+# PivotPHP Benchmarks 🧬⚡
 
 > **Private Repository** - Isolated benchmark environment for accurate performance comparison
 
 ## 📋 Overview
 
-This repository provides a comprehensive performance benchmarking suite for the HelixPHP ecosystem, featuring:
+This repository provides a comprehensive performance benchmarking suite for the PivotPHP ecosystem, featuring:
 - **Isolated framework environments** - Each framework runs in its own Docker container with separate dependencies
 - **Fair comparison** - All frameworks implement identical REST API endpoints
 - **Controlled testing conditions** - Consistent resource allocation (2 CPUs, 1GB RAM)
@@ -15,8 +15,8 @@ This repository provides a comprehensive performance benchmarking suite for the 
 ### Framework Isolation
 ```
 frameworks/
-├── helix-core/      # HelixPHP without ORM
-├── helix-orm/       # HelixPHP with Cycle ORM  
+├── helix-core/      # PivotPHP without ORM
+├── helix-orm/       # PivotPHP with Cycle ORM
 ├── slim4/           # Slim 4 Framework
 ├── lumen/           # Laravel Lumen
 ├── flight/          # Flight Framework
@@ -46,13 +46,13 @@ make report
 
 ### Run Specific Benchmarks
 ```bash
-# HelixPHP Core vs ORM comparison
+# PivotPHP Core vs ORM comparison
 make benchmark-helix
 
-# Only HelixPHP Core (no ORM)
+# Only PivotPHP Core (no ORM)
 make benchmark-core
 
-# Only HelixPHP with Cycle ORM
+# Only PivotPHP with Cycle ORM
 make benchmark-orm
 
 # Comparative frameworks
@@ -129,8 +129,8 @@ memory_limit=512M
 ## 📊 Implementation Status
 
 ### Frameworks
-- ✅ **HelixPHP Core** - Complete application without ORM
-- ✅ **HelixPHP ORM** - Complete application with Cycle ORM
+- ✅ **PivotPHP Core** - Complete application without ORM
+- ✅ **PivotPHP ORM** - Complete application with Cycle ORM
 - ✅ **Slim 4** - PSR-7/PSR-15 microframework
 - ✅ **Lumen** - Laravel's micro-framework
 - ✅ **Flight** - Minimalist framework
@@ -140,8 +140,8 @@ memory_limit=512M
 - ✅ **Routing** - All frameworks
 - ✅ **Middleware** - All frameworks
 - ✅ **JSON API** - All frameworks
-- ✅ **ORM Queries** - HelixPHP ORM only
-- ✅ **ORM Hydration** - HelixPHP ORM only
+- ✅ **ORM Queries** - PivotPHP ORM only
+- ✅ **ORM Hydration** - PivotPHP ORM only
 
 ## 🎯 REST API Endpoints
 
@@ -160,8 +160,8 @@ All frameworks implement:
 services:
   mysql:          # Database for ORM tests
   redis:          # Cache backend
-  helix-core:     # HelixPHP without ORM
-  helix-orm:      # HelixPHP with Cycle ORM
+  helix-core:     # PivotPHP without ORM
+  helix-orm:      # PivotPHP with Cycle ORM
   slim4:          # Slim 4 Framework
   lumen:          # Laravel Lumen
   flight:         # Flight Framework
@@ -207,7 +207,7 @@ Benchmark: routing/match-and-dispatch
 Operations/sec: 52,847
 Memory used: 8.2 MB
 
-Framework: helix-orm  
+Framework: helix-orm
 Benchmark: routing/match-and-dispatch
 Operations/sec: 48,123 (91% of core)
 Memory used: 12.4 MB

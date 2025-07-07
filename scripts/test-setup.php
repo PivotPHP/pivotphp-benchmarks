@@ -3,11 +3,11 @@
 
 /**
  * Test Setup Script
- * 
+ *
  * Verifies that the benchmark environment is properly configured
  */
 
-echo "Testing HelixPHP Benchmark Setup...\n";
+echo "Testing PivotPHP Benchmark Setup...\n";
 echo "===================================\n\n";
 
 $errors = [];
@@ -39,7 +39,7 @@ if (extension_loaded('opcache')) {
     echo "- CLI Enabled: " . ($opcacheConfig['directives']['opcache.enable_cli'] ? 'Yes' : 'No') . "\n";
     echo "- JIT: " . ($opcacheConfig['directives']['opcache.jit'] ?? 'Not configured') . "\n";
     echo "- Memory: " . $opcacheConfig['directives']['opcache.memory_consumption'] . " MB\n";
-    
+
     if (!$opcacheConfig['directives']['opcache.enable_cli']) {
         $warnings[] = "OPcache is not enabled for CLI - benchmarks may not reflect production performance";
     }
@@ -131,14 +131,14 @@ if (empty($errors) && empty($warnings)) {
             echo "✗ {$error}\n";
         }
     }
-    
+
     if (!empty($warnings)) {
         echo "\nWarnings:\n";
         foreach ($warnings as $warning) {
             echo "⚠ {$warning}\n";
         }
     }
-    
+
     echo "\nPlease fix the issues above before running benchmarks.\n";
     exit(1);
 }

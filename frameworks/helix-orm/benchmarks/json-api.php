@@ -2,8 +2,8 @@
 <?php
 
 /**
- * JSON API Benchmark for HelixPHP Core
- * 
+ * JSON API Benchmark for PivotPHP Core
+ *
  * Tests JSON serialization and API response performance
  */
 
@@ -19,14 +19,14 @@ class JsonApiBenchmark implements BenchmarkInterface
     private Application $app;
     private ServerRequestFactory $requestFactory;
     private array $sampleData;
-    
+
     public function __construct()
     {
         $this->requestFactory = new ServerRequestFactory();
         $this->generateSampleData();
         $this->setup();
     }
-    
+
     private function generateSampleData(): void
     {
         $this->sampleData = [];
@@ -47,18 +47,18 @@ class JsonApiBenchmark implements BenchmarkInterface
             ];
         }
     }
-    
+
     private function generateCategories(): array
     {
         $categories = ['Electronics', 'Books', 'Clothing', 'Food', 'Toys', 'Sports', 'Home'];
         $count = mt_rand(1, 3);
         return array_slice($categories, 0, $count);
     }
-    
+
     private function setup(): void
     {
         $this->app = new Application();
-        
+
         // Small payload endpoint
         $this->app->get('/api/small', function($request, $response) {
             return $response->json([
@@ -66,7 +66,7 @@ class JsonApiBenchmark implements BenchmarkInterface
                 'data' => array_slice($this->sampleData, 0, 10)
             ]);
         });
-        
+
         // Medium payload endpoint
         $this->app->get('/api/medium', function($request, $response) {
             return $response->json([
@@ -79,7 +79,7 @@ class JsonApiBenchmark implements BenchmarkInterface
                 ]
             ]);
         });
-        
+
         // Large payload endpoint
         $this->app->get('/api/large', function($request, $response) {
             return $response->json([
@@ -97,11 +97,11 @@ class JsonApiBenchmark implements BenchmarkInterface
                 ]
             ]);
         });
-        
+
         // POST endpoint for testing request parsing
         $this->app->post('/api/create', function($request, $response) {
             $data = $request->getParsedBody();
-            
+
             return $response->json([
                 'status' => 'created',
                 'data' => array_merge(['id' => mt_rand(1000, 9999)], $data),
@@ -109,29 +109,29 @@ class JsonApiBenchmark implements BenchmarkInterface
             ], 201);
         });
     }
-    
+
     public function run(int $iterations = 10000, int $warmup = 1000): array
     {
         // Warmup
         for ($i = 0; $i < $warmup; $i++) {
             $this->runSingleIteration();
         }
-        
+
         // Benchmark
         $start = microtime(true);
         $startMemory = memory_get_usage();
-        
+
         for ($i = 0; $i < $iterations; $i++) {
             $this->runSingleIteration();
         }
-        
+
         $end = microtime(true);
         $endMemory = memory_get_peak_usage();
-        
+
         $totalTime = $end - $start;
         $opsPerSecond = $iterations / $totalTime;
         $memoryUsed = ($endMemory - $startMemory) / 1024 / 1024;
-        
+
         return [
             'benchmark' => $this->getName(),
             'framework' => 'helix-orm',
@@ -144,7 +144,7 @@ class JsonApiBenchmark implements BenchmarkInterface
             'timestamp' => date('Y-m-d H:i:s')
         ];
     }
-    
+
     private function runSingleIteration(): void
     {
         $endpoints = [
@@ -153,12 +153,12 @@ class JsonApiBenchmark implements BenchmarkInterface
             ['method' => 'GET', 'path' => '/api/large'],
             ['method' => 'POST', 'path' => '/api/create']
         ];
-        
+
         $endpoint = $endpoints[array_rand($endpoints)];
-        
+
         // Create request
         $request = $this->requestFactory->createServerRequest($endpoint['method'], $endpoint['path']);
-        
+
         if ($endpoint['method'] === 'POST') {
             $body = json_encode([
                 'name' => 'Test Item',
@@ -169,19 +169,19 @@ class JsonApiBenchmark implements BenchmarkInterface
                 ->withHeader('Content-Type', 'application/json')
                 ->withBody($this->requestFactory->createStream($body));
         }
-        
+
         // Handle request
         $response = $this->app->handle($request);
-        
+
         // Consume response
         $response->getBody()->getContents();
     }
-    
+
     public function getName(): string
     {
         return 'json-api/serialization';
     }
-    
+
     public function getDescription(): string
     {
         return 'Tests JSON API response serialization with various payload sizes';
@@ -191,13 +191,13 @@ class JsonApiBenchmark implements BenchmarkInterface
 // Run if executed directly
 if (php_sapi_name() === 'cli' && basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
     $options = getopt('', ['iterations:', 'warmup:', 'json']);
-    
+
     $iterations = isset($options['iterations']) ? (int)$options['iterations'] : 10000;
     $warmup = isset($options['warmup']) ? (int)$options['warmup'] : 1000;
-    
+
     $benchmark = new JsonApiBenchmark();
     $results = $benchmark->run($iterations, $warmup);
-    
+
     if (isset($options['json'])) {
         echo json_encode($results, JSON_PRETTY_PRINT) . PHP_EOL;
     } else {

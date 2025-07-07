@@ -2,19 +2,19 @@
 <?php
 
 /**
- * Compare HelixPHP Core vs HelixPHP with ORM
+ * Compare PivotPHP Core vs PivotPHP with ORM
  */
 
-echo "=== HelixPHP Core vs ORM Comparison ===\n\n";
+echo "=== PivotPHP Core vs ORM Comparison ===\n\n";
 
 $tests = [
     'helix-core' => [
         'path' => __DIR__ . '/../frameworks/helix-core',
-        'description' => 'HelixPHP without ORM'
+        'description' => 'PivotPHP without ORM'
     ],
     'helix-orm' => [
         'path' => __DIR__ . '/../frameworks/helix-orm',
-        'description' => 'HelixPHP with Cycle ORM'
+        'description' => 'PivotPHP with Cycle ORM'
     ]
 ];
 
@@ -27,17 +27,17 @@ echo str_repeat('-', 50) . "\n";
 foreach ($tests as $name => $config) {
     $start = microtime(true);
     $memStart = memory_get_usage();
-    
+
     require_once $config['path'] . '/vendor/autoload.php';
-    
+
     $bootstrapTime = (microtime(true) - $start) * 1000; // ms
     $memoryUsed = (memory_get_usage() - $memStart) / 1024 / 1024; // MB
-    
+
     $results[$name]['bootstrap'] = [
         'time_ms' => $bootstrapTime,
         'memory_mb' => $memoryUsed
     ];
-    
+
     printf("%-15s: %6.2f ms | %6.2f MB\n", $name, $bootstrapTime, $memoryUsed);
 }
 
@@ -50,28 +50,28 @@ $iterations = 1000;
 foreach ($tests as $name => $config) {
     $start = microtime(true);
     $memStart = memory_get_usage();
-    
+
     for ($i = 0; $i < $iterations; $i++) {
         $app = new \Helix\Core\Application();
-        
+
         if ($name === 'helix-orm') {
             // Simulate ORM service provider registration
             $container = $app->getContainer();
             $container->bind('orm.config', function() { return ['db' => 'test']; });
         }
     }
-    
+
     $totalTime = microtime(true) - $start;
     $memoryUsed = (memory_get_peak_usage() - $memStart) / 1024 / 1024;
     $opsPerSecond = $iterations / $totalTime;
-    
+
     $results[$name]['initialization'] = [
         'ops_per_second' => $opsPerSecond,
         'avg_time_ms' => ($totalTime / $iterations) * 1000,
         'memory_mb' => $memoryUsed
     ];
-    
-    printf("%-15s: %8.0f ops/sec | %6.3f ms avg | %6.2f MB\n", 
+
+    printf("%-15s: %8.0f ops/sec | %6.3f ms avg | %6.2f MB\n",
         $name, $opsPerSecond, ($totalTime / $iterations) * 1000, $memoryUsed);
 }
 
@@ -83,25 +83,25 @@ $routeCount = 100;
 
 foreach ($tests as $name => $config) {
     $app = new \Helix\Core\Application();
-    
+
     $start = microtime(true);
     $memStart = memory_get_usage();
-    
+
     for ($i = 0; $i < $routeCount; $i++) {
         $app->get("/route{$i}", function() { return ['id' => $i]; });
     }
-    
+
     $totalTime = (microtime(true) - $start) * 1000; // ms
     $memoryUsed = (memory_get_usage() - $memStart) / 1024 / 1024; // MB
     $routesPerMs = $routeCount / $totalTime;
-    
+
     $results[$name]['routes'] = [
         'total_time_ms' => $totalTime,
         'routes_per_ms' => $routesPerMs,
         'memory_mb' => $memoryUsed
     ];
-    
-    printf("%-15s: %6.2f ms total | %6.2f routes/ms | %6.2f MB\n", 
+
+    printf("%-15s: %6.2f ms total | %6.2f routes/ms | %6.2f MB\n",
         $name, $totalTime, $routesPerMs, $memoryUsed);
 }
 
@@ -111,33 +111,33 @@ echo str_repeat('-', 50) . "\n";
 
 foreach ($tests as $name => $config) {
     $memStart = memory_get_usage();
-    
+
     $app = new \Helix\Core\Application();
     $container = $app->getContainer();
-    
+
     // Register typical services
     $container->bind('config', function() { return ['app' => ['name' => 'test', 'env' => 'prod']]; });
     $container->bind('logger', function() { return new stdClass(); });
     $container->bind('cache', function() { return new stdClass(); });
-    
+
     if ($name === 'helix-orm') {
         // Additional ORM services
         $container->bind('db.connection', function() { return new stdClass(); });
         $container->bind('orm.schema', function() { return new stdClass(); });
         $container->bind('orm.repository_manager', function() { return new stdClass(); });
     }
-    
+
     // Add some routes
     for ($i = 0; $i < 20; $i++) {
         $app->get("/api/v1/resource{$i}", function() { return ['ok' => true]; });
     }
-    
+
     $memoryUsed = (memory_get_usage() - $memStart) / 1024 / 1024; // MB
-    
+
     $results[$name]['footprint'] = [
         'memory_mb' => $memoryUsed
     ];
-    
+
     printf("%-15s: %6.2f MB\n", $name, $memoryUsed);
 }
 
@@ -159,11 +159,11 @@ $ormMemory = $results['helix-orm']['footprint']['memory_mb'];
 $memoryOverhead = (($ormMemory - $coreMemory) / $coreMemory) * 100;
 
 echo "ORM Overhead:\n";
-printf("  Bootstrap time:    +%.1f%% (%.2f ms vs %.2f ms)\n", 
+printf("  Bootstrap time:    +%.1f%% (%.2f ms vs %.2f ms)\n",
     $bootstrapOverhead, $ormBootstrap, $coreBootstrap);
-printf("  Initialization:    -%.1f%% (%.0f vs %.0f ops/sec)\n", 
+printf("  Initialization:    -%.1f%% (%.0f vs %.0f ops/sec)\n",
     $initOverhead, $ormInit, $coreInit);
-printf("  Memory footprint:  +%.1f%% (%.2f MB vs %.2f MB)\n", 
+printf("  Memory footprint:  +%.1f%% (%.2f MB vs %.2f MB)\n",
     $memoryOverhead, $ormMemory, $coreMemory);
 
 echo "\nConclusion:\n";

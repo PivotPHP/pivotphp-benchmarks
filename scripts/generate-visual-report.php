@@ -5,21 +5,21 @@
  * Generate visual benchmark report
  */
 
-echo "=== HelixPHP Benchmark Results ===\n\n";
+echo "=== PivotPHP Benchmark Results ===\n\n";
 
 // Data from our benchmarks
 $data = [
     'Bootstrap Time (ms)' => [
-        'HelixPHP Core' => 2.01,
-        'HelixPHP + ORM' => 4.85
+        'PivotPHP Core' => 2.01,
+        'PivotPHP + ORM' => 4.85
     ],
     'Operations/Second' => [
-        'HelixPHP Core' => 60990,
-        'HelixPHP + ORM' => 56695
+        'PivotPHP Core' => 60990,
+        'PivotPHP + ORM' => 56695
     ],
     'Memory Usage (MB)' => [
-        'HelixPHP Core' => 0.11,
-        'HelixPHP + ORM' => 0.50
+        'PivotPHP Core' => 0.11,
+        'PivotPHP + ORM' => 0.50
     ]
 ];
 
@@ -27,19 +27,19 @@ $data = [
 function createBarChart($title, $data, $unit = '', $width = 50) {
     echo "\n{$title}\n";
     echo str_repeat('=', strlen($title)) . "\n\n";
-    
+
     $maxValue = max($data);
     $maxLabelLen = max(array_map('strlen', array_keys($data)));
-    
+
     foreach ($data as $label => $value) {
         $barLength = ($value / $maxValue) * $width;
         $bar = str_repeat('█', (int)$barLength);
         $percentage = ($value / $maxValue) * 100;
-        
-        printf("%-{$maxLabelLen}s |%s %.1f%s (%.0f%%)\n", 
-            $label, 
-            str_pad($bar, $width), 
-            $value, 
+
+        printf("%-{$maxLabelLen}s |%s %.1f%s (%.0f%%)\n",
+            $label,
+            str_pad($bar, $width),
+            $value,
             $unit,
             $percentage
         );
@@ -80,7 +80,7 @@ echo "├─────────────────┼─────�
 foreach ($metrics as $metric => $values) {
     $diff = $values['orm'] - $values['core'];
     $impact = (($diff) / $values['core']) * 100;
-    
+
     printf("│ %-15s │ %10.2f │ %11.2f │ %+10.2f │ %+10.1f%% │\n",
         $metric,
         $values['core'],
@@ -120,12 +120,12 @@ foreach ($scenarios as $scenario => $config) {
 echo "\nRecommendations\n";
 echo "===============\n\n";
 
-echo "✓ For microservices and APIs: HelixPHP Core\n";
+echo "✓ For microservices and APIs: PivotPHP Core\n";
 echo "  - Minimal overhead (2.01ms bootstrap)\n";
 echo "  - Excellent throughput (60,990 ops/sec)\n";
 echo "  - Tiny memory footprint (0.11 MB)\n\n";
 
-echo "✓ For data-driven applications: HelixPHP + ORM\n";
+echo "✓ For data-driven applications: PivotPHP + ORM\n";
 echo "  - Only 7% performance impact\n";
 echo "  - Full ORM capabilities\n";
 echo "  - Still excellent performance (56,695 ops/sec)\n\n";
@@ -135,7 +135,7 @@ $html = <<<HTML
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HelixPHP Benchmark Report</title>
+    <title>PivotPHP Benchmark Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -152,31 +152,31 @@ $html = <<<HTML
 </head>
 <body>
     <div class="container">
-        <h1>HelixPHP Benchmark Report</h1>
+        <h1>PivotPHP Benchmark Report</h1>
         <p>Generated: " . date('Y-m-d H:i:s') . "</p>
-        
+
         <h2>Bootstrap Time Comparison</h2>
         <div class="chart">
-            <div>HelixPHP Core: 2.01ms</div>
+            <div>PivotPHP Core: 2.01ms</div>
             <div class="bar" style="width: 41%">2.01ms</div>
-            <div>HelixPHP + ORM: 4.85ms</div>
+            <div>PivotPHP + ORM: 4.85ms</div>
             <div class="bar bar-orm" style="width: 100%">4.85ms</div>
         </div>
-        
+
         <h2>Operations Per Second</h2>
         <div class="chart">
-            <div>HelixPHP Core: 60,990 ops/sec</div>
+            <div>PivotPHP Core: 60,990 ops/sec</div>
             <div class="bar" style="width: 100%">60,990</div>
-            <div>HelixPHP + ORM: 56,695 ops/sec</div>
+            <div>PivotPHP + ORM: 56,695 ops/sec</div>
             <div class="bar bar-orm" style="width: 93%">56,695</div>
         </div>
-        
+
         <h2>Performance Impact Summary</h2>
         <table>
             <tr>
                 <th>Metric</th>
-                <th>HelixPHP Core</th>
-                <th>HelixPHP + ORM</th>
+                <th>PivotPHP Core</th>
+                <th>PivotPHP + ORM</th>
                 <th>Impact</th>
             </tr>
             <tr>
@@ -198,7 +198,7 @@ $html = <<<HTML
                 <td class="negative">+354%</td>
             </tr>
         </table>
-        
+
         <h2>Conclusion</h2>
         <p>The Cycle ORM integration adds minimal runtime overhead (7%) while providing significant developer productivity benefits. Both configurations deliver excellent performance suitable for production use.</p>
     </div>

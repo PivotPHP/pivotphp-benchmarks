@@ -1,5 +1,5 @@
 {
-    "name": "helixphp-benchmarks/flight",
+    "name": "pivotphp-benchmarks/flight",
     "description": "Flight benchmark application",
     "type": "project",
     "require": {

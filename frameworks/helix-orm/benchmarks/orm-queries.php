@@ -2,8 +2,8 @@
 <?php
 
 /**
- * ORM Query Benchmark for HelixPHP with Cycle ORM
- * 
+ * ORM Query Benchmark for PivotPHP with Cycle ORM
+ *
  * Tests database query performance
  */
 
@@ -25,52 +25,52 @@ class OrmQueriesBenchmark implements BenchmarkInterface
     private UserRepository $userRepository;
     private Select $userSelect;
     private Select $postSelect;
-    
+
     public function __construct()
     {
         $this->setup();
     }
-    
+
     private function setup(): void
     {
         // Load configuration
         $config = require __DIR__ . '/../config/database.php';
-        
+
         // Create application and register ORM
         $app = new Application();
         $app->register(new CycleOrmServiceProvider($config));
-        
+
         // Get ORM instance
         $this->orm = $app->get(ORMInterface::class);
         $this->userRepository = new UserRepository($this->orm);
         $this->userSelect = new Select($this->orm, User::class);
         $this->postSelect = new Select($this->orm, Post::class);
     }
-    
+
     public function run(int $iterations = 1000, int $warmup = 100): array
     {
         // Note: ORM benchmarks use fewer iterations due to database overhead
-        
+
         // Warmup
         for ($i = 0; $i < $warmup; $i++) {
             $this->runSingleIteration();
         }
-        
+
         // Benchmark
         $start = microtime(true);
         $startMemory = memory_get_usage();
-        
+
         for ($i = 0; $i < $iterations; $i++) {
             $this->runSingleIteration();
         }
-        
+
         $end = microtime(true);
         $endMemory = memory_get_peak_usage();
-        
+
         $totalTime = $end - $start;
         $opsPerSecond = $iterations / $totalTime;
         $memoryUsed = ($endMemory - $startMemory) / 1024 / 1024;
-        
+
         return [
             'benchmark' => $this->getName(),
             'framework' => 'helix-orm',
@@ -83,7 +83,7 @@ class OrmQueriesBenchmark implements BenchmarkInterface
             'timestamp' => date('Y-m-d H:i:s')
         ];
     }
-    
+
     private function runSingleIteration(): void
     {
         $operations = [
@@ -95,30 +95,30 @@ class OrmQueriesBenchmark implements BenchmarkInterface
             'recentUsers',
             'complexQuery'
         ];
-        
+
         $operation = $operations[array_rand($operations)];
-        
+
         switch ($operation) {
             case 'findById':
                 $this->userRepository->findById(rand(1, 100));
                 break;
-                
+
             case 'findByEmail':
                 $this->userRepository->findByEmail('user' . rand(1, 100) . '@example.com');
                 break;
-                
+
             case 'paginate':
                 $this->userRepository->paginate(rand(1, 50), 20);
                 break;
-                
+
             case 'findWithPosts':
                 $this->userRepository->findByIdWithPosts(rand(1, 50));
                 break;
-                
+
             case 'countUsers':
                 $this->userSelect->count();
                 break;
-                
+
             case 'recentUsers':
                 $this->userSelect
                     ->where('created_at', '>=', date('Y-m-d', strtotime('-7 days')))
@@ -126,7 +126,7 @@ class OrmQueriesBenchmark implements BenchmarkInterface
                     ->limit(10)
                     ->fetchAll();
                 break;
-                
+
             case 'complexQuery':
                 // Complex query with joins and conditions
                 $this->userSelect
@@ -138,12 +138,12 @@ class OrmQueriesBenchmark implements BenchmarkInterface
                 break;
         }
     }
-    
+
     public function getName(): string
     {
         return 'orm/queries';
     }
-    
+
     public function getDescription(): string
     {
         return 'Tests various ORM query operations including finds, pagination, and joins';
@@ -153,13 +153,13 @@ class OrmQueriesBenchmark implements BenchmarkInterface
 // Run if executed directly
 if (php_sapi_name() === 'cli' && basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
     $options = getopt('', ['iterations:', 'warmup:', 'json']);
-    
+
     $iterations = isset($options['iterations']) ? (int)$options['iterations'] : 1000;
     $warmup = isset($options['warmup']) ? (int)$options['warmup'] : 100;
-    
+
     $benchmark = new OrmQueriesBenchmark();
     $results = $benchmark->run($iterations, $warmup);
-    
+
     if (isset($options['json'])) {
         echo json_encode($results, JSON_PRETTY_PRINT) . PHP_EOL;
     } else {

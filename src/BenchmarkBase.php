@@ -10,7 +10,7 @@ abstract class BenchmarkBase
     protected int $warmup = 1000;
     protected bool $jsonOutput = false;
     protected Timer $timer;
-    
+
     public function __construct(array $options = [])
     {
         $this->iterations = (int) ($options['iterations'] ?? 10000);
@@ -18,59 +18,59 @@ abstract class BenchmarkBase
         $this->jsonOutput = isset($options['json']);
         $this->timer = new Timer();
     }
-    
+
     abstract protected function setup(): void;
     abstract protected function runSingleIteration(): void;
     abstract protected function getName(): string;
-    
+
     public function run(): array
     {
         $this->setup();
         $this->doWarmup();
-        
+
         // Capture output to avoid interference
         ob_start();
-        
+
         $this->timer->start();
-        
+
         for ($i = 0; $i < $this->iterations; $i++) {
             $this->runSingleIteration();
         }
-        
+
         $this->timer->stop();
-        
+
         // Discard captured output
         ob_end_clean();
-        
+
         return $this->generateResults();
     }
-    
+
     protected function doWarmup(): void
     {
         if (!$this->jsonOutput) {
             echo "Warming up with {$this->warmup} iterations...\n";
         }
-        
+
         // Capture output during warmup
         ob_start();
-        
+
         for ($i = 0; $i < $this->warmup; $i++) {
             $this->runSingleIteration();
         }
-        
+
         // Discard warmup output
         ob_end_clean();
     }
-    
+
     protected function generateResults(): array
     {
         $totalTime = $this->timer->getElapsedTime();
         $opsPerSecond = $this->iterations / $totalTime;
         $avgTimePerOp = ($totalTime * 1000) / $this->iterations;
-        
+
         $results = [
             'benchmark' => $this->getName(),
-            'framework' => 'helixphp-core',
+            'framework' => 'pivotphp-core',
             'version' => '1.0.0',
             'php_version' => PHP_VERSION,
             'timestamp' => date('c'),
@@ -84,12 +84,12 @@ abstract class BenchmarkBase
                 'warmup' => $this->warmup
             ]
         ];
-        
+
         $this->outputResults($results);
-        
+
         return $results;
     }
-    
+
     protected function outputResults(array $results): void
     {
         if ($this->jsonOutput) {
