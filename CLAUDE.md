@@ -15,7 +15,7 @@ make build
 
 # Run complete benchmark suite
 make benchmark-all              # All benchmarks on all frameworks
-make benchmark-helix            # Both helix-core and helix-orm
+make benchmark-pivotphp         # Both pivotphp-core and pivotphp-orm
 make benchmark-core             # Only PivotPHP Core (without ORM)
 make benchmark-orm              # Only PivotPHP with Cycle ORM
 make benchmark-comparative      # Slim4, Lumen, Flight, Symfony
@@ -30,8 +30,8 @@ make down                       # Stop benchmark environment
 make clean                      # Clean all results and containers
 
 # Debug/Development access
-make shell-helix-core           # Shell access to PivotPHP Core container
-make shell-helix-orm            # Shell access to PivotPHP ORM container
+make shell-pivotphp-core        # Shell access to PivotPHP Core container
+make shell-pivotphp-orm         # Shell access to PivotPHP ORM container
 make shell-slim4                # Shell access to Slim 4 container
 make db-shell                   # Access MySQL shell
 make redis-cli                  # Access Redis CLI
@@ -41,8 +41,8 @@ make redis-cli                  # Access Redis CLI
 ```bash
 # Using the new runner script
 php scripts/run-benchmarks-new.php --all
-php scripts/run-benchmarks-new.php --frameworks=helix-core,helix-orm
-php scripts/run-benchmarks-new.php --frameworks=helix-core,slim4 --iterations=50000
+php scripts/run-benchmarks-new.php --frameworks=pivotphp-core,pivotphp-orm
+php scripts/run-benchmarks-new.php --frameworks=pivotphp-core,slim4 --iterations=50000
 ```
 
 ## Code Architecture
@@ -50,7 +50,7 @@ php scripts/run-benchmarks-new.php --frameworks=helix-core,slim4 --iterations=50
 ### Isolated Framework Structure
 ```
 frameworks/
-├── helix-core/             # PivotPHP without ORM
+├── pivotphp-core/          # PivotPHP without ORM
 │   ├── composer.json       # Only pivotphp/core dependency
 │   ├── Dockerfile          # Optimized container
 │   ├── public/             # Entry points
@@ -60,7 +60,7 @@ frameworks/
 │       ├── middleware.php
 │       └── json-api.php
 │
-├── helix-orm/              # PivotPHP with Cycle ORM
+├── pivotphp-orm/           # PivotPHP with Cycle ORM
 │   ├── composer.json       # pivotphp/core + pivotphp/cycle-orm
 │   ├── Dockerfile          # Includes PDO extensions
 │   └── benchmarks/

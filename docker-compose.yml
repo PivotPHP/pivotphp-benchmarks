@@ -31,16 +31,16 @@ services:
       retries: 5
 
   # PivotPHP Core (without ORM)
-  helix-core:
+  pivotphp-core:
     build:
-      context: ./frameworks/helix-core
+      context: ./frameworks/pivotphp-core
       dockerfile: Dockerfile
     volumes:
-      - ./frameworks/helix-core:/app
+      - ./frameworks/pivotphp-core:/app
       - ./shared:/shared
       - ./results:/results
     environment:
-      - FRAMEWORK_NAME=helix-core
+      - FRAMEWORK_NAME=pivotphp-core
       - PHP_VERSION=8.2
     depends_on:
       - redis
@@ -48,16 +48,16 @@ services:
     mem_limit: 1g
 
   # PivotPHP with Cycle ORM
-  helix-orm:
+  pivotphp-orm:
     build:
-      context: ./frameworks/helix-orm
+      context: ./frameworks/pivotphp-orm
       dockerfile: Dockerfile
     volumes:
-      - ./frameworks/helix-orm:/app
+      - ./frameworks/pivotphp-orm:/app
       - ./shared:/shared
       - ./results:/results
     environment:
-      - FRAMEWORK_NAME=helix-orm
+      - FRAMEWORK_NAME=pivotphp-orm
       - PHP_VERSION=8.2
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -153,8 +153,8 @@ services:
     environment:
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-pivotphp-benchmarks}
     depends_on:
-      - helix-core
-      - helix-orm
+      - pivotphp-core
+      - pivotphp-orm
       - slim4
       - lumen
       - flight

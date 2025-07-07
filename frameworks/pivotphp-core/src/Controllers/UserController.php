@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\User;
-use App\Repositories\UserRepository;
-use Cycle\ORM\ORMInterface;
-use Helix\Http\Psr7\Response;
+use PivotPHP\Http\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class UserController
 {
-    private UserRepository $userRepository;
-    private ORMInterface $orm;
+    private array $users = [];
     
-    public function __construct(UserRepository $userRepository, ORMInterface $orm)
+    public function __construct()
     {
-        $this->userRepository = $userRepository;
-        $this->orm = $orm;
+        // Generate mock data
+        for ($i = 1; $i <= 1000; $i++) {
+            $this->users[$i] = [
+                'id' => $i,
+                'name' => "User {$i}",
+                'email' => "user{$i}@example.com",
+                'created_at' => date('Y-m-d H:i:s', strtotime("-{$i} days"))
+            ];
+        }
     }
     
     public function index(ServerRequestInterface $request): ResponseInterface
@@ -27,16 +30,17 @@ class UserController
         $params = $request->getQueryParams();
         $page = (int) ($params['page'] ?? 1);
         $limit = (int) ($params['limit'] ?? 20);
+        $offset = ($page - 1) * $limit;
         
-        $result = $this->userRepository->paginate($page, $limit);
+        $paginatedUsers = array_slice($this->users, $offset, $limit);
         
         return Response::json([
-            'data' => array_map(fn(User $user) => $user->toArray(), $result['items']),
+            'data' => array_values($paginatedUsers),
             'meta' => [
-                'total' => $result['total'],
+                'total' => count($this->users),
                 'page' => $page,
                 'limit' => $limit,
-                'pages' => $result['pages']
+                'pages' => ceil(count($this->users) / $limit)
             ]
         ]);
     }
@@ -44,13 +48,12 @@ class UserController
     public function show(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $id = (int) $args['id'];
-        $user = $this->userRepository->findById($id);
         
-        if (!$user) {
+        if (!isset($this->users[$id])) {
             return Response::json(['error' => 'User not found'], 404);
         }
         
-        return Response::json(['data' => $user->toArray()]);
+        return Response::json(['data' => $this->users[$id]]);
     }
     
     public function store(ServerRequestInterface $request): ResponseInterface
@@ -62,19 +65,17 @@ class UserController
             return Response::json(['error' => 'Name and email are required'], 422);
         }
         
-        // Check if email exists
-        if ($this->userRepository->findByEmail($data['email'])) {
-            return Response::json(['error' => 'Email already exists'], 422);
-        }
+        $id = count($this->users) + 1;
+        $user = [
+            'id' => $id,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'created_at' => date('Y-m-d H:i:s')
+        ];
         
-        $user = new User();
-        $user->setName($data['name'])
-             ->setEmail($data['email']);
+        $this->users[$id] = $user;
         
-        $this->orm->persist($user);
-        $this->orm->run();
-        
-        return Response::json(['data' => $user->toArray()], 201);
+        return Response::json(['data' => $user], 201);
     }
     
     public function update(ServerRequestInterface $request, array $args): ResponseInterface
@@ -82,43 +83,30 @@ class UserController
         $id = (int) $args['id'];
         $data = $request->getParsedBody();
         
-        $user = $this->userRepository->findById($id);
-        if (!$user) {
+        if (!isset($this->users[$id])) {
             return Response::json(['error' => 'User not found'], 404);
         }
         
         if (isset($data['name'])) {
-            $user->setName($data['name']);
+            $this->users[$id]['name'] = $data['name'];
         }
         
         if (isset($data['email'])) {
-            // Check if email is taken by another user
-            $existing = $this->userRepository->findByEmail($data['email']);
-            if ($existing && $existing->getId() !== $user->getId()) {
-                return Response::json(['error' => 'Email already exists'], 422);
-            }
-            $user->setEmail($data['email']);
+            $this->users[$id]['email'] = $data['email'];
         }
         
-        $user->setUpdatedAt(new \DateTime());
-        
-        $this->orm->persist($user);
-        $this->orm->run();
-        
-        return Response::json(['data' => $user->toArray()]);
+        return Response::json(['data' => $this->users[$id]]);
     }
     
     public function destroy(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $id = (int) $args['id'];
         
-        $user = $this->userRepository->findById($id);
-        if (!$user) {
+        if (!isset($this->users[$id])) {
             return Response::json(['error' => 'User not found'], 404);
         }
         
-        $this->orm->delete($user);
-        $this->orm->run();
+        unset($this->users[$id]);
         
         return Response::json(['message' => 'User deleted successfully'], 204);
     }
@@ -127,14 +115,20 @@ class UserController
     {
         $userId = (int) $args['id'];
         
-        $user = $this->userRepository->findByIdWithPosts($userId);
-        if (!$user) {
+        if (!isset($this->users[$userId])) {
             return Response::json(['error' => 'User not found'], 404);
         }
         
+        // Generate mock posts
         $posts = [];
-        foreach ($user->getPosts() as $post) {
-            $posts[] = $post->toArray();
+        for ($i = 1; $i <= 10; $i++) {
+            $posts[] = [
+                'id' => ($userId * 10) + $i,
+                'user_id' => $userId,
+                'title' => "Post {$i} by User {$userId}",
+                'content' => "Content of post {$i}",
+                'created_at' => date('Y-m-d H:i:s', strtotime("-{$i} hours"))
+            ];
         }
         
         return Response::json(['data' => $posts]);

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Helix\Core\Application;
-use Helix\Core\Middleware\ErrorHandlerMiddleware;
-use Helix\Core\Middleware\JsonResponseMiddleware;
-use Helix\CycleOrm\CycleOrmServiceProvider;
+use PivotPHP\Core\Application;
+use PivotPHP\Core\Middleware\ErrorHandlerMiddleware;
+use PivotPHP\Core\Middleware\JsonResponseMiddleware;
+use PivotPHP\CycleOrm\CycleOrmServiceProvider;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 

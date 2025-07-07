@@ -10,8 +10,8 @@ declare(strict_types=1);
 class BenchmarkRunner
 {
     private array $frameworks = [
-        'helix-core',
-        'helix-orm',
+        'pivotphp-core',
+        'pivotphp-orm',
         'slim4',
         'lumen',
         'flight',

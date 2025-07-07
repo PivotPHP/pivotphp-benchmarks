@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace HelixBenchmark;
+namespace PivotBenchmark;
 
 abstract class BenchmarkBase
 {

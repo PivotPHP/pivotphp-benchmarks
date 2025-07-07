@@ -10,8 +10,8 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Application;
+use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -72,7 +72,7 @@ class MiddlewareBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-orm',
+            'framework' => 'helix-core',
             'description' => $this->getDescription(),
             'iterations' => $iterations,
             'warmup' => $warmup,

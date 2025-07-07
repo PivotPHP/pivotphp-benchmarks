@@ -142,8 +142,8 @@ class ReportGenerator
                 $baseline = null;
 
                 // Use PivotPHP as baseline if available
-                if (isset($frameworks['helix-core'])) {
-                    $baseline = $frameworks['helix-core']['results']['operations_per_second'];
+                if (isset($frameworks['pivotphp-core'])) {
+                    $baseline = $frameworks['pivotphp-core']['results']['operations_per_second'];
                 } else {
                     // Use the first framework as baseline
                     $baseline = reset($frameworks)['results']['operations_per_second'];

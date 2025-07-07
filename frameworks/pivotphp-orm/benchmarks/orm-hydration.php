@@ -14,8 +14,8 @@ use App\Models\User;
 use App\Models\Post;
 use Cycle\ORM\ORMInterface;
 use Cycle\ORM\Select;
-use Helix\Core\Application;
-use Helix\CycleOrm\CycleOrmServiceProvider;
+use PivotPHP\Core\Application;
+use PivotPHP\CycleOrm\CycleOrmServiceProvider;
 use Shared\Interfaces\BenchmarkInterface;
 
 class OrmHydrationBenchmark implements BenchmarkInterface

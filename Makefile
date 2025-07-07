@@ -1,4 +1,4 @@
-.PHONY: help build up down benchmark-all benchmark-helix benchmark-comparative report clean shell-% logs-%
+.PHONY: help build up down benchmark-all benchmark-pivotphp benchmark-comparative report clean shell-% logs-%
 
 # Default target
 help:
@@ -8,7 +8,7 @@ help:
 	@echo "  make up                   - Start all services"
 	@echo "  make down                 - Stop all services"
 	@echo "  make benchmark-all        - Run all benchmarks"
-	@echo "  make benchmark-helix      - Run PivotPHP benchmarks (core + orm)"
+	@echo "  make benchmark-pivotphp   - Run PivotPHP benchmarks (core + orm)"
 	@echo "  make benchmark-core       - Run only PivotPHP Core benchmarks"
 	@echo "  make benchmark-orm        - Run only PivotPHP ORM benchmarks"
 	@echo "  make benchmark-comparative - Run comparative framework benchmarks"
@@ -19,8 +19,8 @@ help:
 	@echo "  make clean               - Clean all results and containers"
 	@echo ""
 	@echo "  Container Access:"
-	@echo "  make shell-helix-core    - Open shell in PivotPHP Core container"
-	@echo "  make shell-helix-orm     - Open shell in PivotPHP ORM container"
+	@echo "  make shell-pivotphp-core - Open shell in PivotPHP Core container"
+	@echo "  make shell-pivotphp-orm  - Open shell in PivotPHP ORM container"
 	@echo "  make shell-slim4         - Open shell in Slim 4 container"
 	@echo "  make shell-lumen         - Open shell in Lumen container"
 	@echo "  make shell-flight        - Open shell in Flight container"
@@ -29,8 +29,8 @@ help:
 	@echo "  make redis-cli           - Access Redis CLI"
 	@echo ""
 	@echo "  Logs:"
-	@echo "  make logs-helix-core     - View PivotPHP Core logs"
-	@echo "  make logs-helix-orm      - View PivotPHP ORM logs"
+	@echo "  make logs-pivotphp-core  - View PivotPHP Core logs"
+	@echo "  make logs-pivotphp-orm   - View PivotPHP ORM logs"
 	@echo "  make logs-all            - View all container logs"
 
 # Build all containers
@@ -57,19 +57,19 @@ benchmark-all: up
 	docker-compose exec orchestrator php /scripts/run-benchmarks.php --all
 
 # Run PivotPHP benchmarks (both core and orm)
-benchmark-helix: up
+benchmark-pivotphp: up
 	@echo "Running PivotPHP benchmarks..."
-	docker-compose exec orchestrator php /scripts/run-benchmarks.php --frameworks=helix-core,helix-orm
+	docker-compose exec orchestrator php /scripts/run-benchmarks.php --frameworks=pivotphp-core,pivotphp-orm
 
 # Run only PivotPHP Core benchmarks
 benchmark-core: up
 	@echo "Running PivotPHP Core benchmarks..."
-	docker-compose exec helix-core php benchmarks/run.php
+	docker-compose exec pivotphp-core php benchmarks/run.php
 
 # Run only PivotPHP ORM benchmarks
 benchmark-orm: up
 	@echo "Running PivotPHP ORM benchmarks..."
-	docker-compose exec helix-orm php benchmarks/run.php
+	docker-compose exec pivotphp-orm php benchmarks/run.php
 
 # Run comparative framework benchmarks
 benchmark-comparative: up
@@ -141,7 +141,7 @@ logs-all:
 # Install dependencies for all frameworks
 install-deps:
 	@echo "Installing dependencies for all frameworks..."
-	@for framework in helix-core helix-orm slim4 lumen flight symfony; do \
+	@for framework in pivotphp-core pivotphp-orm slim4 lumen flight symfony; do \
 		echo "Installing dependencies for $$framework..."; \
 		cd frameworks/$$framework && composer install --no-dev --optimize-autoloader; \
 		cd ../..; \

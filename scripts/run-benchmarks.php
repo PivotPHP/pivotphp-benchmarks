@@ -23,7 +23,7 @@ class BenchmarkCommand extends Command
     protected static $defaultName = 'benchmark:run';
 
     private array $benchmarks = [
-        'helix-core' => [
+        'pivotphp-core' => [
             'routing' => [
                 'simple-route',
                 'route-with-params',
@@ -43,7 +43,7 @@ class BenchmarkCommand extends Command
                 'large-payload'
             ]
         ],
-        'helix-orm' => [
+        'pivotphp-orm' => [
             'queries' => [
                 'select'
             ],
@@ -137,8 +137,8 @@ class BenchmarkCommand extends Command
 
         // Default: run only PivotPHP benchmarks
         return [
-            'helix-core' => $this->benchmarks['helix-core'],
-            'helix-orm' => $this->benchmarks['helix-orm']
+            'pivotphp-core' => $this->benchmarks['pivotphp-core'],
+            'pivotphp-orm' => $this->benchmarks['pivotphp-orm']
         ];
     }
 

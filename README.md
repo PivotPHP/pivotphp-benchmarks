@@ -15,8 +15,8 @@ This repository provides a comprehensive performance benchmarking suite for the 
 ### Framework Isolation
 ```
 frameworks/
-├── helix-core/      # PivotPHP without ORM
-├── helix-orm/       # PivotPHP with Cycle ORM
+├── pivotphp-core/   # PivotPHP without ORM
+├── pivotphp-orm/    # PivotPHP with Cycle ORM
 ├── slim4/           # Slim 4 Framework
 ├── lumen/           # Laravel Lumen
 ├── flight/          # Flight Framework
@@ -47,7 +47,7 @@ make report
 ### Run Specific Benchmarks
 ```bash
 # PivotPHP Core vs ORM comparison
-make benchmark-helix
+make benchmark-pivotphp
 
 # Only PivotPHP Core (no ORM)
 make benchmark-core
@@ -62,8 +62,8 @@ make benchmark-comparative
 ### Framework Access
 ```bash
 # Shell access
-make shell-helix-core
-make shell-helix-orm
+make shell-pivotphp-core
+make shell-pivotphp-orm
 make shell-slim4
 make shell-lumen
 make shell-flight
@@ -91,7 +91,7 @@ make redis-cli
 - Request parsing
 - Response serialization
 
-### 4. **ORM Performance** (helix-orm only)
+### 4. **ORM Performance** (pivotphp-orm only)
 - **Query Performance** (`orm-queries.php`)
   - Simple selects
   - Pagination
@@ -160,8 +160,8 @@ All frameworks implement:
 services:
   mysql:          # Database for ORM tests
   redis:          # Cache backend
-  helix-core:     # PivotPHP without ORM
-  helix-orm:      # PivotPHP with Cycle ORM
+  pivotphp-core:  # PivotPHP without ORM
+  pivotphp-orm:   # PivotPHP with Cycle ORM
   slim4:          # Slim 4 Framework
   lumen:          # Laravel Lumen
   flight:         # Flight Framework
@@ -185,7 +185,7 @@ This is a **PRIVATE** repository to prevent gaming of benchmarks. Results are pu
 ### Local Testing
 ```bash
 # Run benchmarks locally (without Docker)
-cd frameworks/helix-core
+cd frameworks/pivotphp-core
 php benchmarks/routing.php --iterations=1000 --warmup=100
 ```
 
@@ -202,12 +202,12 @@ make clean
 ## 📊 Sample Results
 
 ```
-Framework: helix-core
+Framework: pivotphp-core
 Benchmark: routing/match-and-dispatch
 Operations/sec: 52,847
 Memory used: 8.2 MB
 
-Framework: helix-orm
+Framework: pivotphp-orm
 Benchmark: routing/match-and-dispatch
 Operations/sec: 48,123 (91% of core)
 Memory used: 12.4 MB

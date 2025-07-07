@@ -86,7 +86,7 @@
 ./run-local.sh --all --iterations=1000 --warmup=100
 
 # Run only PivotPHP core benchmarks
-./run-local.sh --framework=helix-core
+./run-local.sh --framework=pivotphp-core
 
 # Run with custom settings
 ./run-local.sh --iterations=5000 --warmup=500
@@ -101,7 +101,7 @@ make build
 make benchmark-all
 
 # Run specific framework
-make benchmark-helix
+make benchmark-pivotphp
 
 # Generate reports
 make report
@@ -113,7 +113,7 @@ make report
 php scripts/run-benchmarks.php --all
 
 # Run specific framework benchmarks
-php scripts/run-benchmarks.php --framework=helix-core
+php scripts/run-benchmarks.php --framework=pivotphp-core
 
 # Generate reports from results
 php scripts/generate-report.php

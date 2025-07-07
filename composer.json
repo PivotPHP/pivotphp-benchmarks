@@ -29,13 +29,13 @@
     },
     "autoload": {
         "psr-4": {
-            "HelixBenchmark\\": "src/"
+            "PivotBenchmark\\": "src/"
         }
     },
     "scripts": {
         "benchmark": "php scripts/run-benchmarks.php",
         "benchmark:all": "php scripts/run-benchmarks.php --all",
-        "benchmark:helix": "php scripts/run-benchmarks.php --framework=helix-core",
+        "benchmark:pivotphp": "php scripts/run-benchmarks.php --framework=pivotphp-core",
         "benchmark:comparative": "php scripts/run-benchmarks.php --comparative",
         "report": "php scripts/generate-report.php"
     },

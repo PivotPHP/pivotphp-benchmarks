@@ -10,8 +10,8 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Application;
+use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
 use Shared\Interfaces\BenchmarkInterface;
 
 class JsonApiBenchmark implements BenchmarkInterface

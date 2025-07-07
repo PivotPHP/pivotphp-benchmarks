@@ -15,8 +15,8 @@ use App\Models\Post;
 use App\Repositories\UserRepository;
 use Cycle\ORM\ORMInterface;
 use Cycle\ORM\Select;
-use Helix\Core\Application;
-use Helix\CycleOrm\CycleOrmServiceProvider;
+use PivotPHP\Core\Application;
+use PivotPHP\CycleOrm\CycleOrmServiceProvider;
 use Shared\Interfaces\BenchmarkInterface;
 
 class OrmQueriesBenchmark implements BenchmarkInterface

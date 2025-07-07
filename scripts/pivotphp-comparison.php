@@ -8,12 +8,12 @@
 echo "=== PivotPHP Core vs ORM Comparison ===\n\n";
 
 $tests = [
-    'helix-core' => [
-        'path' => __DIR__ . '/../frameworks/helix-core',
+    'pivotphp-core' => [
+        'path' => __DIR__ . '/../frameworks/pivotphp-core',
         'description' => 'PivotPHP without ORM'
     ],
-    'helix-orm' => [
-        'path' => __DIR__ . '/../frameworks/helix-orm',
+    'pivotphp-orm' => [
+        'path' => __DIR__ . '/../frameworks/pivotphp-orm',
         'description' => 'PivotPHP with Cycle ORM'
     ]
 ];
