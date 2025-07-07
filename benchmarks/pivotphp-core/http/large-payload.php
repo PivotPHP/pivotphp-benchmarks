@@ -9,12 +9,12 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
-use Helix\Http\Psr7\Factory\ResponseFactory;
-use Helix\Http\Psr7\Factory\StreamFactory;
-use Helix\Http\Psr7\Factory\UriFactory;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Http\Psr7\Factory\ResponseFactory;
+use PivotPHP\Core\Http\Psr7\Factory\StreamFactory;
+use PivotPHP\Core\Http\Psr7\Factory\UriFactory;
+use PivotBenchmark\BenchmarkBase;
 
 class LargePayloadBenchmark extends BenchmarkBase
 {

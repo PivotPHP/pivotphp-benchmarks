@@ -9,7 +9,10 @@ $benchmarks = [
     'routing.php',
     'middleware.php', 
     'json-api.php',
-    'concurrency.php'
+    'concurrency.php',
+    'security.php',
+    'auth.php',
+    'memory.php'
 ];
 
 $results = [];
@@ -35,7 +38,7 @@ foreach ($benchmarks as $benchmark) {
 
 // Save results
 $timestamp = date('Y-m-d_H-i-s');
-$outputFile = dirname(__DIR__, 3) . "/results/raw/helix-core_{$timestamp}.json";
+$outputFile = dirname(__DIR__, 3) . "/results/raw/pivotphp-core_{$timestamp}.json";
 @mkdir(dirname($outputFile), 0755, true);
 file_put_contents($outputFile, json_encode($results, JSON_PRETTY_PRINT));
 

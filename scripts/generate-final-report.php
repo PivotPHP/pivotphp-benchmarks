@@ -10,26 +10,26 @@ echo "=== Generating Final Benchmark Report ===\n\n";
 $timestamp = date('Y-m-d H:i:s');
 
 // Use existing benchmark data we've collected
-$helixData = json_decode(file_get_contents(__DIR__ . "/../results/raw/helix_comparison_2025-07-07_14-34-18.json"), true);
+$pivotphpData = json_decode(file_get_contents(__DIR__ . "/../results/raw/pivotphp_comparison_2025-07-07_14-34-18.json"), true);
 $workingData = json_decode(file_get_contents(__DIR__ . "/../results/raw/working_comparison_2025-07-07_14-46-07.json"), true);
 
 // Prepare comprehensive results
 $results = [
-    'helix-core' => [
+    'pivotphp-core' => [
         'name' => 'PivotPHP Core',
-        'routing' => $helixData['helix-core']['initialization']['ops_per_second'],
-        'middleware' => $helixData['helix-core']['initialization']['ops_per_second'] * 0.85, // Estimate
-        'json' => $helixData['helix-core']['initialization']['ops_per_second'] * 0.75, // Estimate
-        'memory' => $helixData['helix-core']['bootstrap']['memory_mb'],
-        'bootstrap' => $helixData['helix-core']['bootstrap']['time_ms']
+        'routing' => $pivotphpData['pivotphp-core']['initialization']['ops_per_second'],
+        'middleware' => $pivotphpData['pivotphp-core']['initialization']['ops_per_second'] * 0.85, // Estimate
+        'json' => $pivotphpData['pivotphp-core']['initialization']['ops_per_second'] * 0.75, // Estimate
+        'memory' => $pivotphpData['pivotphp-core']['bootstrap']['memory_mb'],
+        'bootstrap' => $pivotphpData['pivotphp-core']['bootstrap']['time_ms']
     ],
-    'helix-orm' => [
+    'pivotphp-orm' => [
         'name' => 'PivotPHP + ORM',
-        'routing' => $helixData['helix-orm']['initialization']['ops_per_second'],
-        'middleware' => $helixData['helix-orm']['initialization']['ops_per_second'] * 0.85,
-        'json' => $helixData['helix-orm']['initialization']['ops_per_second'] * 0.75,
-        'memory' => $helixData['helix-orm']['bootstrap']['memory_mb'],
-        'bootstrap' => $helixData['helix-orm']['bootstrap']['time_ms']
+        'routing' => $pivotphpData['pivotphp-orm']['initialization']['ops_per_second'],
+        'middleware' => $pivotphpData['pivotphp-orm']['initialization']['ops_per_second'] * 0.85,
+        'json' => $pivotphpData['pivotphp-orm']['initialization']['ops_per_second'] * 0.75,
+        'memory' => $pivotphpData['pivotphp-orm']['bootstrap']['memory_mb'],
+        'bootstrap' => $pivotphpData['pivotphp-orm']['bootstrap']['time_ms']
     ],
     'slim4' => [
         'name' => 'Slim 4',
@@ -158,8 +158,8 @@ $html = <<<HTML
             font-weight: 500;
             transition: width 0.3s ease;
         }
-        .bar-helix { background: #3498db; }
-        .bar-helix-orm { background: #2980b9; }
+        .bar-pivotphp { background: #3498db; }
+        .bar-pivotphp-orm { background: #2980b9; }
         .bar-slim { background: #9b59b6; }
         .bar-lumen { background: #e74c3c; }
         .bar-flight { background: #f39c12; }
@@ -516,8 +516,8 @@ $html .= <<<HTML
 HTML;
 
 // 6. Performance Summary
-$helixAdvantage = (($results['helix-core']['routing'] - $results['slim4']['routing']) / $results['slim4']['routing']) * 100;
-$ormOverhead = (($results['helix-core']['routing'] - $results['helix-orm']['routing']) / $results['helix-core']['routing']) * 100;
+$pivotphpAdvantage = (($results['pivotphp-core']['routing'] - $results['slim4']['routing']) / $results['slim4']['routing']) * 100;
+$ormOverhead = (($results['pivotphp-core']['routing'] - $results['pivotphp-orm']['routing']) / $results['pivotphp-core']['routing']) * 100;
 
 $html .= <<<HTML
         <div class="metric-card">
@@ -525,12 +525,12 @@ $html .= <<<HTML
             <div class="summary-grid">
                 <div class="summary-item">
                     <div class="summary-label">PivotPHP Core Speed</div>
-                    <div class="summary-value">{$results['helix-core']['routing']}</div>
+                    <div class="summary-value">{$results['pivotphp-core']['routing']}</div>
                     <div class="summary-label">operations/second</div>
                 </div>
                 <div class="summary-item">
                     <div class="summary-label">Performance Advantage</div>
-                    <div class="summary-value">+{$helixAdvantage}%</div>
+                    <div class="summary-value">+{$pivotphpAdvantage}%</div>
                     <div class="summary-label">vs Slim 4</div>
                 </div>
                 <div class="summary-item">
@@ -561,7 +561,7 @@ HTML;
 
 foreach ($routingData as $key => $routing) {
     $framework = $results[$key];
-    $relativePerf = ($routing / $results['helix-core']['routing']) * 100;
+    $relativePerf = ($routing / $results['pivotphp-core']['routing']) * 100;
 
     $html .= <<<HTML
                     <tr>
@@ -587,7 +587,7 @@ $html .= <<<HTML
             <div style="line-height: 1.8;">
                 <h3>Performance Analysis</h3>
                 <ul>
-                    <li>PivotPHP Core is <strong>{$helixAdvantage}x faster</strong> than Slim 4</li>
+                    <li>PivotPHP Core is <strong>{$pivotphpAdvantage}x faster</strong> than Slim 4</li>
                     <li>PivotPHP maintains <strong>sub-3ms bootstrap time</strong></li>
                     <li>ORM integration adds only <strong>{$ormOverhead}% overhead</strong></li>
                     <li>Memory footprint remains <strong>under 0.5MB</strong> even with ORM</li>
@@ -691,9 +691,9 @@ foreach ($routingData as $key => $routing) {
 }
 
 echo "\nKey Metrics:\n";
-echo "• PivotPHP Advantage over Slim 4: +" . formatDecimal($helixAdvantage, 2) . "%\n";
+echo "• PivotPHP Advantage over Slim 4: +" . formatDecimal($pivotphpAdvantage, 2) . "%\n";
 echo "• ORM Integration Overhead: " . formatDecimal($ormOverhead, 2) . "%\n";
-echo "• PivotPHP Core Memory: " . formatDecimal($results['helix-core']['memory'], 2) . " MB\n";
-echo "• PivotPHP Core Bootstrap: " . formatDecimal($results['helix-core']['bootstrap'], 2) . " ms\n";
+echo "• PivotPHP Core Memory: " . formatDecimal($results['pivotphp-core']['memory'], 2) . " MB\n";
+echo "• PivotPHP Core Bootstrap: " . formatDecimal($results['pivotphp-core']['bootstrap'], 2) . " ms\n";
 
 echo "\nReports generated successfully!\n";

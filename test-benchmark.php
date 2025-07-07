@@ -17,7 +17,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 // Test Timer class
 try {
-    $timer = new \HelixBenchmark\Timer();
+    $timer = new \PivotBenchmark\Timer();
     echo "✅ Timer class loaded successfully\n";
 } catch (Exception $e) {
     echo "❌ Failed to load Timer class: " . $e->getMessage() . "\n";
@@ -25,7 +25,7 @@ try {
 
 // Test BenchmarkBase class
 try {
-    if (class_exists('\\HelixBenchmark\\BenchmarkBase')) {
+    if (class_exists('\\PivotBenchmark\\BenchmarkBase')) {
         echo "✅ BenchmarkBase class found\n";
     }
 } catch (Exception $e) {
@@ -35,7 +35,7 @@ try {
 // Check if we can run a simple benchmark
 echo "\nTrying to run a simple benchmark test...\n";
 
-$benchmarkFile = __DIR__ . '/benchmarks/helix-core/routing/simple-route.php';
+$benchmarkFile = __DIR__ . '/benchmarks/pivotphp-core/routing/simple-route.php';
 if (file_exists($benchmarkFile)) {
     echo "✅ Found simple-route.php benchmark\n";
 

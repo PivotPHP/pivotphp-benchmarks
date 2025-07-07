@@ -9,7 +9,7 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use HelixBenchmark\BenchmarkBase;
+use PivotBenchmark\BenchmarkBase;
 
 class FlightRoutingBenchmark extends BenchmarkBase
 {

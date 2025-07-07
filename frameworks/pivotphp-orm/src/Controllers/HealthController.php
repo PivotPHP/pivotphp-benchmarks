@@ -14,7 +14,7 @@ class HealthController
     {
         return Response::json([
             'status' => 'ok',
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-orm',
             'version' => '1.0.0',
             'timestamp' => date('c')
         ]);

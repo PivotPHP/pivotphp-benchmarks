@@ -6,8 +6,8 @@
  */
 
 $frameworks = [
-    'helix-core' => 8081,
-    'helix-orm' => 8082,
+    'pivotphp-core' => 8081,
+    'pivotphp-orm' => 8082,
     'slim4' => 8083,
     'lumen' => 8084,
     'flight' => 8085,

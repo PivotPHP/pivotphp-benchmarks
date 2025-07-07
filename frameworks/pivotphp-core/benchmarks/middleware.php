@@ -10,8 +10,8 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 
-use PivotPHP\Core\Application;
-use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -21,11 +21,9 @@ use Shared\Interfaces\BenchmarkInterface;
 class MiddlewareBenchmark implements BenchmarkInterface
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
 
     public function __construct()
     {
-        $this->requestFactory = new ServerRequestFactory();
         $this->setup();
     }
 
@@ -72,7 +70,7 @@ class MiddlewareBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-core',
             'description' => $this->getDescription(),
             'iterations' => $iterations,
             'warmup' => $warmup,
@@ -89,7 +87,7 @@ class MiddlewareBenchmark implements BenchmarkInterface
         $path = $routes[array_rand($routes)];
 
         // Create request
-        $request = $this->requestFactory->createServerRequest('GET', $path);
+        $request = new Request('GET', $path, $path);
         if ($path === '/protected') {
             $request = $request->withHeader('Authorization', 'Bearer test-token');
         }
@@ -143,7 +141,7 @@ class AuthMiddleware implements MiddlewareInterface
         $auth = $request->getHeaderLine('Authorization');
 
         if (!$auth || !str_starts_with($auth, 'Bearer ')) {
-            return new \Helix\Http\Response(401, [], json_encode(['error' => 'Unauthorized']));
+            return new \PivotPHP\Core\Http\Psr7\Response(401, [], json_encode(['error' => 'Unauthorized']));
         }
 
         $token = substr($auth, 7);

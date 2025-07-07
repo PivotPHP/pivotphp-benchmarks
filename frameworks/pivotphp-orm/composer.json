@@ -1,5 +1,5 @@
 {
-    "name": "pivotphp-benchmarks/helix-orm",
+    "name": "pivotphp-benchmarks/pivotphp-orm",
     "description": "PivotPHP benchmark application with Cycle ORM",
     "type": "project",
     "require": {

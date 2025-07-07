@@ -6,7 +6,7 @@ use App\Controllers\UserController;
 use App\Controllers\HealthController;
 use App\Middleware\RateLimitMiddleware;
 
-/** @var \Helix\Core\Application $app */
+/** @var \PivotPHP\Core\Application $app */
 
 // Health check
 $app->get('/', [HealthController::class, 'index']);

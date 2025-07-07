@@ -9,16 +9,13 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
-use Helix\Http\Psr7\Factory\UriFactory;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
+use PivotBenchmark\BenchmarkBase;
 
 class RouteWithParamsBenchmark extends BenchmarkBase
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
-    private UriFactory $uriFactory;
     
     protected function getName(): string
     {
@@ -28,8 +25,6 @@ class RouteWithParamsBenchmark extends BenchmarkBase
     protected function setup(): void
     {
         $this->app = new Application();
-        $this->requestFactory = new ServerRequestFactory();
-        $this->uriFactory = new UriFactory();
         
         // Routes with single parameter
         $this->app->get('/users/{id}', function($request, $response, $args) {
@@ -91,8 +86,15 @@ class RouteWithParamsBenchmark extends BenchmarkBase
         ];
         
         // Test random route
-        $uri = $this->uriFactory->createUri($requests[array_rand($requests)]);
-        $request = $this->requestFactory->createServerRequest('GET', $uri);
+        $path = $requests[array_rand($requests)];
+        
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
 }

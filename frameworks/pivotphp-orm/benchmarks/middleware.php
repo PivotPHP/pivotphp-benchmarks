@@ -72,7 +72,7 @@ class MiddlewareBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-orm',
+            'framework' => 'pivotphp-orm',
             'description' => $this->getDescription(),
             'iterations' => $iterations,
             'warmup' => $warmup,
@@ -143,7 +143,7 @@ class AuthMiddleware implements MiddlewareInterface
         $auth = $request->getHeaderLine('Authorization');
 
         if (!$auth || !str_starts_with($auth, 'Bearer ')) {
-            return new \Helix\Http\Response(401, [], json_encode(['error' => 'Unauthorized']));
+            return new \PivotPHP\Core\Http\Response(401, [], json_encode(['error' => 'Unauthorized']));
         }
 
         $token = substr($auth, 7);

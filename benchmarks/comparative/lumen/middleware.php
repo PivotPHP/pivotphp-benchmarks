@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Laravel\Lumen\Application;
 use Laravel\Lumen\Http\Request;
-use HelixBenchmark\BenchmarkBase;
+use PivotBenchmark\BenchmarkBase;
 use Illuminate\Http\Response;
 
 class LumenMiddlewareBenchmark extends BenchmarkBase

@@ -10,19 +10,17 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 
-use PivotPHP\Core\Application;
-use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
 use Shared\Interfaces\BenchmarkInterface;
 
 class JsonApiBenchmark implements BenchmarkInterface
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
     private array $sampleData;
 
     public function __construct()
     {
-        $this->requestFactory = new ServerRequestFactory();
         $this->generateSampleData();
         $this->setup();
     }
@@ -134,7 +132,7 @@ class JsonApiBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-core',
             'description' => $this->getDescription(),
             'iterations' => $iterations,
             'warmup' => $warmup,
@@ -157,17 +155,17 @@ class JsonApiBenchmark implements BenchmarkInterface
         $endpoint = $endpoints[array_rand($endpoints)];
 
         // Create request
-        $request = $this->requestFactory->createServerRequest($endpoint['method'], $endpoint['path']);
+        $request = new Request($endpoint['method'], $endpoint['path'], $endpoint['path']);
 
         if ($endpoint['method'] === 'POST') {
-            $body = json_encode([
+            $body = [
                 'name' => 'Test Item',
                 'price' => 99.99,
                 'categories' => ['Test']
-            ]);
+            ];
             $request = $request
                 ->withHeader('Content-Type', 'application/json')
-                ->withBody($this->requestFactory->createStream($body));
+                ->withParsedBody($body);
         }
 
         // Handle request

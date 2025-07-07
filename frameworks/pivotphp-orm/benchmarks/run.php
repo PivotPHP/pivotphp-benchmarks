@@ -36,7 +36,7 @@ foreach ($benchmarks as $benchmark) {
 
 // Save results
 $timestamp = date('Y-m-d_H-i-s');
-$outputFile = dirname(__DIR__, 3) . "/results/raw/helix-orm_{$timestamp}.json";
+$outputFile = dirname(__DIR__, 3) . "/results/raw/pivotphp-orm_{$timestamp}.json";
 @mkdir(dirname($outputFile), 0755, true);
 file_put_contents($outputFile, json_encode($results, JSON_PRETTY_PRINT));
 

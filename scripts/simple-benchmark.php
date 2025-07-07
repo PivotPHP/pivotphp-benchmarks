@@ -6,7 +6,7 @@
  */
 
 $frameworks = [
-    'helix-core' => __DIR__ . '/../frameworks/helix-core/vendor/autoload.php',
+    'pivotphp-core' => __DIR__ . '/../frameworks/pivotphp-core/vendor/autoload.php',
     'slim4' => __DIR__ . '/../frameworks/slim4/vendor/autoload.php',
 ];
 
@@ -22,8 +22,8 @@ foreach ($frameworks as $name => $autoload) {
     $memory_start = memory_get_usage();
     
     for ($i = 0; $i < 10000; $i++) {
-        if ($name === 'helix-core') {
-            $app = new \Helix\Core\Application();
+        if ($name === 'pivotphp-core') {
+            $app = new \PivotPHP\Core\Application();
         } elseif ($name === 'slim4') {
             $app = \Slim\Factory\AppFactory::create();
         }
@@ -53,8 +53,8 @@ foreach ($frameworks as $name => $autoload) {
     $start = microtime(true);
     $memory_start = memory_get_usage();
     
-    if ($name === 'helix-core') {
-        $app = new \Helix\Core\Application();
+    if ($name === 'pivotphp-core') {
+        $app = new \PivotPHP\Core\Application();
         for ($i = 0; $i < 100; $i++) {
             $app->get("/route{$i}", function() { return ['ok' => true]; });
         }

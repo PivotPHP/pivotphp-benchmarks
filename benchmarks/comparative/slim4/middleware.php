@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\Psr7\Factory\UriFactory;
-use HelixBenchmark\BenchmarkBase;
+use PivotBenchmark\BenchmarkBase;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;

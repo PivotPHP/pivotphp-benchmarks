@@ -73,7 +73,7 @@ class OrmQueriesBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-orm',
+            'framework' => 'pivotphp-orm',
             'description' => $this->getDescription(),
             'iterations' => $iterations,
             'warmup' => $warmup,

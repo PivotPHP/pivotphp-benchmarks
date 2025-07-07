@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use PivotPHP\Core\Application;
+use PivotPHP\Core\Core\Application;
 use PivotPHP\Core\Middleware\ErrorHandlerMiddleware;
 use PivotPHP\Core\Middleware\JsonResponseMiddleware;
 

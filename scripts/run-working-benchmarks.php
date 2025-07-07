@@ -12,11 +12,11 @@ $results = [];
 
 // 1. Run the PivotPHP comparison that we know works
 echo "1. Running PivotPHP Core vs ORM comparison...\n";
-$helixOutput = shell_exec("php " . __DIR__ . "/helix-comparison.php 2>&1");
+$pivotphpOutput = shell_exec("php " . __DIR__ . "/pivotphp-comparison.php 2>&1");
 echo "   ✓ Completed\n\n";
 
 // Parse PivotPHP results from our previous run
-$helixData = json_decode(file_get_contents(__DIR__ . "/../results/raw/helix_comparison_2025-07-07_14-34-18.json"), true);
+$pivotphpData = json_decode(file_get_contents(__DIR__ . "/../results/raw/pivotphp_comparison_2025-07-07_14-34-18.json"), true);
 
 // 2. Run Slim 4 benchmarks (these worked)
 echo "2. Running Slim 4 benchmarks...\n";
@@ -78,8 +78,8 @@ echo str_repeat('=', 70) . "\n\n";
 
 // Prepare comparison data using PivotPHP initialization ops/sec as proxy for routing
 $routingComparison = [
-    'PivotPHP Core' => $helixData['helix-core']['initialization']['ops_per_second'],
-    'PivotPHP + ORM' => $helixData['helix-orm']['initialization']['ops_per_second'],
+    'PivotPHP Core' => $pivotphpData['pivotphp-core']['initialization']['ops_per_second'],
+    'PivotPHP + ORM' => $pivotphpData['pivotphp-orm']['initialization']['ops_per_second'],
     'Slim 4' => $slim4Results['routing'] ?? 0,
     'Lumen' => $lumenResults['routing'] ?? 0,
     'Flight' => $flightResults['routing'] ?? 0
@@ -122,8 +122,8 @@ echo "2. MEMORY FOOTPRINT\n";
 echo str_repeat('-', 70) . "\n";
 
 $memoryData = [
-    'PivotPHP Core' => $helixData['helix-core']['bootstrap']['memory_mb'],
-    'PivotPHP + ORM' => $helixData['helix-orm']['bootstrap']['memory_mb'],
+    'PivotPHP Core' => $pivotphpData['pivotphp-core']['bootstrap']['memory_mb'],
+    'PivotPHP + ORM' => $pivotphpData['pivotphp-orm']['bootstrap']['memory_mb'],
     'Slim 4' => 0.04, // From benchmark output
     'Lumen' => 0.06, // From benchmark output
     'Flight' => 7.63  // From benchmark output
@@ -142,33 +142,33 @@ echo "3. KEY PERFORMANCE INSIGHTS\n";
 echo str_repeat('-', 70) . "\n\n";
 
 // Calculate PivotPHP advantages
-$helixCore = $routingComparison['PivotPHP Core'];
+$pivotphpCore = $routingComparison['PivotPHP Core'];
 $slim4Ops = $routingComparison['Slim 4'];
 $lumenOps = $routingComparison['Lumen'];
 $flightOps = $routingComparison['Flight'];
 
 if ($slim4Ops > 0) {
-    $slim4Advantage = (($helixCore - $slim4Ops) / $slim4Ops) * 100;
+    $slim4Advantage = (($pivotphpCore - $slim4Ops) / $slim4Ops) * 100;
     printf("• PivotPHP Core is %.1fx faster than Slim 4 (+%.0f%%)\n",
-        $helixCore / $slim4Ops, $slim4Advantage);
+        $pivotphpCore / $slim4Ops, $slim4Advantage);
 }
 
 if ($lumenOps > 0) {
-    $lumenAdvantage = (($helixCore - $lumenOps) / $lumenOps) * 100;
+    $lumenAdvantage = (($pivotphpCore - $lumenOps) / $lumenOps) * 100;
     printf("• PivotPHP Core is %.1fx faster than Lumen (+%.0f%%)\n",
-        $helixCore / $lumenOps, $lumenAdvantage);
+        $pivotphpCore / $lumenOps, $lumenAdvantage);
 }
 
 if ($flightOps > 0) {
-    $flightAdvantage = (($helixCore - $flightOps) / $flightOps) * 100;
+    $flightAdvantage = (($pivotphpCore - $flightOps) / $flightOps) * 100;
     printf("• PivotPHP Core is %.1fx faster than Flight (+%.0f%%)\n",
-        $helixCore / $flightOps, $flightAdvantage);
+        $pivotphpCore / $flightOps, $flightAdvantage);
 }
 
 echo "\n";
 
 // ORM overhead analysis
-$ormOverhead = (($helixCore - $routingComparison['PivotPHP + ORM']) / $helixCore) * 100;
+$ormOverhead = (($pivotphpCore - $routingComparison['PivotPHP + ORM']) / $pivotphpCore) * 100;
 printf("• ORM Integration adds only %.1f%% overhead to PivotPHP\n", $ormOverhead);
 printf("• PivotPHP + ORM still outperforms all other tested frameworks\n");
 
@@ -292,7 +292,7 @@ $html = <<<HTML
         .winner {
             background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
         }
-        .helix-orm {
+        .pivotphp-orm {
             background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
         }
         .insight {
@@ -345,7 +345,7 @@ HTML;
 foreach ($routingComparison as $framework => $ops) {
     $percentage = ($ops > 0) ? ($ops / $maxOps) * 100 : 0;
     $barClass = ($framework === 'PivotPHP Core') ? 'winner' :
-                 (($framework === 'PivotPHP + ORM') ? 'helix-orm' : '');
+                 (($framework === 'PivotPHP + ORM') ? 'pivotphp-orm' : '');
 
     $html .= <<<HTML
             <div class="performance-bar">
@@ -423,7 +423,7 @@ $rawResults = [
     'timestamp' => $timestamp,
     'routing_performance' => $routingComparison,
     'memory_usage' => $memoryData,
-    'helix_data' => $helixData,
+    'pivotphp_data' => $pivotphpData,
     'slim4' => $slim4Results,
     'lumen' => $lumenResults,
     'flight' => $flightResults

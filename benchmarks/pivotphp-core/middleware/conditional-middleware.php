@@ -9,11 +9,11 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
-use Helix\Http\Psr7\Factory\UriFactory;
-use Helix\Http\Psr15\AbstractMiddleware;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Http\Psr7\Factory\UriFactory;
+use PivotPHP\Core\Http\Psr15\AbstractMiddleware;
+use PivotBenchmark\BenchmarkBase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -38,7 +38,7 @@ class ConditionalAuthMiddleware extends AbstractMiddleware
         if ($requiresAuth) {
             $authHeader = $request->getHeaderLine('Authorization');
             if (!$authHeader || !$this->validateToken($authHeader)) {
-                $response = (new \Helix\Http\Psr7\Factory\ResponseFactory())
+                $response = (new \PivotPHP\Core\Http\Psr7\Factory\ResponseFactory())
                     ->createResponse(401)
                     ->withHeader('Content-Type', 'application/json');
                 $response->getBody()->write(json_encode(['error' => 'Unauthorized']));
@@ -129,7 +129,7 @@ class ConditionalRateLimitMiddleware extends AbstractMiddleware
             $remaining = rand(0, $limit);
             
             if ($remaining === 0) {
-                $response = (new \Helix\Http\Psr7\Factory\ResponseFactory())
+                $response = (new \PivotPHP\Core\Http\Psr7\Factory\ResponseFactory())
                     ->createResponse(429)
                     ->withHeader('Content-Type', 'application/json');
                 $response->getBody()->write(json_encode(['error' => 'Rate limit exceeded']));

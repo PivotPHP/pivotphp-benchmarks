@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use PivotPHP\Http\Psr7\Response;
+use PivotPHP\Core\Http\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -14,7 +14,7 @@ class HealthController
     {
         return Response::json([
             'status' => 'ok',
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-core',
             'version' => '1.0.0',
             'timestamp' => date('c')
         ]);

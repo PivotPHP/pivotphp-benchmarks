@@ -9,9 +9,9 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Application;
-use Helix\Http\Request;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
+use PivotBenchmark\BenchmarkBase;
 
 class SimpleRouteBenchmark extends BenchmarkBase
 {
@@ -44,7 +44,7 @@ class SimpleRouteBenchmark extends BenchmarkBase
         $routeNum = rand(0, 99);
         $path = "/route-{$routeNum}";
         
-        // Create a mock request using Helix's Request class
+        // Create a mock request using PivotPHP's Request class
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI'] = $path;
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';

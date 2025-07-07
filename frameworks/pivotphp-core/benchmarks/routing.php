@@ -10,18 +10,16 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 
-use PivotPHP\Core\Application;
-use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
 use Shared\Interfaces\BenchmarkInterface;
 
 class RoutingBenchmark implements BenchmarkInterface
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
 
     public function __construct()
     {
-        $this->requestFactory = new ServerRequestFactory();
         $this->setup();
     }
 
@@ -78,7 +76,7 @@ class RoutingBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-core',
             'description' => $this->getDescription(),
             'iterations' => $iterations,
             'warmup' => $warmup,
@@ -101,7 +99,7 @@ class RoutingBenchmark implements BenchmarkInterface
         $path = $routes[array_rand($routes)];
 
         // Create request
-        $request = $this->requestFactory->createServerRequest('GET', $path);
+        $request = new Request('GET', $path, $path);
 
         // Handle request
         $response = $this->app->handle($request);

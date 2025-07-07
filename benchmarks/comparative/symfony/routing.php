@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use HelixBenchmark\BenchmarkBase;
+use PivotBenchmark\BenchmarkBase;
 
 class SymfonyRoutingBenchmark extends BenchmarkBase
 {

@@ -19,7 +19,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use HelixBenchmark\BenchmarkBase;
+use PivotBenchmark\BenchmarkBase;
 
 class SymfonyMiddlewareBenchmark extends BenchmarkBase
 {

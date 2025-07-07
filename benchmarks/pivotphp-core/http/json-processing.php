@@ -9,9 +9,9 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Http\Psr7\Factory\ResponseFactory;
-use Helix\Http\Psr7\Factory\StreamFactory;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Http\Psr7\Factory\ResponseFactory;
+use PivotPHP\Core\Http\Psr7\Factory\StreamFactory;
+use PivotBenchmark\BenchmarkBase;
 
 class JsonProcessingBenchmark extends BenchmarkBase
 {

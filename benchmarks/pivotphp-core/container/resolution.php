@@ -9,8 +9,8 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Container;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Container;
+use PivotBenchmark\BenchmarkBase;
 
 interface ServiceInterface
 {
@@ -77,16 +77,16 @@ class ContainerResolutionBenchmark extends BenchmarkBase
     
     protected function setup(): void
     {
-        $this->container = new Container();
+        $this->container = Container::getInstance();
         
         // Register simple bindings
         $this->container->bind(ServiceInterface::class, SimpleService::class);
-        $this->container->bind(SimpleService::class);
+        $this->container->bind(SimpleService::class, SimpleService::class);
         
         // Register complex binding with closure
         $this->container->bind(ComplexService::class, function($container) {
             return new ComplexService(
-                $container->get(SimpleService::class),
+                $container->make(SimpleService::class),
                 ['option' => 'value']
             );
         });
@@ -94,7 +94,7 @@ class ContainerResolutionBenchmark extends BenchmarkBase
         // Register singleton
         $this->container->singleton('config', function() {
             return [
-                'app_name' => 'Helix Benchmark',
+                'app_name' => 'PivotPHP Benchmark',
                 'version' => '1.0.0',
                 'debug' => false
             ];
@@ -126,22 +126,22 @@ class ContainerResolutionBenchmark extends BenchmarkBase
     protected function runSingleIteration(): void
     {
         // Test simple resolution
-        $simple = $this->container->get(SimpleService::class);
+        $simple = $this->container->make(SimpleService::class);
         
         // Test interface resolution
-        $service = $this->container->get(ServiceInterface::class);
+        $service = $this->container->make(ServiceInterface::class);
         
         // Test complex resolution with dependencies
-        $complex = $this->container->get(ComplexService::class);
+        $complex = $this->container->make(ComplexService::class);
         
         // Test singleton resolution
-        $config = $this->container->get('config');
+        $config = $this->container->make('config');
         
         // Test resolution with multiple dependencies
-        $multiDep = $this->container->get(ServiceWithMultipleDependencies::class);
+        $multiDep = $this->container->make(ServiceWithMultipleDependencies::class);
         
         // Test random service resolution
-        $randomService = $this->container->get('service.' . rand(1, 50));
+        $randomService = $this->container->make('service.' . rand(1, 50));
     }
 }
 

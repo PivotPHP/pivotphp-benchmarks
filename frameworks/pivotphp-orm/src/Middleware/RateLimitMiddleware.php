@@ -40,7 +40,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         
         // Check rate limit
         if (count(self::$requests[$key]) >= $this->limit) {
-            return new \Helix\Http\Response(429, [], json_encode([
+            return new \PivotPHP\Core\Http\Response(429, [], json_encode([
                 'error' => 'Too many requests',
                 'retry_after' => $this->window
             ]));

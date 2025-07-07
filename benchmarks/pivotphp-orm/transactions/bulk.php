@@ -17,7 +17,7 @@ use Cycle\ORM\Transaction;
 use Cycle\Database\DatabaseManager;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Driver\SQLite\SQLiteDriver;
-use HelixBenchmark\BenchmarkBase;
+use PivotBenchmark\BenchmarkBase;
 
 class Order
 {

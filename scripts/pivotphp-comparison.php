@@ -52,9 +52,9 @@ foreach ($tests as $name => $config) {
     $memStart = memory_get_usage();
 
     for ($i = 0; $i < $iterations; $i++) {
-        $app = new \Helix\Core\Application();
+        $app = new \PivotPHP\Core\Application();
 
-        if ($name === 'helix-orm') {
+        if ($name === 'pivotphp-orm') {
             // Simulate ORM service provider registration
             $container = $app->getContainer();
             $container->bind('orm.config', function() { return ['db' => 'test']; });
@@ -82,7 +82,7 @@ echo str_repeat('-', 50) . "\n";
 $routeCount = 100;
 
 foreach ($tests as $name => $config) {
-    $app = new \Helix\Core\Application();
+    $app = new \PivotPHP\Core\Application();
 
     $start = microtime(true);
     $memStart = memory_get_usage();
@@ -112,7 +112,7 @@ echo str_repeat('-', 50) . "\n";
 foreach ($tests as $name => $config) {
     $memStart = memory_get_usage();
 
-    $app = new \Helix\Core\Application();
+    $app = new \PivotPHP\Core\Application();
     $container = $app->getContainer();
 
     // Register typical services
@@ -120,7 +120,7 @@ foreach ($tests as $name => $config) {
     $container->bind('logger', function() { return new stdClass(); });
     $container->bind('cache', function() { return new stdClass(); });
 
-    if ($name === 'helix-orm') {
+    if ($name === 'pivotphp-orm') {
         // Additional ORM services
         $container->bind('db.connection', function() { return new stdClass(); });
         $container->bind('orm.schema', function() { return new stdClass(); });
@@ -146,16 +146,16 @@ echo "\n=== PERFORMANCE SUMMARY ===\n";
 echo str_repeat('=', 50) . "\n\n";
 
 // Calculate overhead
-$coreInit = $results['helix-core']['initialization']['ops_per_second'];
-$ormInit = $results['helix-orm']['initialization']['ops_per_second'];
+$coreInit = $results['pivotphp-core']['initialization']['ops_per_second'];
+$ormInit = $results['pivotphp-orm']['initialization']['ops_per_second'];
 $initOverhead = (($coreInit - $ormInit) / $coreInit) * 100;
 
-$coreBootstrap = $results['helix-core']['bootstrap']['time_ms'];
-$ormBootstrap = $results['helix-orm']['bootstrap']['time_ms'];
+$coreBootstrap = $results['pivotphp-core']['bootstrap']['time_ms'];
+$ormBootstrap = $results['pivotphp-orm']['bootstrap']['time_ms'];
 $bootstrapOverhead = (($ormBootstrap - $coreBootstrap) / $coreBootstrap) * 100;
 
-$coreMemory = $results['helix-core']['footprint']['memory_mb'];
-$ormMemory = $results['helix-orm']['footprint']['memory_mb'];
+$coreMemory = $results['pivotphp-core']['footprint']['memory_mb'];
+$ormMemory = $results['pivotphp-orm']['footprint']['memory_mb'];
 $memoryOverhead = (($ormMemory - $coreMemory) / $coreMemory) * 100;
 
 echo "ORM Overhead:\n";
@@ -181,7 +181,7 @@ if ($initOverhead > 20) {
 
 // Save results
 $timestamp = date('Y-m-d_H-i-s');
-$outputFile = __DIR__ . "/../results/raw/helix_comparison_{$timestamp}.json";
+$outputFile = __DIR__ . "/../results/raw/pivotphp_comparison_{$timestamp}.json";
 @mkdir(dirname($outputFile), 0755, true);
 file_put_contents($outputFile, json_encode($results, JSON_PRETTY_PRINT));
 

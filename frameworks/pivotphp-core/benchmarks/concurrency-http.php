@@ -69,7 +69,7 @@ class HttpConcurrencyBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-core',
             'description' => $this->getDescription(),
             'base_url' => $this->baseUrl,
             'scenarios' => $results,

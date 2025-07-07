@@ -8,8 +8,8 @@
 echo "=== Running All Framework Benchmarks ===\n\n";
 
 $frameworks = [
-    'helix-core' => 'PivotPHP Core',
-    'helix-orm' => 'PivotPHP + ORM',
+    'pivotphp-core' => 'PivotPHP Core',
+    'pivotphp-orm' => 'PivotPHP + ORM',
     'slim4' => 'Slim 4',
     'lumen' => 'Laravel Lumen',
     'flight' => 'Flight',

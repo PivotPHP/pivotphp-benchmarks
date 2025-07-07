@@ -9,16 +9,13 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
-use Helix\Http\Psr7\Factory\UriFactory;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
+use PivotBenchmark\BenchmarkBase;
 
 class WildcardRouteBenchmark extends BenchmarkBase
 {
     private Application $app;
-    private ServerRequestFactory $requestFactory;
-    private UriFactory $uriFactory;
     
     protected function getName(): string
     {
@@ -28,8 +25,6 @@ class WildcardRouteBenchmark extends BenchmarkBase
     protected function setup(): void
     {
         $this->app = new Application();
-        $this->requestFactory = new ServerRequestFactory();
-        $this->uriFactory = new UriFactory();
         
         // Specific routes (should match first)
         $this->app->get('/api/users', function($request, $response) {
@@ -117,8 +112,15 @@ class WildcardRouteBenchmark extends BenchmarkBase
         ];
         
         // Test random path
-        $uri = $this->uriFactory->createUri($paths[array_rand($paths)]);
-        $request = $this->requestFactory->createServerRequest('GET', $uri);
+        $path = $paths[array_rand($paths)];
+        
+        // Setup globals for Request
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI'] = $path;
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        
+        $request = Request::createFromGlobals();
         $response = $this->app->handle($request);
     }
 }

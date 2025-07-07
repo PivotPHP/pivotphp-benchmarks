@@ -1,5 +1,5 @@
 {
-    "name": "pivotphp-benchmarks/helix-core",
+    "name": "pivotphp-benchmarks/pivotphp-core",
     "description": "PivotPHP Core benchmark application (without ORM)",
     "type": "project",
     "require": {

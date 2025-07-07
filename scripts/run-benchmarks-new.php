@@ -213,7 +213,7 @@ Usage: php run-benchmarks.php [options]
 Options:
   --all               Run all benchmarks on all frameworks
   --frameworks=LIST   Comma-separated list of frameworks to test
-                      Available: helix-core, helix-orm, slim4, lumen, flight, symfony
+                      Available: pivotphp-core, pivotphp-orm, slim4, lumen, flight, symfony
   --benchmarks=LIST   Comma-separated list of benchmarks to run
                       Available: routing, middleware, json-api
   --iterations=N      Number of iterations (default: 10000)
@@ -222,8 +222,8 @@ Options:
 
 Examples:
   php run-benchmarks.php --all
-  php run-benchmarks.php --frameworks=helix-core,slim4
-  php run-benchmarks.php --frameworks=helix-core,helix-orm --iterations=50000
+  php run-benchmarks.php --frameworks=pivotphp-core,slim4
+  php run-benchmarks.php --frameworks=pivotphp-core,pivotphp-orm --iterations=50000
 
 HELP;
     exit(0);

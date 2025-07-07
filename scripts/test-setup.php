@@ -59,13 +59,13 @@ if (file_exists($autoloadFile)) {
 // Check benchmark directories
 echo "\nChecking directory structure:\n";
 $directories = [
-    'benchmarks/helix-core/routing',
-    'benchmarks/helix-core/middleware',
-    'benchmarks/helix-core/container',
-    'benchmarks/helix-core/http',
-    'benchmarks/helix-orm/queries',
-    'benchmarks/helix-orm/hydration',
-    'benchmarks/helix-orm/transactions',
+    'benchmarks/pivotphp-core/routing',
+    'benchmarks/pivotphp-core/middleware',
+    'benchmarks/pivotphp-core/container',
+    'benchmarks/pivotphp-core/http',
+    'benchmarks/pivotphp-orm/queries',
+    'benchmarks/pivotphp-orm/hydration',
+    'benchmarks/pivotphp-orm/transactions',
     'benchmarks/comparative/slim4',
     'benchmarks/comparative/lumen',
     'benchmarks/comparative/flight',
@@ -86,14 +86,14 @@ foreach ($directories as $dir) {
 }
 
 // Check benchmark classes
-if (class_exists('HelixBenchmark\\Timer')) {
+if (class_exists('PivotBenchmark\\Timer')) {
     echo "\n✓ Timer class available\n";
 } else {
     $errors[] = "Timer class not found";
     echo "\n✗ Timer class not found\n";
 }
 
-if (class_exists('HelixBenchmark\\BenchmarkBase')) {
+if (class_exists('PivotBenchmark\\BenchmarkBase')) {
     echo "✓ BenchmarkBase class available\n";
 } else {
     $errors[] = "BenchmarkBase class not found";

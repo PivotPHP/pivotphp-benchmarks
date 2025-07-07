@@ -11,8 +11,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 require_once __DIR__ . '/../../../shared/Traits/ConcurrencyTrait.php';
 
-use PivotPHP\Core\Application;
-use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Request;
 use Shared\Interfaces\BenchmarkInterface;
 use Shared\Traits\ConcurrencyTrait;
 
@@ -20,11 +20,8 @@ class ConcurrencyBenchmark implements BenchmarkInterface
 {
     use ConcurrencyTrait;
 
-    private ServerRequestFactory $requestFactory;
-
     public function __construct()
     {
-        $this->requestFactory = new ServerRequestFactory();
     }
 
     public function run(int $iterations = 1000, int $warmup = 100): array
@@ -75,7 +72,7 @@ class ConcurrencyBenchmark implements BenchmarkInterface
 
         return [
             'benchmark' => $this->getName(),
-            'framework' => 'helix-core',
+            'framework' => 'pivotphp-core',
             'description' => $this->getDescription(),
             'scenarios' => $results,
             'timestamp' => date('Y-m-d H:i:s')
@@ -130,13 +127,13 @@ class ConcurrencyBenchmark implements BenchmarkInterface
         $endpoint = $endpoints[array_rand($endpoints)];
 
         // Create request
-        $request = $this->requestFactory->createServerRequest($endpoint['method'], $endpoint['path']);
+        $request = new Request($endpoint['method'], $endpoint['path'], $endpoint['path']);
 
         if ($endpoint['method'] === 'POST') {
-            $body = json_encode(['name' => 'Test User', 'email' => 'test@example.com']);
+            $body = ['name' => 'Test User', 'email' => 'test@example.com'];
             $request = $request
                 ->withHeader('Content-Type', 'application/json')
-                ->withBody($this->requestFactory->createStream($body));
+                ->withParsedBody($body);
         }
 
         // Handle request

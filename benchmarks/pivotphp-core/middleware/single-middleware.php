@@ -9,11 +9,11 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Helix\Core\Application;
-use Helix\Http\Psr7\Factory\ServerRequestFactory;
-use Helix\Http\Psr7\Factory\UriFactory;
-use Helix\Http\Psr15\AbstractMiddleware;
-use HelixBenchmark\BenchmarkBase;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Http\Psr7\Factory\UriFactory;
+use PivotPHP\Core\Http\Psr15\AbstractMiddleware;
+use PivotBenchmark\BenchmarkBase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

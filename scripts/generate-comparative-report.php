@@ -103,8 +103,8 @@ $html = <<<HTML
             font-weight: 500;
             transition: width 0.3s ease;
         }
-        .bar-helix { background: #3498db; }
-        .bar-helix-orm { background: #2980b9; }
+        .bar-pivotphp { background: #3498db; }
+        .bar-pivotphp-orm { background: #2980b9; }
         .bar-slim { background: #9b59b6; }
         .bar-lumen { background: #e74c3c; }
         .bar-flight { background: #f39c12; }
@@ -200,8 +200,8 @@ HTML;
 // Helper function to get framework color class
 function getFrameworkClass($framework) {
     $classes = [
-        'helix-core' => 'bar-helix',
-        'helix-orm' => 'bar-helix-orm',
+        'pivotphp-core' => 'bar-pivotphp',
+        'pivotphp-orm' => 'bar-pivotphp-orm',
         'slim4' => 'bar-slim',
         'lumen' => 'bar-lumen',
         'flight' => 'bar-flight',
@@ -393,26 +393,26 @@ $html .= <<<HTML
 HTML;
 
 // Calculate PivotPHP advantage
-$helixAdvantages = [];
-if (isset($routingData['helix-core'])) {
+$pivotphpAdvantages = [];
+if (isset($routingData['pivotphp-core'])) {
     foreach ($routingData as $framework => $value) {
-        if ($framework !== 'helix-core' && $framework !== 'helix-orm') {
-            $advantage = (($routingData['helix-core'] - $value) / $value) * 100;
-            $helixAdvantages[] = $advantage;
+        if ($framework !== 'pivotphp-core' && $framework !== 'pivotphp-orm') {
+            $advantage = (($routingData['pivotphp-core'] - $value) / $value) * 100;
+            $pivotphpAdvantages[] = $advantage;
         }
     }
 }
 
-$avgAdvantage = !empty($helixAdvantages) ? array_sum($helixAdvantages) / count($helixAdvantages) : 0;
-$helixOps = $routingData['helix-core'] ?? 0;
-$ormOverhead = isset($routingData['helix-orm']) && isset($routingData['helix-core'])
-    ? (($routingData['helix-core'] - $routingData['helix-orm']) / $routingData['helix-core']) * 100
+$avgAdvantage = !empty($pivotphpAdvantages) ? array_sum($pivotphpAdvantages) / count($pivotphpAdvantages) : 0;
+$pivotphpOps = $routingData['pivotphp-core'] ?? 0;
+$ormOverhead = isset($routingData['pivotphp-orm']) && isset($routingData['pivotphp-core'])
+    ? (($routingData['pivotphp-core'] - $routingData['pivotphp-orm']) / $routingData['pivotphp-core']) * 100
     : 0;
 
 $html .= <<<HTML
                 <div class="summary-item">
                     <div class="summary-label">PivotPHP Core Speed</div>
-                    <div class="summary-value">{$helixOps}</div>
+                    <div class="summary-value">{$pivotphpOps}</div>
                     <div class="summary-label">operations/second</div>
                 </div>
                 <div class="summary-item">
