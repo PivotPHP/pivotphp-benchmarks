@@ -12,6 +12,7 @@ class BenchmarkRunner
     private array $frameworks = [
         'pivotphp-core',
         'pivotphp-orm',
+        'pivotphp-reactphp',
         'slim4',
         'lumen',
         'flight',

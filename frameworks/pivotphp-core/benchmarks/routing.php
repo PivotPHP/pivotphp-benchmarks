@@ -25,7 +25,8 @@ class RoutingBenchmark implements BenchmarkInterface
 
     private function setup(): void
     {
-        $this->app = new Application();
+        // Bootstrap the application
+        $this->app = require __DIR__ . '/../bootstrap/app.php';
 
         // Setup 100 routes for testing
         for ($i = 0; $i < 100; $i++) {

@@ -8,9 +8,10 @@ help:
 	@echo "  make up                   - Start all services"
 	@echo "  make down                 - Stop all services"
 	@echo "  make benchmark-all        - Run all benchmarks"
-	@echo "  make benchmark-pivotphp   - Run PivotPHP benchmarks (core + orm)"
+	@echo "  make benchmark-pivotphp   - Run PivotPHP benchmarks (core + orm + reactphp)"
 	@echo "  make benchmark-core       - Run only PivotPHP Core benchmarks"
 	@echo "  make benchmark-orm        - Run only PivotPHP ORM benchmarks"
+	@echo "  make benchmark-reactphp   - Run only PivotPHP ReactPHP benchmarks"
 	@echo "  make benchmark-comparative - Run comparative framework benchmarks"
 	@echo "  make benchmark-matrix     - Run benchmarks across all PHP versions"
 	@echo "  make benchmark-concurrency - Run in-process concurrency benchmarks"
@@ -20,8 +21,9 @@ help:
 	@echo ""
 	@echo "  Container Access:"
 	@echo "  make shell-pivotphp-core - Open shell in PivotPHP Core container"
-	@echo "  make shell-pivotphp-orm  - Open shell in PivotPHP ORM container"
-	@echo "  make shell-slim4         - Open shell in Slim 4 container"
+	@echo "  make shell-pivotphp-orm      - Open shell in PivotPHP ORM container"
+	@echo "  make shell-pivotphp-reactphp - Open shell in PivotPHP ReactPHP container"
+	@echo "  make shell-slim4             - Open shell in Slim 4 container"
 	@echo "  make shell-lumen         - Open shell in Lumen container"
 	@echo "  make shell-flight        - Open shell in Flight container"
 	@echo "  make shell-symfony       - Open shell in Symfony container"
@@ -29,9 +31,10 @@ help:
 	@echo "  make redis-cli           - Access Redis CLI"
 	@echo ""
 	@echo "  Logs:"
-	@echo "  make logs-pivotphp-core  - View PivotPHP Core logs"
-	@echo "  make logs-pivotphp-orm   - View PivotPHP ORM logs"
-	@echo "  make logs-all            - View all container logs"
+	@echo "  make logs-pivotphp-core     - View PivotPHP Core logs"
+	@echo "  make logs-pivotphp-orm      - View PivotPHP ORM logs"
+	@echo "  make logs-pivotphp-reactphp - View PivotPHP ReactPHP logs"
+	@echo "  make logs-all               - View all container logs"
 
 # Build all containers
 build:
@@ -56,10 +59,10 @@ benchmark-all: up
 	@echo "Running all benchmarks..."
 	docker-compose exec orchestrator php /scripts/run-benchmarks.php --all
 
-# Run PivotPHP benchmarks (both core and orm)
+# Run PivotPHP benchmarks (core, orm, and reactphp)
 benchmark-pivotphp: up
 	@echo "Running PivotPHP benchmarks..."
-	docker-compose exec orchestrator php /scripts/run-benchmarks.php --frameworks=pivotphp-core,pivotphp-orm
+	docker-compose exec orchestrator php /scripts/run-benchmarks.php --frameworks=pivotphp-core,pivotphp-orm,pivotphp-reactphp
 
 # Run only PivotPHP Core benchmarks
 benchmark-core: up
@@ -70,6 +73,11 @@ benchmark-core: up
 benchmark-orm: up
 	@echo "Running PivotPHP ORM benchmarks..."
 	docker-compose exec pivotphp-orm php benchmarks/run.php
+
+# Run only PivotPHP ReactPHP benchmarks
+benchmark-reactphp: up
+	@echo "Running PivotPHP ReactPHP benchmarks..."
+	docker-compose exec pivotphp-reactphp php benchmarks/run.php
 
 # Run comparative framework benchmarks
 benchmark-comparative: up
@@ -141,7 +149,7 @@ logs-all:
 # Install dependencies for all frameworks
 install-deps:
 	@echo "Installing dependencies for all frameworks..."
-	@for framework in pivotphp-core pivotphp-orm slim4 lumen flight symfony; do \
+	@for framework in pivotphp-core pivotphp-orm pivotphp-reactphp slim4 lumen flight symfony; do \
 		echo "Installing dependencies for $$framework..."; \
 		cd frameworks/$$framework && composer install --no-dev --optimize-autoloader; \
 		cd ../..; \

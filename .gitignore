@@ -47,8 +47,6 @@ phpunit.xml
 phpstan.neon
 
 # Benchmark specific
-/benchmarks/comparative/vendor/
-/benchmarks/helix-orm/vendor/
 benchmark-output/
 performance-reports/
 
@@ -106,3 +104,6 @@ docker-compose.*.yml
 
 # Keep .gitkeep files
 !.gitkeep
+
+# Keep CLAUDE.md for documentation
+!CLAUDE.md
