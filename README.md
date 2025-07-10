@@ -76,8 +76,10 @@ make redis-cli
 
 ## 📊 Benchmark Types
 
+### 🔥 Core Infrastructure Benchmarks
+
 ### 1. **Routing Performance** (`routing.php`)
-- Tests route matching and dispatching
+- Route matching and dispatching
 - 100+ routes with parameters
 - Wildcard and regex patterns
 
@@ -91,7 +93,67 @@ make redis-cli
 - Request parsing
 - Response serialization
 
-### 4. **ORM Performance** (pivotphp-orm only)
+### 4. **Concurrency Testing** (`concurrency.php`)
+- Multi-process concurrent execution
+- Application creation under load
+- Route registration performance
+- Container resolution speed
+
+### 5. **Database Operations** (`database.php`)
+- Connection management
+- Query execution (SELECT, INSERT, UPDATE, DELETE)
+- Transaction handling
+- Connection pooling simulation
+
+### 6. **Memory Usage Analysis** (`memory.php`)
+- Large object creation
+- String concatenation performance
+- Array operations
+- Garbage collection impact
+
+### 7. **Security Middleware** (`security.php`)
+- Input sanitization
+- CSRF protection
+- Rate limiting
+- XSS prevention
+- JWT token validation
+
+### 🌐 API-Focused Benchmarks
+
+### 8. **HTTP Request/Response** (`http-performance.php`)
+- Request parsing and validation
+- Response creation and headers
+- Content negotiation
+- Large payload processing
+- Status code handling
+
+### 9. **REST API Endpoints** (`rest-api.php`)
+- GET /users (list with pagination)
+- GET /users/:id (single resource)
+- POST /users (create resource)
+- PUT /users/:id (update resource)
+- PATCH /users/:id (partial update)
+- DELETE /users/:id (delete resource)
+- Complex query operations
+
+### 10. **JSON Performance** (`json-performance.php`)
+- Small JSON objects (< 1KB)
+- Medium JSON arrays (1-10KB)
+- Large JSON datasets (10KB+)
+- Nested JSON structures
+- Schema validation
+- Error handling
+
+### 11. **API Middleware Stack** (`api-middleware.php`)
+- CORS middleware
+- Rate limiting middleware
+- Authentication middleware
+- Validation middleware
+- Logging middleware
+- Compression middleware
+- Complete middleware stack
+
+### 12. **ORM Performance** (pivotphp-orm only)
 - **Query Performance** (`orm-queries.php`)
   - Simple selects
   - Pagination
@@ -136,10 +198,22 @@ memory_limit=512M
 - ✅ **Flight** - Minimalist framework
 - ✅ **Symfony** - Full framework in micro configuration
 
-### Benchmarks
+### Infrastructure Benchmarks
 - ✅ **Routing** - All frameworks
 - ✅ **Middleware** - All frameworks
 - ✅ **JSON API** - All frameworks
+- ✅ **Concurrency** - All frameworks
+- ✅ **Database Operations** - All frameworks
+- ✅ **Memory Analysis** - All frameworks
+- ✅ **Security Middleware** - All frameworks
+
+### API-Focused Benchmarks
+- ✅ **HTTP Request/Response** - All frameworks
+- ✅ **REST API Endpoints** - All frameworks
+- ✅ **JSON Performance** - All frameworks
+- ✅ **API Middleware Stack** - All frameworks
+
+### ORM Benchmarks
 - ✅ **ORM Queries** - PivotPHP ORM only
 - ✅ **ORM Hydration** - PivotPHP ORM only
 

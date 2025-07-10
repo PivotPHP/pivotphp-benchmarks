@@ -220,33 +220,61 @@ tail -f logs/pivotphp-core.log
 tail -f logs/pivotphp-orm.log
 ```
 
-## Benchmark Types Available
+## Comprehensive Benchmark Suite
 
-### Core Benchmarks (All Frameworks)
+### 🔥 Core Infrastructure Benchmarks (All Frameworks)
 - **routing.php**: Route matching and dispatching performance
 - **middleware.php**: Middleware pipeline execution
 - **json-api.php**: JSON serialization/deserialization
-- **memory.php**: Memory usage profiling
-- **security.php**: Security middleware overhead
+- **concurrency.php**: Multi-request concurrent handling
+- **database.php**: Database operations simulation
+- **memory.php**: Memory usage profiling and leak detection
+- **security.php**: Security middleware and input validation
 
-### PivotPHP-Specific Benchmarks
-- **concurrency.php**: In-process concurrency testing
-- **auth.php**: Authentication middleware performance
-- **container/resolution.php**: Dependency injection performance
+### 🌐 API-Focused Benchmarks (Production-Ready)
+- **http-performance.php**: HTTP request/response processing, headers, content negotiation
+- **rest-api.php**: Complete REST operations (GET, POST, PUT, PATCH, DELETE, pagination)
+- **json-performance.php**: JSON processing (small/medium/large datasets, nested structures)
+- **api-middleware.php**: Production middleware stack (CORS, auth, rate limiting, compression)
 
-### ORM-Specific Benchmarks (pivotphp-orm only)
+### ⚙️ Framework-Specific Benchmarks
+
+#### PivotPHP Core v1.1.0
+- **Container resolution**: Dependency injection performance (584K+ ops/sec)
+- **PSR-7 optimization**: Request/response object creation
+- **High-performance mode**: Advanced optimization features
+
+#### PivotPHP ORM v1.0.1 (with Cycle ORM)
 - **orm-queries.php**: Database query performance
-- **orm-hydration.php**: Entity hydration performance
+- **orm-hydration.php**: Entity hydration and relationship loading
+- **ORM model operations**: Entity management (327K+ ops/sec)
+- **Unit of Work patterns**: Change tracking and persistence
 
-### ReactPHP-Specific Benchmarks (pivotphp-reactphp only)
-- **routing.php**: Route matching in continuous runtime context
-- **http-server.php**: Real HTTP server performance with client requests
-- **async-performance.php**: Async operations and event loop performance
-- **continuous-runtime.php**: Persistent state and runtime advantages
+#### PivotPHP ReactPHP v0.1.0 (Continuous Runtime)
+- **async-performance.php**: Event loop and promise operations
+- **continuous-runtime.php**: Persistent state advantages (1.27M+ ops/sec)
+- **http-server.php**: Real HTTP server with ReactPHP
+- **WebSocket simulation**: Real-time connection handling
 
-### Stress Testing
-- **stress/synchronous-load-test.php**: High-load synchronous testing
-- **stress-test/unified-stress-test.php**: Cross-framework stress comparison
+### 🚀 Performance Testing Categories
+
+#### Infrastructure Tests
+- **Concurrency**: 4-20 concurrent operations per test
+- **Memory Management**: Usage tracking, leak detection, garbage collection
+- **Security**: Input sanitization, XSS protection, SQL injection prevention
+- **Database**: Connection pooling, query optimization, transaction handling
+
+#### API-Specific Tests  
+- **HTTP Protocol**: Request parsing, response creation, status codes, headers
+- **REST Operations**: CRUD operations with validation, pagination, filtering
+- **JSON Processing**: Small objects, large datasets, nested structures, schema validation
+- **Middleware Stack**: CORS, authentication, rate limiting, logging, compression
+
+#### Stress Testing
+- **High-load scenarios**: 10,000+ iterations per test
+- **Continuous runtime**: Long-running process simulation
+- **Memory pressure**: Large dataset processing
+- **Concurrent users**: Multi-client simulation
 
 ## Report Generation
 
