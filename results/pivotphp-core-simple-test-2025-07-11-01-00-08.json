@@ -1,9 +1,0 @@
-{
-    "framework": "pivotphp-core",
-    "version": "1.1.0",
-    "iterations": 5000,
-    "total_time": 0.6985878944396973,
-    "ops_per_second": 7157.3,
-    "memory_mb": 0.09,
-    "peak_memory_mb": 2.24
-}

@@ -42,4 +42,4 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 RUN composer dump-autoload --optimize --no-dev
 
 # Run benchmarks by default
-CMD ["php", "benchmarks/run.php"]
+CMD ["tail", "-f", "/dev/null"]

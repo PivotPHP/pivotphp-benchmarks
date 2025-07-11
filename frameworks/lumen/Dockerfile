@@ -44,4 +44,4 @@ RUN cp .env.example .env
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Run benchmarks by default
-CMD ["php", "benchmarks/run.php"]
+CMD ["tail", "-f", "/dev/null"]

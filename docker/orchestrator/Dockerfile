@@ -30,4 +30,4 @@ COPY shared/ /shared/
 # Make scripts executable
 RUN chmod +x /scripts/*.sh 2>/dev/null || true
 
-CMD ["php", "/scripts/run-benchmarks.php", "--help"]
+CMD ["tail", "-f", "/dev/null"]

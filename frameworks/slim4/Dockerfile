@@ -40,5 +40,5 @@ COPY . .
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Run benchmarks by default
-CMD ["php", "benchmarks/run.php"]
+# Keep container running for benchmark execution
+CMD ["tail", "-f", "/dev/null"]

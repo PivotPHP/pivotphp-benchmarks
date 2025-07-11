@@ -48,4 +48,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Run benchmarks by default
-CMD ["php", "benchmarks/run.php"]
+CMD ["tail", "-f", "/dev/null"]
