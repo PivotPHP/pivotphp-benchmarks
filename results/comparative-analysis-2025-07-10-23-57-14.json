@@ -1,0 +1,125 @@
+{
+    "analysis": {
+        "title": "Comprehensive Cross-Framework API Performance Comparison",
+        "generated_at": "2025-07-10 23:57:14",
+        "frameworks_compared": [
+            "pivotphp-core",
+            "pivotphp-orm",
+            "pivotphp-full",
+            "laravel",
+            "slim4"
+        ],
+        "benchmark_types": [
+            "http-performance",
+            "rest-api",
+            "json-performance",
+            "api-middleware"
+        ]
+    },
+    "executive_summary": {
+        "total_operations": {
+            "pivotphp-core": 3066046,
+            "pivotphp-orm": 0,
+            "pivotphp-full": 0,
+            "laravel": 0,
+            "slim4": 3811346
+        },
+        "memory_usage_mb": {
+            "pivotphp-core": 20,
+            "pivotphp-orm": 0,
+            "pivotphp-full": 0,
+            "laravel": 0,
+            "slim4": 20
+        },
+        "performance_winner": "slim4",
+        "memory_winner": "pivotphp-core",
+        "benchmarks_won": {
+            "pivotphp-core": 0,
+            "pivotphp-orm": 0,
+            "pivotphp-full": 0,
+            "laravel": 0,
+            "slim4": 3
+        }
+    },
+    "detailed_comparison": {
+        "http-performance": {
+            "benchmark_type": "http-performance",
+            "frameworks": {
+                "pivotphp-core": {
+                    "ops_per_second": 1005501,
+                    "memory_mb": 16
+                },
+                "slim4": {
+                    "ops_per_second": 1052042,
+                    "memory_mb": 16
+                }
+            },
+            "winner": "slim4",
+            "max_ops": 1052042
+        },
+        "rest-api": {
+            "benchmark_type": "rest-api",
+            "frameworks": {
+                "pivotphp-core": {
+                    "ops_per_second": 1376354,
+                    "memory_mb": 2
+                },
+                "slim4": {
+                    "ops_per_second": 1881264,
+                    "memory_mb": 2
+                }
+            },
+            "winner": "slim4",
+            "max_ops": 1881264
+        },
+        "json-performance": {
+            "benchmark_type": "json-performance",
+            "frameworks": []
+        },
+        "api-middleware": {
+            "benchmark_type": "api-middleware",
+            "frameworks": {
+                "pivotphp-core": {
+                    "ops_per_second": 684191,
+                    "memory_mb": 2
+                },
+                "slim4": {
+                    "ops_per_second": 878040,
+                    "memory_mb": 2
+                }
+            },
+            "winner": "slim4",
+            "max_ops": 878040
+        }
+    },
+    "performance_ratios": [],
+    "memory_comparison": {
+        "average_memory_usage": {
+            "pivotphp-core": 5,
+            "pivotphp-orm": 0,
+            "pivotphp-full": 0,
+            "laravel": 0,
+            "slim4": 5
+        },
+        "most_efficient": "pivotphp-core",
+        "memory_rankings": [
+            "pivotphp-core",
+            "pivotphp-orm",
+            "pivotphp-full",
+            "laravel",
+            "slim4"
+        ]
+    },
+    "recommendations": {
+        "use_cases": [
+            "slim4 recommended for high-performance API applications"
+        ],
+        "performance_insights": [
+            "slim4 shows superior overall performance across API-focused benchmarks"
+        ],
+        "deployment_guidance": [
+            "pivotphp-core offers better memory efficiency for resource-constrained environments",
+            "slim4 provides better throughput for high-traffic scenarios"
+        ]
+    }
+}

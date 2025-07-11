@@ -1,0 +1,100 @@
+{
+    "analysis": {
+        "title": "PivotPHP Core v1.1.0 vs Slim 4 API Performance Comparison",
+        "generated_at": "2025-07-10 23:28:57",
+        "frameworks_compared": [
+            "pivotphp-core",
+            "slim4"
+        ],
+        "benchmark_types": [
+            "http-performance",
+            "rest-api",
+            "json-performance",
+            "api-middleware"
+        ]
+    },
+    "executive_summary": {
+        "total_operations": {
+            "pivotphp_total": 2185982,
+            "slim4_total": 2497158,
+            "overall_performance": "12.5% slower"
+        },
+        "memory_efficiency": {
+            "pivotphp_total_mb": 20,
+            "slim4_total_mb": 20,
+            "memory_winner": "Slim4"
+        },
+        "performance_winner": "Slim4",
+        "benchmarks_won": {
+            "pivotphp": 0,
+            "slim4": 3
+        }
+    },
+    "detailed_comparison": {
+        "http-performance": {
+            "benchmark_type": "http-performance",
+            "pivotphp_ops": 605290,
+            "slim4_ops": 736576,
+            "performance_ratio": "17.8% slower",
+            "pivotphp_memory_mb": 16,
+            "slim4_memory_mb": 16,
+            "memory_efficiency": "Slim4 more efficient",
+            "winner": "Slim4"
+        },
+        "rest-api": {
+            "benchmark_type": "rest-api",
+            "pivotphp_ops": 1120424,
+            "slim4_ops": 1299879,
+            "performance_ratio": "13.8% slower",
+            "pivotphp_memory_mb": 2,
+            "slim4_memory_mb": 2,
+            "memory_efficiency": "Slim4 more efficient",
+            "winner": "Slim4"
+        },
+        "api-middleware": {
+            "benchmark_type": "api-middleware",
+            "pivotphp_ops": 460268,
+            "slim4_ops": 460703,
+            "performance_ratio": "0.1% slower",
+            "pivotphp_memory_mb": 2,
+            "slim4_memory_mb": 2,
+            "memory_efficiency": "Slim4 more efficient",
+            "winner": "Slim4"
+        }
+    },
+    "performance_ratios": {
+        "http_processing": {
+            "pivotphp": 605290,
+            "slim4": 736576,
+            "ratio": "17.8% slower"
+        },
+        "rest_operations": {
+            "pivotphp": 1120424,
+            "slim4": 1299879,
+            "ratio": "13.8% slower"
+        },
+        "middleware_stack": {
+            "pivotphp": 460268,
+            "slim4": 460703,
+            "ratio": "0.1% slower"
+        }
+    },
+    "memory_comparison": {
+        "average_memory_usage": {
+            "pivotphp_avg_mb": 5,
+            "slim4_avg_mb": 5
+        },
+        "memory_efficiency_ratio": "Equal performance"
+    },
+    "recommendations": {
+        "use_cases": [
+            "Slim 4 recommended for this specific benchmark scenario"
+        ],
+        "performance_insights": [
+            "Slim 4 demonstrates competitive performance in API operations"
+        ],
+        "deployment_guidance": [
+            "Both frameworks show similar memory efficiency"
+        ]
+    }
+}

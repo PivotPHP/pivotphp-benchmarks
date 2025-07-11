@@ -1,0 +1,53 @@
+{
+    "analysis": {
+        "title": "PivotPHP Core v1.1.0 vs Slim 4 API Performance Comparison",
+        "generated_at": "2025-07-10 23:28:26",
+        "frameworks_compared": [
+            "pivotphp-core",
+            "slim4"
+        ],
+        "benchmark_types": [
+            "http-performance",
+            "rest-api",
+            "json-performance",
+            "api-middleware"
+        ]
+    },
+    "executive_summary": {
+        "total_operations": {
+            "pivotphp_total": 0,
+            "slim4_total": 0,
+            "overall_performance": "N\/A"
+        },
+        "memory_efficiency": {
+            "pivotphp_total_mb": 0,
+            "slim4_total_mb": 0,
+            "memory_winner": "Slim4"
+        },
+        "performance_winner": "Slim4",
+        "benchmarks_won": {
+            "pivotphp": 0,
+            "slim4": 0
+        }
+    },
+    "detailed_comparison": [],
+    "performance_ratios": [],
+    "memory_comparison": {
+        "average_memory_usage": {
+            "pivotphp_avg_mb": 0,
+            "slim4_avg_mb": 0
+        },
+        "memory_efficiency_ratio": "N\/A"
+    },
+    "recommendations": {
+        "use_cases": [
+            "Slim 4 recommended for this specific benchmark scenario"
+        ],
+        "performance_insights": [
+            "Slim 4 demonstrates competitive performance in API operations"
+        ],
+        "deployment_guidance": [
+            "Both frameworks show similar memory efficiency"
+        ]
+    }
+}

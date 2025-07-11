@@ -23,7 +23,7 @@ function runBenchmark($name, $iterations, $callback) {
     $end = microtime(true);
     $duration = $end - $start;
     $memoryUsed = memory_get_usage() - $startMemory;
-    $opsPerSecond = round($iterations / $duration);
+    $opsPerSecond = $duration > 0 ? round($iterations / $duration) : 0;
     
     echo number_format($opsPerSecond) . " ops/sec\n";
     
@@ -39,7 +39,7 @@ function parseArgs($argv) {
     
     foreach ($argv as $arg) {
         if ($arg === '--json') $args['json'] = true;
-        if (strpos($arg, '--iterations=') === 0) $args['iterations'] = intval(substr($arg, 14));
+        if (strpos($arg, '--iterations=') === 0) $args['iterations'] = intval(substr($arg, 13));
         if (strpos($arg, '--warmup=') === 0) $args['warmup'] = intval(substr($arg, 9));
     }
     
