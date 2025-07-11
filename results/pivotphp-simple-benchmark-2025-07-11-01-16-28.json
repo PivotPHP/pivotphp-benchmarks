@@ -1,0 +1,15 @@
+{
+    "framework": "pivotphp-core",
+    "version": "1.1.0",
+    "test_type": "simple_benchmark",
+    "timestamp": "2025-07-11 01:16:28",
+    "total_iterations": 2000,
+    "successful_requests": 0,
+    "failed_requests": 2000,
+    "success_rate": 0,
+    "total_time": 0.565,
+    "ops_per_second": 0,
+    "avg_response_time_ms": 565.34,
+    "memory_mb": 0.01,
+    "peak_memory_mb": 2.32
+}

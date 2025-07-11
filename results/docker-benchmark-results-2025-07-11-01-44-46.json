@@ -1,0 +1,23 @@
+[
+    {
+        "framework": "pivotphp-core",
+        "benchmark": "http-performance",
+        "duration": -14.164030075073242,
+        "output": "================================================\n PivotPHP Core HTTP Performance Benchmark\n================================================\n\n\ud83d\ude80 HTTP Request Parsing (1000 iterations)... 328,296 ops\/sec\n\ud83d\ude80 HTTP Response Creation (1000 iterations)... 277,934 ops\/sec\n\ud83d\ude80 Content Negotiation (1000 iterations)... 533,016 ops\/sec\n\ud83d\ude80 Large Payload Processing (250 iterations)... 91 ops\/sec\n\ud83d\ude80 HTTP Status Code Handling (1000 iterations)... 606,464 ops\/sec\n\ud83d\ude80 Header Processing (1000 iterations)... 368,051 ops\/sec\n\n\ud83d\udcca HTTP Performance Summary:\n============================\nrequest_parsing                    :  328,296 ops\/sec\nresponse_creation                  :  277,934 ops\/sec\ncontent_negotiation                :  533,016 ops\/sec\nlarge_payload_processing           :       91 ops\/sec\nstatus_code_handling               :  606,464 ops\/sec\nheader_processing                  :  368,051 ops\/sec\n\n\ud83c\udfc6 Total Memory Peak: 14.00 MB\n\ud83c\udfaf Framework: PivotPHP Core v1.1.0\n\ud83c\udf10 HTTP Features: Request\/Response, Content Negotiation, Large Payloads, Status Codes, Headers\n\u26a1 Total HTTP Ops: 2,113,852 ops\/sec\n\ud83d\ude80 HTTP Status: HIGH PERFORMANCE \u2705\n\n\ud83d\udcbe Results saved to results\/raw\/\n\u2705 HTTP performance benchmark completed successfully!\n",
+        "status": "success"
+    },
+    {
+        "framework": "pivotphp-core",
+        "benchmark": "rest-api",
+        "duration": 0.9213449954986572,
+        "output": "============================================\n PivotPHP Core REST API Benchmark\n============================================\n\n\ud83d\ude80 GET \/users (List with Pagination) (1000 iterations)... 24,400 ops\/sec\n\ud83d\ude80 GET \/users\/:id (Single Resource) (1000 iterations)... 889,755 ops\/sec\n\ud83d\ude80 POST \/users (Create Resource) (1000 iterations)... 189,505 ops\/sec\n\ud83d\ude80 PUT \/users\/:id (Update Resource) (1000 iterations)... 581,734 ops\/sec\n\ud83d\ude80 PATCH \/users\/:id (Partial Update) (1000 iterations)... 390,023 ops\/sec\n\ud83d\ude80 DELETE \/users\/:id (Delete Resource) (500 iterations)... 1,547,714 ops\/sec\n\ud83d\ude80 Complex Query Operations (1000 iterations)... 5,952 ops\/sec\n\n\ud83d\udcca REST API Performance Summary:\n=================================\nget_users_list                     :   24,400 ops\/sec\nget_user_by_id                     :  889,755 ops\/sec\npost_create_user                   :  189,505 ops\/sec\nput_update_user                    :  581,734 ops\/sec\npatch_partial_update               :  390,023 ops\/sec\ndelete_user                        : 1,547,714 ops\/sec\ncomplex_query_operations           :    5,952 ops\/sec\n\n\ud83c\udfc6 Total Memory Peak: 4.00 MB\n\ud83c\udfaf Framework: PivotPHP Core v1.1.0\n\ud83d\udd17 REST Operations: GET List, GET Single, POST Create, PUT Update, PATCH Partial, DELETE, Complex Queries\n\u26a1 Total REST API Ops: 3,629,083 ops\/sec\n\ud83c\udf10 API Status: HIGH PERFORMANCE \u2705\n\n\ud83d\udcbe Results saved to results\/raw\/\n\u2705 REST API benchmark completed successfully!\n",
+        "status": "success"
+    },
+    {
+        "framework": "pivotphp-reactphp",
+        "benchmark": "async-performance",
+        "duration": 0.8264260292053223,
+        "output": "\nParse error: syntax error, unexpected token \"=\", expecting end of file in Command line code on line 1\n",
+        "status": "failed"
+    }
+]

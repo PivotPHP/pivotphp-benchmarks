@@ -1,0 +1,52 @@
+{
+    "benchmark": "http-performance",
+    "framework": "pivotphp-core",
+    "version": "1.1.0",
+    "timestamp": "2025-07-11 01:27:24",
+    "php_version": "8.4.8",
+    "http_features": [
+        "request_parsing",
+        "response_creation",
+        "content_negotiation",
+        "large_payloads",
+        "status_codes",
+        "headers"
+    ],
+    "results": {
+        "request_parsing": {
+            "ops_per_second": 64952,
+            "duration": 0.015395879745483398,
+            "memory_used": 0
+        },
+        "response_creation": {
+            "ops_per_second": 163133,
+            "duration": 0.0061299800872802734,
+            "memory_used": 0
+        },
+        "content_negotiation": {
+            "ops_per_second": 248389,
+            "duration": 0.004025936126708984,
+            "memory_used": 0
+        },
+        "large_payload_processing": {
+            "ops_per_second": 58,
+            "duration": 4.307106018066406,
+            "memory_used": 0
+        },
+        "status_code_handling": {
+            "ops_per_second": 449406,
+            "duration": 0.002225160598754883,
+            "memory_used": 0
+        },
+        "header_processing": {
+            "ops_per_second": 59015,
+            "duration": 0.01694488525390625,
+            "memory_used": 0
+        }
+    },
+    "total_peak_memory": 16777216,
+    "summary": {
+        "total_ops": 984953,
+        "avg_ops": 164159
+    }
+}

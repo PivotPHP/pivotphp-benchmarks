@@ -16,6 +16,19 @@ help:
 	@echo "  make benchmark-matrix     - Run benchmarks across all PHP versions"
 	@echo "  make benchmark-concurrency - Run in-process concurrency benchmarks"
 	@echo "  make benchmark-http-concurrency - Run HTTP concurrency benchmarks"
+	@echo ""
+	@echo "  Docker Benchmarks:"
+	@echo "  make docker-benchmark    - Run Docker-based benchmarks"
+	@echo "  make docker-benchmark-pivotphp - Run PivotPHP Docker benchmarks only"
+	@echo "  make docker-benchmark-comparative - Run comparative frameworks in Docker"
+	@echo "  make docker-benchmark-all - Run all Docker benchmarks (high iterations)"
+	@echo ""
+	@echo "  Advanced Analysis (Parallel + Sequential):"
+	@echo "  make parallel-sequential-analysis - Complete parallel→sequential analysis"
+	@echo "  make parallel-sequential-pivotphp - PivotPHP parallel→sequential"
+	@echo "  make parallel-sequential-comparative - Comparative frameworks analysis"
+	@echo "  make parallel-sequential-all - All frameworks with CPU warmup strategy"
+	@echo ""
 	@echo "  make report              - Generate benchmark reports"
 	@echo "  make clean               - Clean all results and containers"
 	@echo ""
@@ -160,3 +173,38 @@ validate:
 	@echo "Validating benchmark setup..."
 	@docker-compose config
 	@echo "Setup is valid!"
+
+# Docker-based benchmark commands
+docker-benchmark:
+	@echo "Running Docker-based benchmarks..."
+	php scripts/docker-benchmark-runner.php --frameworks=pivotphp-core,pivotphp-reactphp,slim4,lumen,flight,symfony
+
+docker-benchmark-pivotphp:
+	@echo "Running PivotPHP Docker benchmarks..."
+	php scripts/docker-benchmark-runner.php --frameworks=pivotphp-core,pivotphp-reactphp --benchmarks=http-performance,rest-api,async-performance
+
+docker-benchmark-comparative:
+	@echo "Running comparative framework benchmarks in Docker..."
+	php scripts/docker-benchmark-runner.php --frameworks=slim4,lumen,flight,symfony --benchmarks=http-performance,memory-test
+
+docker-benchmark-all:
+	@echo "Running all Docker benchmarks with high iterations..."
+	php scripts/docker-benchmark-runner.php --frameworks=pivotphp-core,pivotphp-reactphp,slim4,lumen,flight,symfony --iterations=10000 --warmup=1000
+
+# Parallel + Sequential Analysis (CPU warmup strategy)
+parallel-sequential-analysis:
+	@echo "Running complete parallel + sequential analysis..."
+	@echo "Strategy: Parallel warmup → Sequential precision"
+	php scripts/parallel-benchmark-runner.php
+
+parallel-sequential-pivotphp:
+	@echo "Running PivotPHP parallel + sequential analysis..."
+	php scripts/parallel-benchmark-runner.php --frameworks=pivotphp-core,pivotphp-reactphp,pivotphp-orm
+
+parallel-sequential-comparative:
+	@echo "Running comparative frameworks parallel + sequential analysis..."
+	php scripts/parallel-benchmark-runner.php --frameworks=slim4,lumen,flight,symfony
+
+parallel-sequential-all:
+	@echo "Running complete analysis on all frameworks..."
+	php scripts/parallel-benchmark-runner.php --frameworks=pivotphp-core,pivotphp-reactphp,pivotphp-orm,slim4,lumen,flight,symfony --benchmarks=basic-test,memory-test,performance-test,cpu-intensive

@@ -4,19 +4,42 @@ declare(strict_types=1);
 
 use App\Controllers\UserController;
 use App\Controllers\HealthController;
-use App\Middleware\RateLimitMiddleware;
 
-/** @var \PivotPHP\Core\Application $app */
+/** @var \PivotPHP\Core\Routing\Router $router */
 
 // Health check
-$app->get('/', [HealthController::class, 'index']);
+$router->get('/', function($request, $response, callable $next) {
+    $health = new HealthController();
+    return $health->index($request);
+});
 
 // Users API
-$app->group('/users', function ($group) {
-    $group->get('', [UserController::class, 'index']);
-    $group->get('/{id:\d+}', [UserController::class, 'show']);
-    $group->post('', [UserController::class, 'store']);
-    $group->put('/{id:\d+}', [UserController::class, 'update']);
-    $group->delete('/{id:\d+}', [UserController::class, 'destroy']);
-    $group->get('/{id:\d+}/posts', [UserController::class, 'posts']);
-})->addMiddleware(new RateLimitMiddleware());
+$router->get('/users', function($request, $response, callable $next) {
+    $controller = new UserController();
+    return $controller->index($request);
+});
+
+$router->get('/users/:id', function($request, $response, callable $next) {
+    $controller = new UserController();
+    return $controller->show($request, $request->getAttribute('route')->getArguments());
+});
+
+$router->post('/users', function($request, $response, callable $next) {
+    $controller = new UserController();
+    return $controller->store($request);
+});
+
+$router->put('/users/:id', function($request, $response, callable $next) {
+    $controller = new UserController();
+    return $controller->update($request, $request->getAttribute('route')->getArguments());
+});
+
+$router->delete('/users/:id', function($request, $response, callable $next) {
+    $controller = new UserController();
+    return $controller->destroy($request, $request->getAttribute('route')->getArguments());
+});
+
+$router->get('/users/:id/posts', function($request, $response, callable $next) {
+    $controller = new UserController();
+    return $controller->posts($request, $request->getAttribute('route')->getArguments());
+});

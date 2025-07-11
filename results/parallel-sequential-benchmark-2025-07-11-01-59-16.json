@@ -1,0 +1,157 @@
+{
+    "metadata": {
+        "start_time": 1752199113.147655,
+        "cpu_cores": 20,
+        "memory_total": "7.62GB",
+        "strategy": "parallel_then_sequential",
+        "end_time": 1752199156.614773,
+        "total_duration": 43.46711802482605
+    },
+    "parallel_results": [
+        {
+            "framework": "pivotphp-core",
+            "benchmark": "basic-test",
+            "execution_type": "parallel",
+            "duration": 1.29909086227417,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Pivotphp-core Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "error": "",
+            "status": "success"
+        },
+        {
+            "framework": "pivotphp-core",
+            "benchmark": "memory-test",
+            "execution_type": "parallel",
+            "duration": 1.8921968936920166,
+            "exit_code": 0,
+            "output": "\ud83d\udcbe Pivotphp-core Memory Test\nPeak: 2MB\nCurrent: 2MB",
+            "error": "",
+            "status": "success"
+        },
+        {
+            "framework": "slim4",
+            "benchmark": "basic-test",
+            "execution_type": "parallel",
+            "duration": 1.892038106918335,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "error": "",
+            "status": "success"
+        },
+        {
+            "framework": "slim4",
+            "benchmark": "memory-test",
+            "execution_type": "parallel",
+            "duration": 1.981456995010376,
+            "exit_code": 0,
+            "output": "\ud83d\udcbe Slim4 Memory Test\nPeak: 2MB\nCurrent: 2MB",
+            "error": "",
+            "status": "success"
+        },
+        {
+            "framework": "flight",
+            "benchmark": "basic-test",
+            "execution_type": "parallel",
+            "duration": 1.9810011386871338,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Flight Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "error": "",
+            "status": "success"
+        },
+        {
+            "framework": "flight",
+            "benchmark": "memory-test",
+            "execution_type": "parallel",
+            "duration": 2.0174529552459717,
+            "exit_code": 0,
+            "output": "\ud83d\udcbe Flight Memory Test\nPeak: 2MB\nCurrent: 2MB",
+            "error": "",
+            "status": "success"
+        }
+    ],
+    "sequential_results": [
+        {
+            "framework": "pivotphp-core",
+            "benchmark": "basic-test",
+            "execution_type": "sequential",
+            "duration": 0.7623801231384277,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Pivotphp-core Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "status": "success"
+        },
+        {
+            "framework": "pivotphp-core",
+            "benchmark": "memory-test",
+            "execution_type": "sequential",
+            "duration": 36.28461718559265,
+            "exit_code": 0,
+            "output": "\ud83d\udcbe Pivotphp-core Memory Test\nPeak: 2MB\nCurrent: 2MB",
+            "status": "success"
+        },
+        {
+            "framework": "slim4",
+            "benchmark": "basic-test",
+            "execution_type": "sequential",
+            "duration": 0.7454178333282471,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "status": "success"
+        },
+        {
+            "framework": "slim4",
+            "benchmark": "memory-test",
+            "execution_type": "sequential",
+            "duration": 0.7225048542022705,
+            "exit_code": 0,
+            "output": "\ud83d\udcbe Slim4 Memory Test\nPeak: 2MB\nCurrent: 2MB",
+            "status": "success"
+        },
+        {
+            "framework": "flight",
+            "benchmark": "basic-test",
+            "execution_type": "sequential",
+            "duration": 0.7708728313446045,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Flight Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "status": "success"
+        },
+        {
+            "framework": "flight",
+            "benchmark": "memory-test",
+            "execution_type": "sequential",
+            "duration": 0.7547910213470459,
+            "exit_code": 0,
+            "output": "\ud83d\udcbe Flight Memory Test\nPeak: 2MB\nCurrent: 2MB",
+            "status": "success"
+        }
+    ],
+    "comparison": {
+        "summary": {
+            "parallel_total_time": 11.063236951828003,
+            "sequential_total_time": 40.04058384895325,
+            "parallel_success_rate": 100,
+            "sequential_success_rate": 100,
+            "speed_advantage": "sequential"
+        },
+        "framework_comparison": {
+            "pivotphp-core": {
+                "parallel_avg_duration": 1.5956438779830933,
+                "sequential_avg_duration": 18.52349865436554,
+                "difference_percent": 1060.8792481803266,
+                "recommendation": "parallel_faster"
+            },
+            "slim4": {
+                "parallel_avg_duration": 1.9367475509643555,
+                "sequential_avg_duration": 0.7339613437652588,
+                "difference_percent": -62.10340664172773,
+                "recommendation": "sequential_faster"
+            },
+            "flight": {
+                "parallel_avg_duration": 1.9992270469665527,
+                "sequential_avg_duration": 0.7628319263458252,
+                "difference_percent": -61.84365715223402,
+                "recommendation": "sequential_faster"
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "test_suite": "High-Scale Concurrency Testing",
+    "generated_at": "2025-07-11 00:38:15",
+    "test_configuration": {
+        "concurrency_levels": [
+            100,
+            500,
+            1000,
+            2500,
+            5000,
+            10000,
+            25000,
+            50000
+        ],
+        "endpoints_tested": [
+            "health",
+            "api",
+            "heavy"
+        ],
+        "total_test_scenarios": 0,
+        "successful_tests": 0
+    },
+    "framework_performance": [],
+    "scalability_analysis": [],
+    "performance_breakdown": [],
+    "recommendations": []
+}

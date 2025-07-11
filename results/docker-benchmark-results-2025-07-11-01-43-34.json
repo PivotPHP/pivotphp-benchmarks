@@ -1,0 +1,9 @@
+[
+    {
+        "framework": "pivotphp-core",
+        "benchmark": "http-performance",
+        "duration": 3.803691864013672,
+        "output": "================================================\n PivotPHP Core HTTP Performance Benchmark\n================================================\n\n\ud83d\ude80 HTTP Request Parsing (1000 iterations)... 232,127 ops\/sec\n\ud83d\ude80 HTTP Response Creation (1000 iterations)... 293,513 ops\/sec\n\ud83d\ude80 Content Negotiation (1000 iterations)... 429,568 ops\/sec\n\ud83d\ude80 Large Payload Processing (250 iterations)... 88 ops\/sec\n\ud83d\ude80 HTTP Status Code Handling (1000 iterations)... 667,139 ops\/sec\n\ud83d\ude80 Header Processing (1000 iterations)... 394,944 ops\/sec\n\n\ud83d\udcca HTTP Performance Summary:\n============================\nrequest_parsing                    :  232,127 ops\/sec\nresponse_creation                  :  293,513 ops\/sec\ncontent_negotiation                :  429,568 ops\/sec\nlarge_payload_processing           :       88 ops\/sec\nstatus_code_handling               :  667,139 ops\/sec\nheader_processing                  :  394,944 ops\/sec\n\n\ud83c\udfc6 Total Memory Peak: 14.00 MB\n\ud83c\udfaf Framework: PivotPHP Core v1.1.0\n\ud83c\udf10 HTTP Features: Request\/Response, Content Negotiation, Large Payloads, Status Codes, Headers\n\u26a1 Total HTTP Ops: 2,017,379 ops\/sec\n\ud83d\ude80 HTTP Status: HIGH PERFORMANCE \u2705\n\n\ud83d\udcbe Results saved to results\/raw\/\n\u2705 HTTP performance benchmark completed successfully!\n",
+        "status": "success"
+    }
+]

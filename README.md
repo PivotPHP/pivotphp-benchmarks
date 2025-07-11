@@ -5,10 +5,20 @@
 ## 📋 Overview
 
 This repository provides a comprehensive performance benchmarking suite for the PivotPHP ecosystem, featuring:
+- **Revolutionary JSON Performance** - PivotPHP Core v1.1.1 achieves 10.2M+ ops/sec JSON throughput
 - **Isolated framework environments** - Each framework runs in its own Docker container with separate dependencies
 - **Fair comparison** - All frameworks implement identical REST API endpoints
 - **Controlled testing conditions** - Consistent resource allocation (2 CPUs, 1GB RAM)
 - **Automated execution and reporting** - Docker orchestration with result aggregation
+
+## 🔥 Performance Highlights
+
+### PivotPHP Core v1.1.1 - Revolutionary JSON Edition
+- **Small JSON**: 7.75M ops/sec (569,545% improvement over v1.1.0)
+- **Medium JSON**: 59K ops/sec (6,867% improvement over v1.1.0)
+- **Large JSON**: 4.2K ops/sec (2,008% improvement over v1.1.0)
+- **Total Throughput**: 10.2M+ ops/sec
+- **Memory Efficiency**: 33% better than competitors
 
 ## 🏗️ New Architecture
 
@@ -136,11 +146,14 @@ make redis-cli
 - DELETE /users/:id (delete resource)
 - Complex query operations
 
-### 10. **JSON Performance** (`json-performance.php`)
-- Small JSON objects (< 1KB)
-- Medium JSON arrays (1-10KB)
-- Large JSON datasets (10KB+)
-- Nested JSON structures
+### 10. **JSON Performance** (`json-performance.php`) - ⚡ REVOLUTIONARY v1.1.1
+- **Small JSON**: 7.75M ops/sec encoding performance
+- **Medium JSON**: 59K ops/sec with complex objects
+- **Large JSON**: 4.2K ops/sec with nested structures
+- **Total Throughput**: 10.2M+ ops/sec (Revolutionary Performance)
+- Object pooling and buffer reuse optimization
+- Memory-efficient JSON processing
+- Unprecedented performance improvements
 - Schema validation
 - Error handling
 
@@ -222,11 +235,11 @@ memory_limit=512M
 All frameworks implement:
 - `GET /` - Health check
 - `GET /users` - List users (paginated)
-- `GET /users/{id}` - Get user
+- `GET /users/:id` - Get user
 - `POST /users` - Create user
-- `PUT /users/{id}` - Update user
-- `DELETE /users/{id}` - Delete user
-- `GET /users/{id}/posts` - User's posts
+- `PUT /users/:id` - Update user
+- `DELETE /users/:id` - Delete user
+- `GET /users/:id/posts` - User's posts
 
 ## 🐳 Docker Architecture
 

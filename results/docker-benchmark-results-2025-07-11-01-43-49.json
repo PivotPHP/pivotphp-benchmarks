@@ -1,0 +1,44 @@
+[
+    {
+        "framework": "pivotphp-core",
+        "benchmark": "http-performance",
+        "duration": 3.7088630199432373,
+        "output": "================================================\n PivotPHP Core HTTP Performance Benchmark\n================================================\n\n\ud83d\ude80 HTTP Request Parsing (1000 iterations)... 317,847 ops\/sec\n\ud83d\ude80 HTTP Response Creation (1000 iterations)... 294,110 ops\/sec\n\ud83d\ude80 Content Negotiation (1000 iterations)... 548,849 ops\/sec\n\ud83d\ude80 Large Payload Processing (250 iterations)... 86 ops\/sec\n\ud83d\ude80 HTTP Status Code Handling (1000 iterations)... 692,472 ops\/sec\n\ud83d\ude80 Header Processing (1000 iterations)... 301,207 ops\/sec\n\n\ud83d\udcca HTTP Performance Summary:\n============================\nrequest_parsing                    :  317,847 ops\/sec\nresponse_creation                  :  294,110 ops\/sec\ncontent_negotiation                :  548,849 ops\/sec\nlarge_payload_processing           :       86 ops\/sec\nstatus_code_handling               :  692,472 ops\/sec\nheader_processing                  :  301,207 ops\/sec\n\n\ud83c\udfc6 Total Memory Peak: 14.00 MB\n\ud83c\udfaf Framework: PivotPHP Core v1.1.0\n\ud83c\udf10 HTTP Features: Request\/Response, Content Negotiation, Large Payloads, Status Codes, Headers\n\u26a1 Total HTTP Ops: 2,154,571 ops\/sec\n\ud83d\ude80 HTTP Status: HIGH PERFORMANCE \u2705\n\n\ud83d\udcbe Results saved to results\/raw\/\n\u2705 HTTP performance benchmark completed successfully!\n",
+        "status": "success"
+    },
+    {
+        "framework": "pivotphp-core",
+        "benchmark": "rest-api",
+        "duration": 1.0225248336791992,
+        "output": "============================================\n PivotPHP Core REST API Benchmark\n============================================\n\n\ud83d\ude80 GET \/users (List with Pagination) (1000 iterations)... 61,114 ops\/sec\n\ud83d\ude80 GET \/users\/:id (Single Resource) (1000 iterations)... 1,285,413 ops\/sec\n\ud83d\ude80 POST \/users (Create Resource) (1000 iterations)... 242,782 ops\/sec\n\ud83d\ude80 PUT \/users\/:id (Update Resource) (1000 iterations)... 526,856 ops\/sec\n\ud83d\ude80 PATCH \/users\/:id (Partial Update) (1000 iterations)... 412,014 ops\/sec\n\ud83d\ude80 DELETE \/users\/:id (Delete Resource) (500 iterations)... 1,505,493 ops\/sec\n\ud83d\ude80 Complex Query Operations (1000 iterations)... 5,581 ops\/sec\n\n\ud83d\udcca REST API Performance Summary:\n=================================\nget_users_list                     :   61,114 ops\/sec\nget_user_by_id                     : 1,285,413 ops\/sec\npost_create_user                   :  242,782 ops\/sec\nput_update_user                    :  526,856 ops\/sec\npatch_partial_update               :  412,014 ops\/sec\ndelete_user                        : 1,505,493 ops\/sec\ncomplex_query_operations           :    5,581 ops\/sec\n\n\ud83c\udfc6 Total Memory Peak: 4.00 MB\n\ud83c\udfaf Framework: PivotPHP Core v1.1.0\n\ud83d\udd17 REST Operations: GET List, GET Single, POST Create, PUT Update, PATCH Partial, DELETE, Complex Queries\n\u26a1 Total REST API Ops: 4,039,253 ops\/sec\n\ud83c\udf10 API Status: HIGH PERFORMANCE \u2705\n\n\ud83d\udcbe Results saved to results\/raw\/\n\u2705 REST API benchmark completed successfully!\n",
+        "status": "success"
+    },
+    {
+        "framework": "pivotphp-reactphp",
+        "benchmark": "async-performance",
+        "duration": 0.8092548847198486,
+        "output": "\nParse error: syntax error, unexpected token \"=\", expecting end of file in Command line code on line 1\n",
+        "status": "failed"
+    },
+    {
+        "framework": "slim4",
+        "benchmark": "http-performance",
+        "duration": 0.8365588188171387,
+        "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\n",
+        "status": "success"
+    },
+    {
+        "framework": "slim4",
+        "benchmark": "rest-api",
+        "duration": 0.7750749588012695,
+        "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\n",
+        "status": "success"
+    },
+    {
+        "framework": "slim4",
+        "benchmark": "async-performance",
+        "duration": 0.8256580829620361,
+        "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\n",
+        "status": "success"
+    }
+]

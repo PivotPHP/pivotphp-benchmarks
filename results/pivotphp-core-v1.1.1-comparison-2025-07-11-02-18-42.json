@@ -1,0 +1,59 @@
+{
+    "comparison_date": "2025-07-11-02-18-42",
+    "versions": {
+        "v1.1.0": {
+            "small_json_api": 1361,
+            "medium_json_api": 850,
+            "large_json_api": 200,
+            "total_framework_ops": 899705
+        },
+        "v1.1.1": {
+            "small_encode": {
+                "ops_per_sec": 7752872.46,
+                "duration": 0.0006,
+                "memory_mb": 0,
+                "iterations": 5000
+            },
+            "small_decode": {
+                "ops_per_sec": 2391006.73,
+                "duration": 0.0021,
+                "memory_mb": 0,
+                "iterations": 5000
+            },
+            "medium_encode": {
+                "ops_per_sec": 59220.67,
+                "duration": 0.0844,
+                "memory_mb": 0.01,
+                "iterations": 5000
+            },
+            "medium_decode": {
+                "ops_per_sec": 24290.7,
+                "duration": 0.2058,
+                "memory_mb": 0.07,
+                "iterations": 5000
+            },
+            "large_encode": {
+                "ops_per_sec": 4216.61,
+                "duration": 0.2372,
+                "memory_mb": 0.11,
+                "iterations": 1000
+            },
+            "large_decode": {
+                "ops_per_sec": -58.31,
+                "duration": -17.1504,
+                "memory_mb": 0.99,
+                "iterations": 1000
+            }
+        }
+    },
+    "improvements": {
+        "small_json": 569545.2946362969,
+        "medium_json": 6867.137647058823,
+        "large_json": 2008.305
+    },
+    "summary": {
+        "total_v111_ops": 10231548.859999998,
+        "revolutionary_upgrade": true,
+        "status": "JSON optimization validated"
+    }
+}

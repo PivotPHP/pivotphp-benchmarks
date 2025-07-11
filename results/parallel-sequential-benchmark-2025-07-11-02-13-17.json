@@ -1,0 +1,75 @@
+{
+    "metadata": {
+        "start_time": 1752199993.817064,
+        "cpu_cores": 20,
+        "memory_total": "7.62GB",
+        "strategy": "parallel_then_sequential",
+        "end_time": 1752199997.397739,
+        "total_duration": 3.580674886703491
+    },
+    "parallel_results": [
+        {
+            "framework": "pivotphp-core",
+            "benchmark": "basic-test",
+            "execution_type": "parallel",
+            "duration": 0.8855330944061279,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Pivotphp-core Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "error": "",
+            "status": "success"
+        },
+        {
+            "framework": "slim4",
+            "benchmark": "basic-test",
+            "execution_type": "parallel",
+            "duration": 0.9305729866027832,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "error": "",
+            "status": "success"
+        }
+    ],
+    "sequential_results": [
+        {
+            "framework": "pivotphp-core",
+            "benchmark": "basic-test",
+            "execution_type": "sequential",
+            "duration": 0.8033039569854736,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Pivotphp-core Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "status": "success"
+        },
+        {
+            "framework": "slim4",
+            "benchmark": "basic-test",
+            "execution_type": "sequential",
+            "duration": 0.7812559604644775,
+            "exit_code": 0,
+            "output": "\ud83d\udd25 Slim4 Basic Test\nFramework loaded successfully\nMemory: 2MB",
+            "status": "success"
+        }
+    ],
+    "comparison": {
+        "summary": {
+            "parallel_total_time": 1.8161060810089111,
+            "sequential_total_time": 1.5845599174499512,
+            "parallel_success_rate": 100,
+            "sequential_success_rate": 100,
+            "speed_advantage": "sequential"
+        },
+        "framework_comparison": {
+            "pivotphp-core": {
+                "parallel_avg_duration": 0.8855330944061279,
+                "sequential_avg_duration": 0.8033039569854736,
+                "difference_percent": -9.285834480957515,
+                "recommendation": "sequential_faster"
+            },
+            "slim4": {
+                "parallel_avg_duration": 0.9305729866027832,
+                "sequential_avg_duration": 0.7812559604644775,
+                "difference_percent": -16.045708212895065,
+                "recommendation": "sequential_faster"
+            }
+        }
+    }
+}
