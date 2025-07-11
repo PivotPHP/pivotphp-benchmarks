@@ -29,14 +29,17 @@ class ComprehensiveRealisticBenchmark
     
     private function initializeRandomData(): void
     {
+        // Initialize base data first
         $this->randomData = [
-            'users' => $this->generateUsers(1000),
-            'products' => $this->generateProducts(500),
-            'orders' => $this->generateOrders(200),
             'categories' => ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports', 'Toys', 'Beauty', 'Automotive'],
             'countries' => ['US', 'UK', 'CA', 'DE', 'FR', 'JP', 'AU', 'BR', 'IN', 'CN'],
             'cities' => ['New York', 'London', 'Toronto', 'Berlin', 'Paris', 'Tokyo', 'Sydney', 'São Paulo', 'Mumbai', 'Shanghai']
         ];
+        
+        // Then generate complex data that depends on base data
+        $this->randomData['users'] = $this->generateUsers(1000);
+        $this->randomData['products'] = $this->generateProducts(500);
+        $this->randomData['orders'] = $this->generateOrders(200);
     }
     
     private function setupTestRoutes(): void
@@ -441,9 +444,16 @@ class ComprehensiveRealisticBenchmark
     
     private function executeRequest(string $method, string $uri, ?array $data = null): void
     {
-        $request = new Request();
-        $request->setMethod($method);
-        $request->setUri($uri);
+        // Create Request with required parameters (method, path, pathCallable)
+        $request = new Request($method, $uri, '');
+        
+        // Set additional properties if needed
+        if (method_exists($request, 'setMethod')) {
+            $request->setMethod($method);
+        }
+        if (method_exists($request, 'setUri')) {
+            $request->setUri($uri);
+        }
         
         if ($data && in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $request->setParsedBody($data);

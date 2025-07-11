@@ -11,8 +11,11 @@
 // Health check
 $router->get('/', 'HealthController@index');
 
+// API Health check
+$router->get('/api/health', 'HealthController@health');
+
 // Users API
-$router->group(['prefix' => 'users', 'middleware' => 'rate_limit'], function () use ($router) {
+$router->group(['prefix' => 'api/users', 'middleware' => 'rate_limit'], function () use ($router) {
     $router->get('/', 'UserController@index');
     $router->get('/{id:[0-9]+}', 'UserController@show');
     $router->post('/', 'UserController@store');

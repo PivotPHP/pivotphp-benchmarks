@@ -511,9 +511,16 @@ class RealisticAPIBenchmark
     
     private function createRequest(string $method, string $uri, ?array $data = null): Request
     {
-        $request = new Request();
-        $request->setMethod($method);
-        $request->setUri($uri);
+        // Create Request with required parameters (method, path, pathCallable)
+        $request = new Request($method, $uri, '');
+        
+        // Set additional properties if needed
+        if (method_exists($request, 'setMethod')) {
+            $request->setMethod($method);
+        }
+        if (method_exists($request, 'setUri')) {
+            $request->setUri($uri);
+        }
         
         if ($data && in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $request->setParsedBody($data);

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use PivotPHP\Core\Support\ServiceProvider;
+use PivotPHP\Core\Providers\ServiceProvider;
 use App\Controllers\HealthController;
 use App\Controllers\UserController;
 use App\Controllers\BenchmarkController;

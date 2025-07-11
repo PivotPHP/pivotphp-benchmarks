@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use PivotPHP\Core\Support\ServiceProvider;
+use PivotPHP\Core\Providers\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

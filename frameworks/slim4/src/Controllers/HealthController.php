@@ -20,4 +20,19 @@ class HealthController
         
         return $response->withHeader('Content-Type', 'application/json');
     }
+    
+    public function health(Request $request, Response $response): Response
+    {
+        $response->getBody()->write(json_encode([
+            'status' => 'healthy',
+            'framework' => 'slim4',
+            'version' => '4.0.0',
+            'timestamp' => date('c'),
+            'uptime' => time(),
+            'memory_usage' => memory_get_usage(true),
+            'memory_peak' => memory_get_peak_usage(true)
+        ]));
+        
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }

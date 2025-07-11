@@ -41,6 +41,8 @@ services:
     environment:
       - FRAMEWORK_NAME=pivotphp-core
       - PHP_VERSION=8.2
+    ports:
+      - "8001:8001"
     depends_on:
       - redis
     cpus: 2
@@ -102,6 +104,8 @@ services:
     environment:
       - FRAMEWORK_NAME=slim4
       - PHP_VERSION=8.2
+    ports:
+      - "8002:8002"
     depends_on:
       - redis
     cpus: 2
@@ -119,6 +123,8 @@ services:
     environment:
       - FRAMEWORK_NAME=lumen
       - PHP_VERSION=8.2
+    ports:
+      - "8003:8003"
     depends_on:
       - redis
     cpus: 2
@@ -136,6 +142,8 @@ services:
     environment:
       - FRAMEWORK_NAME=flight
       - PHP_VERSION=8.2
+    ports:
+      - "8004:8004"
     depends_on:
       - redis
     cpus: 2
@@ -153,6 +161,8 @@ services:
     environment:
       - FRAMEWORK_NAME=symfony
       - PHP_VERSION=8.2
+    ports:
+      - "8005:8005"
     depends_on:
       - redis
     cpus: 2

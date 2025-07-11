@@ -40,5 +40,6 @@ COPY . .
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Keep container running for benchmark execution
-CMD ["tail", "-f", "/dev/null"]
+# Expose port and start HTTP server
+EXPOSE 8001
+CMD ["php", "-S", "0.0.0.0:8001", "-t", "public/", "public/index.php"]

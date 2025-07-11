@@ -15,4 +15,17 @@ class HealthController extends BaseController
             'timestamp' => date('c')
         ]);
     }
+    
+    public function health()
+    {
+        return response()->json([
+            'status' => 'healthy',
+            'framework' => 'lumen',
+            'version' => app()->version(),
+            'timestamp' => date('c'),
+            'uptime' => time(),
+            'memory_usage' => memory_get_usage(true),
+            'memory_peak' => memory_get_peak_usage(true)
+        ]);
+    }
 }

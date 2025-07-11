@@ -40,5 +40,8 @@ COPY . .
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Run benchmarks by default
-CMD ["tail", "-f", "/dev/null"]
+# Expose port
+EXPOSE 8004
+
+# Start PHP built-in server
+CMD ["php", "-S", "0.0.0.0:8004", "-t", "public/", "public/index-http-real.php"]

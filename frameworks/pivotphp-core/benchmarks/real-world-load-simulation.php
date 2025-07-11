@@ -353,7 +353,7 @@ class RealWorldLoadSimulation
         
         // Replace dynamic segments
         if (strpos($uri, '{id}') !== false) {
-            $uri = str_replace('{id}', rand(1, 1000), $uri);
+            $uri = str_replace('{id}', (string) rand(1, 1000), $uri);
         }
         
         // Add query parameters for certain endpoints

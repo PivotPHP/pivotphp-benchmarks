@@ -41,4 +41,5 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Keep container running for benchmark execution
-CMD ["tail", "-f", "/dev/null"]
+EXPOSE 8002
+CMD ["php", "-S", "0.0.0.0:8002", "-t", "public/", "public/index-simple.php"]

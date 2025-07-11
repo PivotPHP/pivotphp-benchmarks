@@ -44,4 +44,5 @@ RUN cp .env.example .env
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Run benchmarks by default
-CMD ["tail", "-f", "/dev/null"]
+EXPOSE 8003
+CMD ["php", "-S", "0.0.0.0:8003", "-t", "public/", "public/index.php"]

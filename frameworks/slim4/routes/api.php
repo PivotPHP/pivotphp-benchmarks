@@ -12,8 +12,11 @@ return function (App $app) {
     // Health check
     $app->get('/', HealthController::class . ':index');
     
+    // API Health check
+    $app->get('/api/health', HealthController::class . ':health');
+    
     // Users API with rate limiting
-    $app->group('/users', function (RouteCollectorProxy $group) {
+    $app->group('/api/users', function (RouteCollectorProxy $group) {
         $group->get('', UserController::class . ':index');
         $group->get('/{id:[0-9]+}', UserController::class . ':show');
         $group->post('', UserController::class . ':store');

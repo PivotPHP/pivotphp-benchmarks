@@ -436,9 +436,11 @@ $results['nested_json_structures'] = runBenchmark(
         $decodeTime = microtime(true) - $start;
         
         // Calculate nesting depth
-        function getMaxDepth($array, $depth = 0) {
-            if (!is_array($array)) return $depth;
-            return empty($array) ? $depth : max(array_map(fn($v) => getMaxDepth($v, $depth + 1), $array));
+        if (!function_exists('getMaxDepth')) {
+            function getMaxDepth($array, $depth = 0) {
+                if (!is_array($array)) return $depth;
+                return empty($array) ? $depth : max(array_map(fn($v) => getMaxDepth($v, $depth + 1), $array));
+            }
         }
         
         $maxDepth = getMaxDepth($complexStructure);

@@ -10,8 +10,8 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../../../shared/Interfaces/BenchmarkInterface.php';
 
-use PivotPHP\Core\Application;
-use PivotPHP\Http\Psr7\Factory\ServerRequestFactory;
+use PivotPHP\Core\Core\Application;
+use PivotPHP\Core\Http\Psr7\Factory\ServerRequestFactory;
 use Shared\Interfaces\BenchmarkInterface;
 
 class RoutingBenchmark implements BenchmarkInterface
