@@ -1,0 +1,200 @@
+# Makefile para PivotPHP v1.1.4 Benchmarks
+# Ambiente Docker isolado para testes de performance
+
+.PHONY: help build up down clean test benchmark validate logs shell
+
+# Configurações
+COMPOSE_FILE = docker-compose-v114.yml
+PIVOTPHP_VERSION = 1.1.4
+BENCHMARK_ITERATIONS = 10000
+
+# === COMANDOS PRINCIPAIS ===
+
+help: ## Mostra ajuda dos comandos disponíveis
+	@echo "🚀 PivotPHP v1.1.4 Benchmark Environment"
+	@echo "========================================"
+	@echo ""
+	@echo "Comandos disponíveis:"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+build: ## Constrói todas as imagens Docker
+	@echo "🔨 Construindo imagens Docker para PivotPHP v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) build --parallel
+	@echo "✅ Imagens construídas com sucesso!"
+
+up: ## Inicia todos os containers
+	@echo "🚀 Iniciando ambiente PivotPHP v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) up -d
+	@echo "⏳ Aguardando containers ficarem prontos..."
+	@sleep 15
+	@echo "✅ Ambiente iniciado!"
+	@make status
+
+down: ## Para todos os containers
+	@echo "🛑 Parando ambiente PivotPHP v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) down
+	@echo "✅ Ambiente parado!"
+
+restart: ## Reinicia todos os containers
+	@echo "🔄 Reiniciando ambiente..."
+	@make down
+	@make up
+
+clean: ## Remove containers, volumes e imagens
+	@echo "🧹 Limpando ambiente PivotPHP v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) down -v --remove-orphans
+	docker system prune -f
+	@echo "✅ Ambiente limpo!"
+
+# === VALIDAÇÃO E STATUS ===
+
+validate: ## Valida configuração do Docker Compose
+	@echo "🔍 Validando configuração Docker Compose..."
+	docker-compose -f $(COMPOSE_FILE) config --quiet
+	@echo "✅ Configuração válida!"
+
+status: ## Mostra status dos containers
+	@echo "📊 Status dos containers PivotPHP v$(PIVOTPHP_VERSION):"
+	@echo ""
+	docker-compose -f $(COMPOSE_FILE) ps
+
+health: ## Verifica health dos containers
+	@echo "🏥 Verificando saúde dos containers..."
+	@echo ""
+	@echo "Core v1.1.4:"
+	@curl -s http://localhost:8080/health | jq -r '.status // "unhealthy"' 2>/dev/null || echo "❌ Não disponível"
+	@echo ""
+	@echo "ORM v1.1.4:"
+	@curl -s http://localhost:8081/health | jq -r '.status // "unhealthy"' 2>/dev/null || echo "❌ Não disponível"
+	@echo ""
+	@echo "ReactPHP v1.1.4:"
+	@curl -s http://localhost:8082/health | jq -r '.status // "unhealthy"' 2>/dev/null || echo "❌ Não disponível"
+
+# === BENCHMARKS ===
+
+benchmark-all: ## Executa todos os benchmarks v1.1.4
+	@echo "🎯 Executando benchmarks completos PivotPHP v$(PIVOTPHP_VERSION)..."
+	@make benchmark-core
+	@make benchmark-phase2
+	@echo "🎉 Benchmarks concluídos!"
+
+benchmark-core: ## Executa benchmark do Core v1.1.4
+	@echo "📦 Benchmark PivotPHP Core v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) exec pivotphp-core-v114 php benchmarks/run-v114.php
+
+benchmark-phase2: ## Executa benchmarks da Phase 2 v1.1.4
+	@echo "🔄 Benchmark Phase 2 v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) exec pivotphp-orm-v114 php benchmarks/run-v114.php
+
+benchmark-stress: ## Executa stress tests
+	@echo "💪 Stress Tests v$(PIVOTPHP_VERSION)..."
+	@curl -s "http://localhost:8080/stress/cpu?iterations=50000"
+	@curl -s "http://localhost:8080/stress/memory?size=10000"
+
+# === TESTES UNITÁRIOS ===
+
+test-core: ## Executa testes do Core
+	@echo "🧪 Executando testes PivotPHP Core v$(PIVOTPHP_VERSION)..."
+	docker-compose -f $(COMPOSE_FILE) exec pivotphp-core-v114 vendor/bin/phpunit
+
+test-validation: ## Executa validação de versões
+	@echo "✅ Validando versões PivotPHP v$(PIVOTPHP_VERSION)..."
+	php validate-versions.php
+
+# === LOGS E DEBUG ===
+
+logs: ## Mostra logs de todos os containers
+	docker-compose -f $(COMPOSE_FILE) logs --tail=100 -f
+
+logs-core: ## Mostra logs do Core
+	docker-compose -f $(COMPOSE_FILE) logs --tail=100 -f pivotphp-core-v114
+
+logs-orm: ## Mostra logs do ORM
+	docker-compose -f $(COMPOSE_FILE) logs --tail=100 -f pivotphp-orm-v114
+
+logs-reactphp: ## Mostra logs do ReactPHP
+	docker-compose -f $(COMPOSE_FILE) logs --tail=100 -f pivotphp-reactphp-v114
+
+# === SHELL ACCESS ===
+
+shell-core: ## Acesso shell ao container Core
+	docker-compose -f $(COMPOSE_FILE) exec pivotphp-core-v114 bash
+
+shell-orm: ## Acesso shell ao container ORM
+	docker-compose -f $(COMPOSE_FILE) exec pivotphp-orm-v114 bash
+
+shell-reactphp: ## Acesso shell ao container ReactPHP
+	docker-compose -f $(COMPOSE_FILE) exec pivotphp-reactphp-v114 bash
+
+shell-mysql: ## Acesso MySQL shell
+	docker-compose -f $(COMPOSE_FILE) exec mysql-benchmark mysql -u benchmark -pbenchmark benchmark
+
+# === DEVELOPMENT ===
+
+install-deps: ## Instala dependências em todos os projetos
+	@echo "📦 Instalando dependências PivotPHP v$(PIVOTPHP_VERSION)..."
+	@cd phase1 && composer install --optimize-autoloader
+	@cd phase2 && composer install --optimize-autoloader
+	@echo "✅ Dependências instaladas!"
+
+update-deps: ## Atualiza dependências para v1.1.4
+	@echo "🔄 Atualizando para PivotPHP v$(PIVOTPHP_VERSION)..."
+	@cd phase1 && composer update pivotphp/core --with-dependencies
+	@cd phase2 && composer update pivotphp/core --with-dependencies
+	@echo "✅ Dependências atualizadas!"
+
+# === RELATÓRIOS ===
+
+report: ## Gera relatórios de benchmark
+	@echo "📊 Gerando relatórios v$(PIVOTPHP_VERSION)..."
+	@if [ -d "results" ]; then \
+		echo "Relatórios disponíveis:"; \
+		ls -la results/*.json results/*.md 2>/dev/null || echo "Nenhum relatório encontrado"; \
+	else \
+		echo "Diretório de resultados não encontrado"; \
+	fi
+
+clean-reports: ## Remove relatórios antigos
+	@echo "🧹 Limpando relatórios antigos..."
+	rm -rf results/*.json results/*.md phase1/results/*.json phase1/results/*.md phase2/results/*.json phase2/results/*.md
+	@echo "✅ Relatórios limpos!"
+
+# === MONITORING ===
+
+monitor: ## Mostra métricas dos containers
+	@echo "📈 Métricas dos containers:"
+	docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.PIDs}}"
+
+ps: ## Lista containers em execução
+	docker-compose -f $(COMPOSE_FILE) ps
+
+top: ## Mostra processos dos containers
+	docker-compose -f $(COMPOSE_FILE) top
+
+# === QUICK COMMANDS ===
+
+dev: build up ## Build e start completo (desenvolvimento)
+
+prod: ## Configuração para produção
+	@echo "🚀 Configurando para produção..."
+	docker-compose -f $(COMPOSE_FILE) -f docker-compose.prod.yml up -d
+
+quick-test: ## Teste rápido de funcionalidade
+	@echo "⚡ Teste rápido v$(PIVOTPHP_VERSION)..."
+	@make health
+	@curl -s http://localhost:8080/meta | jq '.application.version' 2>/dev/null || echo "❌ Core não disponível"
+
+# === INFO ===
+
+version: ## Mostra versão atual
+	@echo "PivotPHP Benchmark Environment"
+	@echo "Versão: $(PIVOTPHP_VERSION)"
+	@echo "Compose: $(COMPOSE_FILE)"
+	@echo "Iterações padrão: $(BENCHMARK_ITERATIONS)"
+
+env: ## Mostra variáveis de ambiente
+	@echo "Variáveis de ambiente:"
+	@echo "PIVOTPHP_VERSION=$(PIVOTPHP_VERSION)"
+	@echo "COMPOSE_FILE=$(COMPOSE_FILE)"
+	@echo "BENCHMARK_ITERATIONS=$(BENCHMARK_ITERATIONS)"

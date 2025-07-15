@@ -1,109 +1,173 @@
-# Composer
-/vendor/
+# PivotPHP Benchmarks - Git Ignore
+# =================================
+
+# PHP Dependencies
+vendor/
+composer.phar
 composer.lock
 
-# Benchmark results
-/results/raw/*
-/results/processed/*
-/results/reports/*
-!results/raw/.gitkeep
-!results/processed/.gitkeep
-!results/reports/.gitkeep
-benchmark-*.txt
-BENCHMARK_RESULTS.md
+# PHP Runtime Files
+*.log
+.phpunit.result.cache
+.php_cs.cache
+.php-cs-fixer.cache
 
-# Docker volumes
-/docker/mysql/data/
-/docker/redis/data/
-/docker/volumes/
-
-# IDE and system files
-.idea/
+# IDE and Editor Files
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
 .DS_Store
 Thumbs.db
 
-# Environment files
-.env
+# Docker
+.docker/
+docker-compose.override.yml
 .env.local
 .env.*.local
 
-# Cache and temporary files
-/cache/
-/tmp/
-/temp/
+# Benchmark Results and Reports
+results/
+logs/
+*.json
+*.csv
+*.txt
+*.html
+!config/*.json
+!config/**/*.json
+
+# Temporary Files
+tmp/
+temp/
 *.tmp
-*.cache
+*.temp
+*.pid
+*.lock
 
-# PHP specific
-*.phar
-.phpunit.result.cache
-.php_cs.cache
-.php-cs-fixer.cache
-phpunit.xml
-phpstan.neon
+# Cache and Session Files
+cache/
+sessions/
+storage/
 
-# Benchmark specific
-benchmark-output/
-performance-reports/
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-# Framework-specific vendor directories
-frameworks/*/vendor/
-frameworks/*/composer.lock
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
 
-# Test artifacts
-/coverage/
-*.coverage
-*.profraw
-*.profdata
+# Visual Studio Code
+.vscode/
+*.code-workspace
 
-# Build artifacts
-/build/
-/dist/
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
 
-# Local configuration
-config.local.php
-benchmarks.local.php
+# Vim
+*.swp
+*.swo
+*~
 
-# Logs
-/logs/
-*.log
-error_log
-access_log
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
 
-# Database files
+# Performance Monitoring
+*.prof
+*.memprof
+xdebug.*
+blackfire.*
+
+# Database Files
 *.sqlite
 *.sqlite3
 *.db
 
-# Backup files
-*.bak
-*.backup
-*.old
+# Environment Configuration
+.env
+.env.production
+.env.development
+.env.testing
 
-# Generated documentation
-/docs/_build/
-/docs/generated/
+# Node.js (if used for tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Symfony specific
-frameworks/symfony/var/
-frameworks/symfony/public/bundles/
+# Build Artifacts
+build/
+dist/
+out/
 
-# Laravel/Lumen specific
-frameworks/lumen/storage/
-frameworks/lumen/bootstrap/cache/
+# Coverage Reports
+coverage/
+clover.xml
+phpunit.xml
+.phpunit.cache
 
-# Docker override files
-docker-compose.override.yml
-docker-compose.*.yml
-!docker-compose.prod.yml
-!docker-compose.dev.yml
+# Static Analysis
+.phpstan/
+.psalm/
+infection.log
 
-# Keep .gitkeep files
-!.gitkeep
+# Performance Reports
+*.perf
+*.flame
+*.svg
 
-# Keep CLAUDE.md for documentation
+# System Files
+.fuse_hidden*
+.nfs*
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Exception: Keep Config Files
+!config/
+!*/config/
+!docker/
+!*/docker/
+
+# Exception: Keep Benchmark Scripts
+!benchmarks/
+!*/benchmarks/
+
+# Exception: Keep Documentation
+!README.md
+!*/README.md
 !CLAUDE.md
+!*/CLAUDE.md
+!*.md
+
+# Exception: Keep Core Structure Files
+!composer.json
+!*/composer.json
+!Makefile
+!*/Makefile
+!docker-compose.yml
+!*/docker-compose.yml
+!Dockerfile
+!*/Dockerfile

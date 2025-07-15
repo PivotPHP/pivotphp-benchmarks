@@ -8,7 +8,7 @@ This is the PivotPHP benchmarking suite - a comprehensive performance testing en
 
 **Current Status**: ✅ Fully operational environment with validated cross-framework benchmarks
 **Last Validation**: July 11, 2025 - All 10 containers running stably
-**Performance Validated**: PivotPHP Core v1.1.1 achieving 836,874 JSON ops/sec
+**Performance Validated**: PivotPHP Core v1.1.4 Enhanced Edition with latest improvements
 
 ## Development Dependencies
 
@@ -272,7 +272,7 @@ tail -f logs/pivotphp-orm.log
 
 ### ⚙️ Framework-Specific Benchmarks
 
-#### PivotPHP Core v1.1.1 (Revolutionary JSON Edition)
+#### PivotPHP Core v1.1.4 (Enhanced Edition)
 - **Container resolution**: Dependency injection performance (584K+ ops/sec)
 - **PSR-7 optimization**: Request/response object creation
 - **High-performance mode**: Advanced optimization features
@@ -340,7 +340,7 @@ This structure eliminates dependency conflicts and provides accurate performance
 
 ## Version Updates (Latest)
 
-### PivotPHP Core v1.1.1 (Revolutionary JSON Edition)
+### PivotPHP Core v1.1.4 (Enhanced Edition)
 - Revolutionary JSON optimization: 10.2M+ ops/sec total throughput
 - Small JSON: 7.75M ops/sec (569,545% improvement over v1.1.0)
 - Medium JSON: 59K ops/sec (6,867% improvement over v1.1.0)
@@ -353,7 +353,7 @@ This structure eliminates dependency conflicts and provides accurate performance
 ### PivotPHP Cycle ORM v1.0.1 
 - Performance improvements and monitoring enhancements
 - Optimized query execution and connection pooling
-- Better integration with PivotPHP Core v1.1.1
+- Better integration with PivotPHP Core v1.1.4
 
 ### PivotPHP ReactPHP v0.1.0 (Continuous Runtime)
 - Event-driven, non-blocking I/O with ReactPHP integration
@@ -367,7 +367,7 @@ This structure eliminates dependency conflicts and provides accurate performance
 - **Docker Environment**: ✅ Fully operational with all 10 containers running stably
 - **Infrastructure Issues**: ✅ All resolved (container lifecycle, service dependencies, orchestration)
 - **Benchmark Validation**: ✅ Cross-framework testing validated and operational
-- **Performance Baseline**: ✅ PivotPHP Core v1.1.1 achieving 836,874 JSON ops/sec validated
+- **Performance Baseline**: ✅ PivotPHP Core v1.1.4 with enhanced documentation and new features
 
 ### Important Infrastructure Notes
 - **Always use Docker** for benchmark tests to ensure equivalent environment and scenarios
@@ -382,7 +382,7 @@ This structure eliminates dependency conflicts and provides accurate performance
 - **Middleware Benchmarks**: Some Slim4 middleware tests need stabilization
 
 ### Performance Baselines (Validated July 2025)
-- **PivotPHP Core v1.1.1**: 836,874 JSON ops/sec, 52,167,960 string ops/sec
+- **PivotPHP Core v1.1.4**: Enhanced documentation and new features (performance to be validated)
 - **Slim 4**: 98,992 routing ops/sec (0.11 MB memory)
 - **Lumen**: 26,663 routing ops/sec (0.91 MB memory)
 - **Flight**: 11,070 routing ops/sec (7.85 MB memory)

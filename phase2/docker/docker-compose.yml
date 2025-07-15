@@ -1,0 +1,157 @@
+version: '3.8'
+
+services:
+  # PivotPHP + Cycle ORM
+  pivotphp-orm:
+    build:
+      context: .
+      dockerfile: Dockerfile-orm
+    container_name: phase2-pivotphp-orm
+    ports:
+      - "8081:8080"
+    environment:
+      - BENCHMARK_PHASE=2
+      - BENCHMARK_EXTENSION=orm
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=benchmark_phase2
+      - DB_USERNAME=benchmark
+      - DB_PASSWORD=benchmark
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ../:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/benchmark.ini
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - benchmark-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    command: ["php", "-S", "0.0.0.0:8080", "-t", "/var/www/html/src/orm/public"]
+
+  # PivotPHP + ReactPHP  
+  pivotphp-reactphp:
+    build:
+      context: .
+      dockerfile: Dockerfile-reactphp
+    container_name: phase2-pivotphp-reactphp
+    ports:
+      - "8082:8080"
+      - "9090:9090"  # WebSocket port
+    environment:
+      - BENCHMARK_PHASE=2
+      - BENCHMARK_EXTENSION=reactphp
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=benchmark_phase2
+      - DB_USERNAME=benchmark
+      - DB_PASSWORD=benchmark
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ../:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/benchmark.ini
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - benchmark-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    command: ["php", "/var/www/html/src/reactphp/server.php"]
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: phase2-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=benchmark_phase2
+      - MYSQL_USER=benchmark
+      - MYSQL_PASSWORD=benchmark
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql.cnf:/etc/mysql/conf.d/benchmark.cnf
+    networks:
+      - benchmark-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "benchmark", "-pbenchmark"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 40s
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: phase2-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - benchmark-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+      interval: 5s
+      start_period: 10s
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+  # Monitoring
+  monitor:
+    image: alpine:latest
+    container_name: phase2-monitor
+    volumes:
+      - ../results:/results
+    networks:
+      - benchmark-network
+    command: >
+      sh -c '
+        apk add --no-cache curl jq &&
+        while true; do
+          echo "$(date): Monitoring Phase 2 services" >> /results/phase2-monitor.log &&
+          curl -s http://pivotphp-orm:8080/health > /dev/null || echo "$(date): ORM service down" >> /results/phase2-monitor.log &&
+          curl -s http://pivotphp-reactphp:8080/health > /dev/null || echo "$(date): ReactPHP service down" >> /results/phase2-monitor.log &&
+          sleep 30
+        done
+      '
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  benchmark-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
