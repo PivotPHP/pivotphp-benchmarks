@@ -1,0 +1,128 @@
+# Dockerfile para PivotPHP v1.1.4 - Phase 3 Benchmark
+# Architectural Excellence & Performance Optimization Edition
+
+FROM php:8.2-apache
+
+# Instalar dependências básicas
+RUN apt-get update && apt-get install -y \
+    curl \
+    zip \
+    unzip \
+    git \
+    libicu-dev \
+    libpq-dev \
+    libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar extensões PHP
+RUN docker-php-ext-install \
+    intl \
+    pdo \
+    pdo_mysql \
+    zip \
+    opcache
+
+# Configurar OPcache para alta performance
+RUN { \
+    echo 'opcache.enable=1'; \
+    echo 'opcache.enable_cli=1'; \
+    echo 'opcache.jit=1255'; \
+    echo 'opcache.jit_buffer_size=256M'; \
+    echo 'opcache.memory_consumption=512M'; \
+    echo 'opcache.max_accelerated_files=20000'; \
+    echo 'opcache.validate_timestamps=0'; \
+    echo 'opcache.save_comments=0'; \
+    echo 'opcache.enable_file_override=1'; \
+    echo 'opcache.interned_strings_buffer=64'; \
+    echo 'opcache.max_wasted_percentage=5'; \
+    echo 'opcache.revalidate_freq=0'; \
+    echo 'opcache.fast_shutdown=1'; \
+} > /usr/local/etc/php/conf.d/opcache.ini
+
+# Configurar PHP para performance
+RUN { \
+    echo 'memory_limit=1G'; \
+    echo 'max_execution_time=300'; \
+    echo 'max_input_time=300'; \
+    echo 'post_max_size=50M'; \
+    echo 'upload_max_filesize=50M'; \
+    echo 'date.timezone=UTC'; \
+    echo 'expose_php=Off'; \
+    echo 'display_errors=Off'; \
+    echo 'log_errors=On'; \
+    echo 'error_log=/var/log/php_errors.log'; \
+    echo 'realpath_cache_size=4096K'; \
+    echo 'realpath_cache_ttl=600'; \
+} > /usr/local/etc/php/conf.d/performance.ini
+
+# Configurar Apache
+RUN a2enmod rewrite
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Definir diretório de trabalho
+WORKDIR /var/www/html
+
+# Copiar composer.json primeiro para cache
+COPY composer.json ./
+
+# Instalar dependências PivotPHP v1.1.4
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Copiar código fonte
+COPY src/ ./src/
+COPY public/ ./public/
+
+# Criar estrutura de aplicação PivotPHP v1.1.4
+RUN mkdir -p \
+    /var/www/html/logs \
+    /var/www/html/cache \
+    /var/www/html/results \
+    /var/www/html/config
+
+# Configurar permissões
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Configurar DocumentRoot
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
+# Arquivo de configuração Apache customizado
+RUN { \
+    echo '<VirtualHost *:80>'; \
+    echo '    ServerName localhost'; \
+    echo '    DocumentRoot /var/www/html/public'; \
+    echo '    DirectoryIndex index.php'; \
+    echo '    <Directory /var/www/html/public>'; \
+    echo '        Options Indexes FollowSymLinks'; \
+    echo '        AllowOverride All'; \
+    echo '        Require all granted'; \
+    echo '    </Directory>'; \
+    echo '    ErrorLog ${APACHE_LOG_DIR}/error.log'; \
+    echo '    CustomLog ${APACHE_LOG_DIR}/access.log combined'; \
+    echo '</VirtualHost>'; \
+} > /etc/apache2/sites-available/000-default.conf
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# Variáveis de ambiente
+ENV PIVOTPHP_VERSION=1.1.4
+ENV PIVOTPHP_EDITION="Architectural Excellence & Performance Optimization Edition"
+ENV APP_ENV=benchmark
+ENV HIGH_PERFORMANCE_MODE=PROFILE_HIGH
+
+# Expor porta
+EXPOSE 80
+
+# Labels
+LABEL maintainer="PivotPHP Team"
+LABEL version="1.1.4"
+LABEL description="PivotPHP v1.1.4 Benchmark Container"
+LABEL phase="3"
+LABEL comparison="vs-slim4"
+
+# Comando padrão
+CMD ["apache2-foreground"]
