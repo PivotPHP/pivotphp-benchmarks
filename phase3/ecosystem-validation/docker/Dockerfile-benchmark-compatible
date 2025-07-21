@@ -1,0 +1,94 @@
+FROM alpine:latest
+
+# Install benchmark tools (standard cross-framework setup)
+RUN apk add --no-cache \
+    curl \
+    wget \
+    apache2-utils \
+    wrk \
+    bash \
+    jq \
+    && rm -rf /var/cache/apk/*
+
+# Create benchmark scripts directory
+WORKDIR /var/www/benchmark
+
+# Create cross-framework benchmark script
+RUN echo '#!/bin/bash' > /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'set -e' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Cross-Framework Benchmark Script' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'FRAMEWORK=${BENCHMARK_FRAMEWORK:-pivotphp-full-ecosystem}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'TARGET_URL=${BENCHMARK_TARGET_URL:-http://pivotphp-full-ecosystem/api}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'ITERATIONS=${BENCHMARK_ITERATIONS:-10000}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'CONCURRENT=${BENCHMARK_CONCURRENT_USERS:-1}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'WARMUP=${BENCHMARK_WARMUP:-1000}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "🚀 Cross-Framework Benchmark - ${FRAMEWORK}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "📊 Target: ${TARGET_URL}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "⚡ Iterations: ${ITERATIONS}, Concurrent: ${CONCURRENT}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo ""' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Health check first' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "🔍 Health check..."' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'curl -f ${TARGET_URL%/api}/health || exit 1' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "✅ Service healthy"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo ""' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Warmup phase' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "🔥 Warmup phase (${WARMUP} requests)..."' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'ab -n ${WARMUP} -c 1 ${TARGET_URL} > /dev/null 2>&1' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "✅ Warmup completed"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo ""' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Main benchmark' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "📊 Running main benchmark..."' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'RESULT_FILE="/var/www/results/cross-framework-${FRAMEWORK}-${TIMESTAMP}.txt"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Apache Bench test' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'ab -n ${ITERATIONS} -c ${CONCURRENT} ${TARGET_URL} > ${RESULT_FILE}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Extract key metrics' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'RPS=$(grep "Requests per second" ${RESULT_FILE} | awk "{print \$4}")' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'LATENCY=$(grep "Time per request" ${RESULT_FILE} | head -1 | awk "{print \$4}")' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'FAILED=$(grep "Failed requests" ${RESULT_FILE} | awk "{print \$3}")' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Display results' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "🏆 Benchmark Results for ${FRAMEWORK}:"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "═══════════════════════════════════════"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "⚡ Requests/sec: ${RPS}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "⏱️  Latency: ${LATENCY}ms"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "❌ Failed: ${FAILED}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "📄 Full report: ${RESULT_FILE}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '# Create JSON summary (compatible with existing tools)' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'JSON_FILE="/var/www/results/cross-framework-${FRAMEWORK}-${TIMESTAMP}.json"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'cat > ${JSON_FILE} << EOF' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '{' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\",' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  "framework": "${FRAMEWORK}",' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  "test_type": "cross_framework_http",' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  "target_url": "${TARGET_URL}",' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  "benchmark_config": {' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '    "iterations": ${ITERATIONS},' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '    "concurrent_users": ${CONCURRENT},' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '    "warmup_requests": ${WARMUP}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  },' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  "results": {' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '    "requests_per_second": ${RPS},' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '    "avg_latency_ms": ${LATENCY},' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '    "failed_requests": ${FAILED}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '  }' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '}' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'EOF' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo '' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "💾 JSON report: ${JSON_FILE}"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && echo 'echo "🎉 Benchmark completed!"' >> /usr/local/bin/cross-framework-benchmark.sh \
+    && chmod +x /usr/local/bin/cross-framework-benchmark.sh
+
+# Create results directory
+RUN mkdir -p /var/www/results
+
+# Default command
+CMD ["tail", "-f", "/dev/null"]

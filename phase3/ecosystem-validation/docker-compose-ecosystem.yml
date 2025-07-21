@@ -1,0 +1,315 @@
+version: '3.8'
+
+# PivotPHP Ecosystem Comprehensive Benchmark - Docker Composition
+# Tests Core + ReactPHP + Cycle ORM integration performance
+# Production-ready validation environment
+
+services:
+  # Full Ecosystem Container (Core + ReactPHP + Cycle ORM)
+  pivotphp-full-ecosystem:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-ecosystem-full
+    environment:
+      - ECOSYSTEM_MODE=full
+      - REACTPHP_ENABLED=true
+      - CYCLE_ORM_ENABLED=true
+      - PHP_OPCACHE_ENABLE=1
+      - PHP_JIT_ENABLE=1
+      - DB_HOST=mysql-ecosystem
+      - DB_DATABASE=ecosystem_test
+      - DB_USERNAME=root
+      - DB_PASSWORD=benchmark_password
+      - REDIS_HOST=redis-ecosystem
+    depends_on:
+      - mysql-ecosystem
+      - redis-ecosystem
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Core Only Container (Baseline)
+  pivotphp-core-only:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-core-only
+    environment:
+      - ECOSYSTEM_MODE=core_only
+      - PHP_OPCACHE_ENABLE=1
+      - PHP_JIT_ENABLE=1
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Core + ReactPHP Container
+  pivotphp-core-reactphp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-core-reactphp
+    environment:
+      - ECOSYSTEM_MODE=core_reactphp
+      - REACTPHP_ENABLED=true
+      - PHP_OPCACHE_ENABLE=1
+      - PHP_JIT_ENABLE=1
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Core + Cycle ORM Container
+  pivotphp-core-orm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-core-orm
+    environment:
+      - ECOSYSTEM_MODE=core_orm
+      - CYCLE_ORM_ENABLED=true
+      - PHP_OPCACHE_ENABLE=1
+      - PHP_JIT_ENABLE=1
+      - DB_HOST=mysql-ecosystem
+      - DB_DATABASE=ecosystem_test
+      - DB_USERNAME=root
+      - DB_PASSWORD=benchmark_password
+    depends_on:
+      - mysql-ecosystem
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MySQL Database for ORM Testing
+  mysql-ecosystem:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=benchmark_password
+      - MYSQL_DATABASE=ecosystem_test
+      - MYSQL_USER=benchmark
+      - MYSQL_PASSWORD=benchmark_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Redis for Caching
+  redis-ecosystem:
+    image: redis:7.0-alpine
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Benchmark Runner Service
+  benchmark-runner:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-benchmark-runner
+    environment:
+      - BENCHMARK_MODE=ecosystem
+      - ITERATIONS=1000
+      - WARMUP_ITERATIONS=100
+      - OUTPUT_DIR=/results
+    volumes:
+      - ./results:/results
+      - ./config:/config
+    depends_on:
+      - pivotphp-full-ecosystem
+      - pivotphp-core-only
+      - pivotphp-core-reactphp
+      - pivotphp-core-orm
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  # Load Generator (K6) for Stress Testing
+  load-generator:
+    image: grafana/k6:latest
+    volumes:
+      - ./k6-scripts:/scripts
+      - ./results:/results
+    environment:
+      - K6_OUT=json=/results/k6-results.json
+    command: run /scripts/ecosystem-stress-test.js
+    depends_on:
+      - pivotphp-full-ecosystem
+      - pivotphp-core-reactphp
+    networks:
+      - ecosystem-network
+
+  # Monitoring: Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # Monitoring: Grafana
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=benchmark
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # Log Aggregation: ELK Stack (Optional)
+  elasticsearch:
+    image: elasticsearch:8.8.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # Health Check Service
+  health-checker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-health-checker
+    environment:
+      - HEALTH_CHECK_INTERVAL=30
+      - HEALTH_CHECK_TIMEOUT=10
+    depends_on:
+      - pivotphp-full-ecosystem
+      - pivotphp-core-only
+      - pivotphp-core-reactphp
+      - pivotphp-core-orm
+    networks:
+      - ecosystem-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  elasticsearch-data:
+    driver: local
+
+networks:
+  ecosystem-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1
+
+# Docker Compose Commands:
+# Start ecosystem: docker-compose -f docker-compose-ecosystem.yml up -d
+# Run benchmarks: docker-compose -f docker-compose-ecosystem.yml run benchmark-runner
+# View logs: docker-compose -f docker-compose-ecosystem.yml logs -f pivotphp-full-ecosystem
+# Stop ecosystem: docker-compose -f docker-compose-ecosystem.yml down
+# Clean up: docker-compose -f docker-compose-ecosystem.yml down -v --remove-orphans

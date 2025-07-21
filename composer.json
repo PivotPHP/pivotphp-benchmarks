@@ -1,0 +1,44 @@
+{
+    "name": "pivotphp/benchmarks",
+    "description": "PivotPHP v1.2.0 Benchmarking Suite - Simplicidade sobre Otimização Prematura",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "pivotphp/core": "^1.2.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "PivotPHP\\Benchmarks\\": "src/",
+            "PivotPHP\\Benchmarks\\Phase1\\": "phase1/src/",
+            "PivotPHP\\Benchmarks\\Phase2\\": "phase2/src/",
+            "PivotPHP\\Benchmarks\\Phase3\\": "phase3/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PivotPHP\\Benchmarks\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "benchmark-v120": "php simple_benchmark_v120.php",
+        "benchmark-openapi": "php openapi_benchmark_v120.php",
+        "benchmark-comparison": "php benchmarks/v114-vs-v120-comparison.php",
+        "test-all": [
+            "@benchmark-v120",
+            "@benchmark-openapi", 
+            "@benchmark-comparison"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "prefer-stable": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

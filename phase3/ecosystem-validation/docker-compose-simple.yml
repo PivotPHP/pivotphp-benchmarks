@@ -1,0 +1,118 @@
+networks:
+  ecosystem-network:
+    driver: bridge
+
+services:
+  # Core Services
+  pivotphp-core-only:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-core-only
+    container_name: pivotphp-core-only
+    ports:
+      - "8081:80"
+    networks:
+      - ecosystem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pivotphp-core-reactphp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-core-reactphp
+    container_name: pivotphp-core-reactphp
+    ports:
+      - "8082:80"
+    networks:
+      - ecosystem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pivotphp-core-orm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-core-orm
+    container_name: pivotphp-core-orm
+    ports:
+      - "8083:80"
+    networks:
+      - ecosystem-network
+    depends_on:
+      - mysql-ecosystem
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Full Ecosystem (simplified)
+  pivotphp-full-ecosystem:
+    image: nginx:alpine
+    container_name: pivotphp-full-ecosystem
+    ports:
+      - "8080:80"
+    networks:
+      - ecosystem-network
+    volumes:
+      - ./ecosystem-app/public:/usr/share/nginx/html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Infrastructure Services
+  mysql-ecosystem:
+    image: mysql:8.0
+    container_name: mysql-ecosystem
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ecosystem_root
+      MYSQL_DATABASE: ecosystem_test
+      MYSQL_USER: ecosystem_user
+      MYSQL_PASSWORD: ecosystem_pass
+    networks:
+      - ecosystem-network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis-ecosystem:
+    image: redis:7-alpine
+    container_name: redis-ecosystem
+    ports:
+      - "6380:6379"
+    networks:
+      - ecosystem-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Benchmark Runner
+  benchmark-runner:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-benchmark-runner
+    container_name: benchmark-runner
+    networks:
+      - ecosystem-network
+    depends_on:
+      - pivotphp-core-only
+      - pivotphp-core-reactphp
+      - pivotphp-core-orm
+      - pivotphp-full-ecosystem
+    volumes:
+      - .:/var/www/benchmark
+      - ../results:/var/www/results

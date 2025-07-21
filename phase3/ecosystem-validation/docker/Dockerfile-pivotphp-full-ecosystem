@@ -1,0 +1,146 @@
+FROM php:8.4-fpm-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    git \
+    unzip \
+    libzip-dev \
+    nginx \
+    supervisor \
+    && rm -rf /var/cache/apk/*
+
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo_mysql \
+    zip \
+    opcache
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Configure OPcache
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.jit_buffer_size=256M" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Configure PHP
+RUN echo "memory_limit=512M" >> /usr/local/etc/php/conf.d/production.ini \
+    && echo "max_execution_time=0" >> /usr/local/etc/php/conf.d/production.ini
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Create structure
+RUN mkdir -p /var/www/html/public \
+    && mkdir -p /var/www/html/results
+
+# Copy composer files
+COPY composer.json composer.lock* ./
+
+# Install all dependencies (core + reactphp + orm)
+RUN composer require pivotphp/core:^1.1.4 --no-scripts --optimize-autoloader \
+    && composer require pivotphp/reactphp:^0.1.0 --no-scripts --optimize-autoloader \
+    && composer require pivotphp/cycle-orm:^1.0.1 --no-scripts --optimize-autoloader
+
+# Create PivotPHP Full Ecosystem application
+RUN echo '<?php' > /var/www/html/public/index.php \
+    && echo 'require_once __DIR__ . "/../vendor/autoload.php";' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '// PivotPHP Full Ecosystem - Cross-Framework Test' >> /var/www/html/public/index.php \
+    && echo 'use PivotPHP\\Core\\Application;' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '$app = new Application();' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '// Enable all features' >> /var/www/html/public/index.php \
+    && echo '$reactphpEnabled = true;' >> /var/www/html/public/index.php \
+    && echo '$ormEnabled = true;' >> /var/www/html/public/index.php \
+    && echo '$dbConnected = false;' >> /var/www/html/public/index.php \
+    && echo 'try {' >> /var/www/html/public/index.php \
+    && echo '    $pdo = new PDO("mysql:host=mysql-ecosystem;dbname=benchmark", "benchmark", "benchmark");' >> /var/www/html/public/index.php \
+    && echo '    $dbConnected = true;' >> /var/www/html/public/index.php \
+    && echo '} catch (Exception $e) {' >> /var/www/html/public/index.php \
+    && echo '    $dbConnected = false;' >> /var/www/html/public/index.php \
+    && echo '}' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '$app->get("/", function($req, $res) use ($reactphpEnabled, $ormEnabled, $dbConnected) {' >> /var/www/html/public/index.php \
+    && echo '    return $res->json([' >> /var/www/html/public/index.php \
+    && echo '        "framework" => "PivotPHP Full Ecosystem",' >> /var/www/html/public/index.php \
+    && echo '        "version" => "1.1.4",' >> /var/www/html/public/index.php \
+    && echo '        "config" => "full_ecosystem",' >> /var/www/html/public/index.php \
+    && echo '        "components" => ["core", "reactphp", "cycle-orm"],' >> /var/www/html/public/index.php \
+    && echo '        "features" => [' >> /var/www/html/public/index.php \
+    && echo '            "async", "websocket", "continuous_runtime",' >> /var/www/html/public/index.php \
+    && echo '            "database", "migrations", "entities", "repositories"' >> /var/www/html/public/index.php \
+    && echo '        ],' >> /var/www/html/public/index.php \
+    && echo '        "reactphp_enabled" => $reactphpEnabled,' >> /var/www/html/public/index.php \
+    && echo '        "orm_enabled" => $ormEnabled,' >> /var/www/html/public/index.php \
+    && echo '        "database_connected" => $dbConnected,' >> /var/www/html/public/index.php \
+    && echo '        "timestamp" => time()' >> /var/www/html/public/index.php \
+    && echo '    ]);' >> /var/www/html/public/index.php \
+    && echo '});' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '$app->get("/api", function($req, $res) use ($dbConnected) {' >> /var/www/html/public/index.php \
+    && echo '    return $res->json([' >> /var/www/html/public/index.php \
+    && echo '        "status" => "ok",' >> /var/www/html/public/index.php \
+    && echo '        "framework" => "pivotphp-full-ecosystem",' >> /var/www/html/public/index.php \
+    && echo '        "performance_target" => "6000-8000 req/sec",' >> /var/www/html/public/index.php \
+    && echo '        "capabilities" => "complete",' >> /var/www/html/public/index.php \
+    && echo '        "database_ready" => $dbConnected' >> /var/www/html/public/index.php \
+    && echo '    ]);' >> /var/www/html/public/index.php \
+    && echo '});' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '$app->get("/health", function($req, $res) use ($dbConnected) {' >> /var/www/html/public/index.php \
+    && echo '    return $res->json([' >> /var/www/html/public/index.php \
+    && echo '        "status" => "healthy",' >> /var/www/html/public/index.php \
+    && echo '        "framework" => "pivotphp-full-ecosystem",' >> /var/www/html/public/index.php \
+    && echo '        "config" => "full_ecosystem",' >> /var/www/html/public/index.php \
+    && echo '        "components" => [' >> /var/www/html/public/index.php \
+    && echo '            "core" => "active",' >> /var/www/html/public/index.php \
+    && echo '            "reactphp" => "active",' >> /var/www/html/public/index.php \
+    && echo '            "orm" => "active",' >> /var/www/html/public/index.php \
+    && echo '            "database" => $dbConnected ? "connected" : "disconnected"' >> /var/www/html/public/index.php \
+    && echo '        ]' >> /var/www/html/public/index.php \
+    && echo '    ]);' >> /var/www/html/public/index.php \
+    && echo '});' >> /var/www/html/public/index.php \
+    && echo '' >> /var/www/html/public/index.php \
+    && echo '$app->run();' >> /var/www/html/public/index.php
+
+# Configure nginx
+RUN echo 'server {' > /etc/nginx/http.d/default.conf \
+    && echo '    listen 80;' >> /etc/nginx/http.d/default.conf \
+    && echo '    root /var/www/html/public;' >> /etc/nginx/http.d/default.conf \
+    && echo '    index index.php;' >> /etc/nginx/http.d/default.conf \
+    && echo '    location / {' >> /etc/nginx/http.d/default.conf \
+    && echo '        try_files $uri $uri/ /index.php?$query_string;' >> /etc/nginx/http.d/default.conf \
+    && echo '    }' >> /etc/nginx/http.d/default.conf \
+    && echo '    location ~ \.php$ {' >> /etc/nginx/http.d/default.conf \
+    && echo '        fastcgi_pass 127.0.0.1:9000;' >> /etc/nginx/http.d/default.conf \
+    && echo '        fastcgi_index index.php;' >> /etc/nginx/http.d/default.conf \
+    && echo '        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;' >> /etc/nginx/http.d/default.conf \
+    && echo '        include fastcgi_params;' >> /etc/nginx/http.d/default.conf \
+    && echo '    }' >> /etc/nginx/http.d/default.conf \
+    && echo '}' >> /etc/nginx/http.d/default.conf
+
+# Configure supervisor
+RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo '[program:php-fpm]' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'command=php-fpm -F' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'autostart=true' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo '[program:nginx]' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'command=nginx -g "daemon off;"' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'autostart=true' >> /etc/supervisor/conf.d/supervisord.conf \
+    && echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html
+
+EXPOSE 80
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

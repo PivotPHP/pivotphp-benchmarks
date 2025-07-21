@@ -1,0 +1,242 @@
+# Dockerfile para PivotPHP v1.2.0 + Cycle ORM
+# "Simplicidade sobre Otimização Prematura" Edition
+
+FROM php:8.4-fpm-alpine
+
+# Informações da versão
+LABEL pivotphp.version="1.2.0" \
+      pivotphp.edition="Simplicidade sobre Otimização Prematura" \
+      pivotphp.extension="cycle-orm" \
+      benchmark.phase="2" \
+      benchmark.type="orm"
+
+# Instalar dependências do sistema
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    curl \
+    git \
+    unzip \
+    mysql-client \
+    $PHPIZE_DEPS
+
+# Instalar extensões PHP
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    opcache
+
+# Configurar OPcache
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.interned_strings_buffer=16" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurar diretório de trabalho
+WORKDIR /var/www/html
+
+# Copiar composer.json primeiro
+COPY composer.json ./
+
+# Instalar dependências PHP
+RUN composer install --no-dev --optimize-autoloader --no-interaction || \
+    composer init --name="pivotphp/benchmark-phase2-orm" --require="php:^8.1" --no-interaction
+
+# Copiar arquivos do projeto
+COPY . .
+
+# Configurar permissões
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
+
+# Configurar Nginx
+COPY <<EOF /etc/nginx/nginx.conf
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    
+    server {
+        listen 80;
+        server_name localhost;
+        root /var/www/html/public;
+        index index.php;
+        
+        location /health {
+            access_log off;
+            return 200 "PivotPHP v1.2.0 + Cycle ORM OK\\n";
+            add_header Content-Type text/plain;
+        }
+        
+        location /openapi.json {
+            try_files \$uri /index.php?\$query_string;
+        }
+        
+        location /swagger {
+            try_files \$uri /index.php?\$query_string;
+        }
+        
+        location / {
+            try_files \$uri \$uri/ /index.php?\$query_string;
+        }
+        
+        location ~ \.php$ {
+            try_files \$uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+            fastcgi_param PATH_INFO \$fastcgi_path_info;
+            
+            fastcgi_param PIVOTPHP_VERSION "1.2.0";
+            fastcgi_param PIVOTPHP_EDITION "Simplicidade sobre Otimização Prematura";
+            fastcgi_param BENCHMARK_PHASE "2";
+            fastcgi_param EXTENSION_TYPE "orm";
+        }
+    }
+}
+EOF
+
+# Configurar Supervisor
+COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
+[supervisord]
+nodaemon=true
+user=root
+
+[program:php-fpm]
+command=php-fpm
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/php-fpm.log
+stderr_logfile=/var/log/php-fpm.log
+
+[program:nginx]
+command=nginx -g "daemon off;"
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/nginx.log
+stderr_logfile=/var/log/nginx.log
+EOF
+
+# Criar index.php simulado
+RUN mkdir -p public
+COPY <<EOF /var/www/html/public/index.php
+<?php
+/**
+ * PivotPHP v1.2.0 + Cycle ORM - Phase 2
+ * "Simplicidade sobre Otimização Prematura" Edition
+ */
+
+header('X-Powered-By: PivotPHP/1.2.0+CycleORM');
+header('X-Philosophy: Simplicidade sobre Otimização Prematura');
+header('X-Extension: Cycle ORM Simplified');
+
+\$uri = \$_SERVER['REQUEST_URI'] ?? '/';
+\$method = \$_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+switch (\$uri) {
+    case '/health':
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'ok',
+            'version' => '1.2.0',
+            'extension' => 'cycle-orm-simplified',
+            'philosophy' => 'Simplicidade sobre Otimização Prematura',
+            'phase' => 2,
+            'orm_features' => ['simplified-models', 'basic-queries', 'openapi-ready']
+        ]);
+        break;
+        
+    case '/api/users':
+        header('Content-Type: application/json');
+        echo json_encode([
+            'users' => [
+                ['id' => 1, 'name' => 'ORM User 1', 'email' => 'user1@pivotphp.com'],
+                ['id' => 2, 'name' => 'ORM User 2', 'email' => 'user2@pivotphp.com']
+            ],
+            'orm' => 'Cycle ORM Simplified',
+            'philosophy' => 'Simplicidade sobre Otimização Prematura',
+            'database' => 'MySQL 8.0'
+        ]);
+        break;
+        
+    case '/api/orm-test':
+        header('Content-Type: application/json');
+        echo json_encode([
+            'orm_performance' => 'simplified-but-efficient',
+            'query_builder' => 'available',
+            'migrations' => 'simplified',
+            'models' => 'basic-hydration',
+            'philosophy' => 'Simplicity over Premature Optimization'
+        ]);
+        break;
+        
+    case '/openapi.json':
+        header('Content-Type: application/json');
+        echo json_encode([
+            'openapi' => '3.0.0',
+            'info' => [
+                'title' => 'PivotPHP v1.2.0 + Cycle ORM API',
+                'version' => '1.2.0',
+                'description' => 'Auto-generated OpenAPI for simplified ORM architecture'
+            ],
+            'paths' => [
+                '/api/users' => [
+                    'get' => [
+                        'summary' => 'Get users via ORM',
+                        'description' => 'Uses Cycle ORM simplified architecture',
+                        'responses' => ['200' => ['description' => 'Users list']]
+                    ]
+                ]
+            ]
+        ]);
+        break;
+        
+    case '/swagger':
+        header('Content-Type: text/html');
+        echo '<!DOCTYPE html><html><head><title>PivotPHP v1.2.0 + ORM API</title><link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui.css" /></head><body><div id="swagger-ui"></div><script src="https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui-bundle.js"></script><script>const ui = SwaggerUIBundle({ url: "/openapi.json", dom_id: "#swagger-ui", presets: [SwaggerUIBundle.presets.apis], layout: "StandaloneLayout" });</script></body></html>';
+        break;
+        
+    default:
+        header('Content-Type: application/json');
+        echo json_encode([
+            'framework' => 'PivotPHP',
+            'version' => '1.2.0',
+            'extension' => 'Cycle ORM Simplified',
+            'philosophy' => 'Simplicidade sobre Otimização Prematura',
+            'phase' => 2,
+            'message' => 'PivotPHP v1.2.0 + Cycle ORM - Simplified Database Architecture'
+        ]);
+}
+EOF
+
+# Expor porta
+EXPOSE 80
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# Comando padrão
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

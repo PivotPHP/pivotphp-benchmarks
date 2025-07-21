@@ -4,7 +4,7 @@
     "type": "project",
     "require": {
         "php": ">=8.2",
-        "pivotphp/core": "^1.1.4",
+        "pivotphp/core": "^1.2.0",
         "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {

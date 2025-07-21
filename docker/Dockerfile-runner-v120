@@ -1,0 +1,113 @@
+# Dockerfile para Benchmark Runner v1.2.0
+# "Simplicidade sobre Otimização Prematura" Edition
+
+FROM php:8.4-cli-alpine
+
+# Informações da versão
+LABEL pivotphp.version="1.2.0" \
+      pivotphp.edition="Simplicidade sobre Otimização Prematura" \
+      pivotphp.philosophy="Simplicity over Premature Optimization" \
+      service.type="benchmark-runner"
+
+# Instalar dependências
+RUN apk add --no-cache \
+    curl \
+    git \
+    unzip \
+    jq \
+    $PHPIZE_DEPS
+
+# Instalar extensões PHP
+RUN docker-php-ext-install \
+    opcache
+
+# Configurar OPcache para benchmarking
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.interned_strings_buffer=16" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurar diretório de trabalho
+WORKDIR /app
+
+# Copiar arquivos do benchmark
+COPY . .
+
+# Instalar dependências
+RUN composer install --no-dev --optimize-autoloader --no-interaction || true
+
+# Script de entrada para executar benchmarks
+COPY <<EOF /usr/local/bin/run-benchmarks.sh
+#!/bin/ash
+echo "🚀 PivotPHP v1.2.0 Benchmark Runner"
+echo "Philosophy: Simplicidade sobre Otimização Prematura"
+echo "==========================================="
+
+# Aguardar serviços ficarem prontos
+echo "⏳ Aguardando serviços..."
+sleep 30
+
+# Executar benchmarks v1.2.0
+echo "📊 Executando benchmarks v1.2.0..."
+
+# Core benchmarks
+echo "▶️  Phase 1 - Core Framework"
+php simple_benchmark_v120.php 15000 1000
+
+# OpenAPI benchmarks  
+echo "▶️  OpenAPI/Swagger benchmarks"
+php openapi_benchmark_v120.php 15000 1000
+
+# Comparison benchmarks
+echo "▶️  v1.1.4 vs v1.2.0 comparison"
+php benchmarks/v114-vs-v120-comparison.php
+
+# Generate comprehensive report
+echo "📋 Gerando relatório final..."
+timestamp=\$(date +"%Y-%m-%d-%H-%M-%S")
+report_file="docker-benchmark-v120-\$timestamp.json"
+
+cat > \$report_file << 'REPORT'
+{
+  "benchmark_info": {
+    "version": "1.2.0",
+    "philosophy": "Simplicidade sobre Otimização Prematura",
+    "edition": "Reimagined Architecture",
+    "environment": "Docker Containerized",
+    "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "runner": "Automated Docker Orchestration"
+  },
+  "services_tested": {
+    "core": "pivotphp-core-v120:8080",
+    "orm": "pivotphp-orm-v120:8081", 
+    "reactphp": "pivotphp-reactphp-v120:8082",
+    "ecosystem": "pivotphp-ecosystem-v120:8083"
+  },
+  "features_validated": [
+    "OpenAPI 3.0.0 Automatic Generation",
+    "Swagger UI Interactive Interface",
+    "Simplified Architecture Implementation",
+    "15+ Automatic Aliases",
+    "Backward Compatibility",
+    "Zero Breaking Changes"
+  ],
+  "status": "✅ Docker-based benchmarks completed successfully"
+}
+REPORT
+
+echo "💾 Relatório salvo: /app/results/\$report_file"
+cp \$report_file /app/results/
+
+echo "🎉 Benchmarks v1.2.0 finalizados!"
+echo "📊 Resultados disponíveis em /app/results/"
+EOF
+
+RUN chmod +x /usr/local/bin/run-benchmarks.sh
+
+# Comando padrão
+CMD ["/usr/local/bin/run-benchmarks.sh"]

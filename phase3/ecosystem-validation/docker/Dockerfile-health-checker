@@ -1,0 +1,17 @@
+FROM alpine:latest
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Create health check script
+RUN echo '#!/bin/sh' > /health-check.sh
+RUN echo 'echo "Health checking services..."' >> /health-check.sh
+RUN echo 'curl -f http://pivotphp-full-ecosystem:8080/health || exit 1' >> /health-check.sh
+RUN echo 'curl -f http://pivotphp-core-only:8081/health || exit 1' >> /health-check.sh
+RUN echo 'curl -f http://pivotphp-core-reactphp:8082/health || exit 1' >> /health-check.sh
+RUN echo 'curl -f http://pivotphp-core-orm:8083/health || exit 1' >> /health-check.sh
+RUN echo 'echo "All services healthy!"' >> /health-check.sh
+RUN chmod +x /health-check.sh
+
+# Keep container running
+CMD ["tail", "-f", "/dev/null"]
