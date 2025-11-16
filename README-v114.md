@@ -223,7 +223,6 @@ pivotphp-benchmarks/
 
 - [PivotPHP Core v1.1.4](https://github.com/PivotPHP/pivotphp-core)
 - [Documentação Oficial](https://docs.pivotphp.com)
-- [Discord Comunidade](https://discord.gg/DMtxsP7z)
 
 ## 📄 Licença
 
