@@ -158,9 +158,11 @@ infection.log
 # Exception: Keep Documentation
 !README.md
 !*/README.md
-!CLAUDE.md
-!*/CLAUDE.md
 !*.md
+
+CLAUDE.md
+*/CLAUDE.md
+.claude/
 
 # Exception: Keep Core Structure Files
 !composer.json
