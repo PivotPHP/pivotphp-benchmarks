@@ -1,5 +1,7 @@
 # PivotPHP v1.2.0 Simulation Benchmark Results
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 **Date:** 2025-07-21 19:35:04
 **Version:** 1.2.0
 **Philosophy:** Simplicity over Premature Optimization

@@ -1,6 +1,17 @@
-# FASE 3: Benchmarks Comparativos PivotPHP v1.1.4 vs Slim 4
+# FASE 3: Benchmarks Comparativos PivotPHP vs Slim 4
 
-**Objetivo:** Comparação científica cross-framework com PivotPHP v1.1.4 (Architectural Excellence & Performance Optimization Edition).
+**Objetivo:** Comparação científica cross-framework com PivotPHP vs Slim 4.
+
+## Linhas de versão disponíveis nesta fase
+
+O título e o conteúdo original deste documento eram específicos da linha v1.1.4 (endpoints `/v114/*`, features "v1.1.4"). Hoje o diretório também contém artefatos da linha v1.2.0:
+
+- **v1.2.0**: `docker/Dockerfile-ecosystem-v120`, `ecosystem-validation/ecosystem-v120-benchmark.php`. Construído a partir da raiz via `make -f Makefile-v120 build` (o serviço `pivotphp-ecosystem-v120` em `docker-compose-v120.yml` usa `phase3/docker/Dockerfile-ecosystem-v120`).
+- **v1.1.4** (conteúdo original abaixo, incluindo os endpoints `/v114/*`): `docker/Dockerfile-pivotphp-v114`, `docker/docker-compose-v114.yml`, `benchmarks/run-phase3-v114.php`, `benchmarks/run-phase3-v114-standalone.php`.
+
+`phase3/composer.json` não declara dependência de `pivotphp/core` — esta fase só empacota o lado Slim 4 da comparação; o lado PivotPHP roda a partir dos containers da raiz. Note também que `phase3/ecosystem-validation/` é um sub-harness próprio, com seu próprio `Makefile`, `composer.json` e vários `docker-compose-*.yml`/`Dockerfile-*`, independente da estrutura descrita abaixo.
+
+O restante deste documento (endpoints `/v114/*`, estrutura de diretórios, status) é conteúdo original da linha v1.1.4 e não foi reescrito — trate-o como descrição daquela linha específica, não da v1.2.0.
 
 ## 🎯 FRAMEWORK ESCOLHIDO: SLIM 4
 

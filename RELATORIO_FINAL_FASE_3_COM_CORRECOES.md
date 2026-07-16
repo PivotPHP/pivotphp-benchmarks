@@ -1,5 +1,7 @@
 # RELATÓRIO FINAL - FASE 3 COM CORREÇÕES ✅
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 **Data:** 11 de Julho de 2025  
 **Análise:** PivotPHP v1.1.2 (Corrigido) vs Slim 4  
 **Status:** Fase 3 concluída com correções aplicadas  

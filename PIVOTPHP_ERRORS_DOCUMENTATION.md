@@ -1,5 +1,7 @@
 # DOCUMENTAÇÃO DE ERROS - PivotPHP Benchmarks
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Documenta bugs observados no PivotPHP Core v1.1.2; não presuma que ainda se aplicam a versões atuais sem verificar no código-fonte correspondente. Ver README.md para a estrutura atual.
+
 **Data:** 11 de Julho de 2025
 **Análise:** Erros identificados nos benchmarks PivotPHP v1.1.2
 **Objetivo:** Documentar problemas específicos para correção

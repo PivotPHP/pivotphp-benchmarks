@@ -1,5 +1,7 @@
 # STATUS DE ATUALIZAÇÃO - PivotPHP v1.1.2
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 **Data da Atualização:** 11 de Julho de 2025  
 **Versão Alvo:** PivotPHP Core v1.1.2 (Consolidation Edition)  
 **Status Geral:** ✅ **COMPLETO**

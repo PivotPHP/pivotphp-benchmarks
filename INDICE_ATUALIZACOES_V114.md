@@ -1,5 +1,7 @@
 # Índice de Atualizações v1.1.4 - PivotPHP Benchmarks
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 ## Resumo das Atualizações
 
 **Data**: 15 de julho de 2025  

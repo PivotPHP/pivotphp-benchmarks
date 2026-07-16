@@ -1,5 +1,7 @@
 # Relatório Técnico - PivotPHP v1.1.4
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 ## Especificações Técnicas
 
 **Framework**: PivotPHP Core  

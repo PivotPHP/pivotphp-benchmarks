@@ -1,5 +1,7 @@
 # 📊 Resumo Final dos Testes - PivotPHP v1.2.0 "Simplicidade sobre Otimização Prematura"
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 **🗓️ Data:** 21 de julho de 2025  
 **🚀 Versão:** PivotPHP v1.2.0  
 **🎯 Filosofia:** Simplicidade sobre Otimização Prematura  

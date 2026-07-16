@@ -2,6 +2,15 @@
 
 **Objetivo**: Avaliar performance das extensões PivotPHP (Cycle ORM e ReactPHP) comparando com o baseline da Fase 1.
 
+## Linhas de versão disponíveis nesta fase
+
+- **v1.2.0** (atual): `docker/Dockerfile-orm-v120`, `docker/Dockerfile-reactphp-v120`, `benchmarks/run-phase2-v120.php`.
+- **v1.1.4** (histórica): `docker/Dockerfile-orm`, `docker/Dockerfile-reactphp`, `benchmarks/run-phase2-v114.php`, `benchmarks/run-phase2-v114-test.php`, `benchmarks/run-v114.php`.
+
+**Atenção à divergência de versão**: `phase2/composer.json` ainda fixa `pivotphp/core: ^1.1.4`, diferente de `phase1/composer.json` e do `composer.json` da raiz (ambos em `^1.2.0`). Isso não foi corrigido nesta atualização de documentação — está sinalizado aqui como achado, não como algo já resolvido.
+
+O caminho recomendado para rodar a linha v1.2.0 é a partir da raiz do repositório: `make -f Makefile-v120 build && make -f Makefile-v120 up` (usa `docker-compose-v120.yml`, que constrói `pivotphp-orm-v120` a partir de `phase2/docker/Dockerfile-orm-v120` e `pivotphp-reactphp-v120` a partir de `phase2/docker/Dockerfile-reactphp-v120`). O `Makefile` e o `docker/docker-compose.yml` **deste** diretório são um setup separado, direcionado à linha v1.1.4/legada.
+
 ## 🎯 Estrutura da Fase 2
 
 ### Diretórios

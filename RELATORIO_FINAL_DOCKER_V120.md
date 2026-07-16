@@ -1,5 +1,7 @@
 # 🐳 Relatório Final dos Testes Docker - PivotPHP v1.2.0
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 **Data:** 21 de julho de 2025  
 **Versão:** PivotPHP v1.2.0 "Simplicidade sobre Otimização Prematura"  
 **Ambiente:** Docker Containerizado (Isolamento Total)  

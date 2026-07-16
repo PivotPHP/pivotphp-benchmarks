@@ -1,5 +1,7 @@
 # OBJETIVOS DE BENCHMARK - PivotPHP Ecosystem
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 **Data**: 2025-07-11
 **Status**: Planejamento inicial
 

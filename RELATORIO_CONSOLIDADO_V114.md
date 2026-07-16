@@ -1,5 +1,7 @@
 # Relatório Consolidado de Performance - PivotPHP v1.1.4
 
+> 📦 Relatório histórico de execução — não reflete o estado atual do código. Ver README.md para a estrutura atual.
+
 ## Resumo Executivo
 
 **Data**: 15 de julho de 2025  

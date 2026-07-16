@@ -2,6 +2,15 @@
 
 **Objetivo**: Estabelecer baseline confiável e reproduzível do PivotPHP Core através de metodologia científica rigorosa.
 
+## Linhas de versão disponíveis nesta fase
+
+Este diretório contém artefatos para duas linhas de versão do PivotPHP Core:
+
+- **v1.2.0** (atual): `Dockerfile-v120`, `benchmarks/run-simple-v120.php`. `composer.json` desta fase já fixa `pivotphp/core: ^1.2.0`.
+- **v1.1.4** (histórica): `Dockerfile-v114`, `public/index-v114.php`, `benchmarks/run-simple-v114.php`, `benchmarks/run-v114.php`.
+
+O caminho recomendado para rodar a linha v1.2.0 é a partir da raiz do repositório, com `make -f Makefile-v120 build && make -f Makefile-v120 up` (usa `docker-compose-v120.yml`, que constrói o container `pivotphp-core-v120` a partir de `phase1/Dockerfile-v120`). O `Makefile` e o `docker/docker-compose.yml` **deste** diretório (`phase1/`) são um setup separado e mais antigo — buildam a partir de `phase1/docker/Dockerfile` (não de `Dockerfile-v114`/`Dockerfile-v120`) e esperam subdiretórios `config/` e `results/` que não existem atualmente em `phase1/`. Não presuma que os comandos `make build`/`make up` abaixo funcionam sem antes criar esses diretórios ou ajustar o compose local.
+
 ## 🎯 Estrutura da Fase 1
 
 ### Diretórios
