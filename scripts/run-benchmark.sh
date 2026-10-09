@@ -30,7 +30,7 @@ for fw in "${FRAMEWORKS[@]}"; do
     (
         cd "$fw"
 
-        docker compose up -d --build postgres redis app >/dev/null 2>&1
+        docker compose up -d postgres redis app >/dev/null 2>&1
         sleep 10
 
         # Smoke (validação) + cenário principal
