@@ -1,0 +1,24 @@
+{
+    "name": "bench/slim-app",
+    "description": "Voting API implemented with Slim 4 (benchmark)",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-json": "*",
+        "slim/slim": "^4.0",
+        "slim/psr7": "^1.6",
+        "predis/predis": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bench\\": "app/src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

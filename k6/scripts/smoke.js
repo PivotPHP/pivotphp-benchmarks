@@ -13,6 +13,11 @@ export const options = {
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
 
 export default function () {
+  // Reseta os votos uma única vez (torna o smoke determinístico entre execuções).
+  if (__ITER === 0 && __VU === 1) {
+    http.del(`${BASE_URL}/api/votes`);
+  }
+
   // Health
   const health = http.get(`${BASE_URL}/api/health`);
   check(health, { 'health: 200': (r) => r.status === 200 });
