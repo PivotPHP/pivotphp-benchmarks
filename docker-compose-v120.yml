@@ -102,52 +102,6 @@ services:
       - "benchmark.type=orm"
       - "openapi.orm=http://localhost:8081/openapi.json"
 
-  # === PHASE 2: PivotPHP + ReactPHP v1.2.0 (Simplified) ===
-  pivotphp-reactphp-v120:
-    build:
-      context: ./phase2
-      dockerfile: docker/Dockerfile-reactphp-v120
-    container_name: pivotphp-reactphp-v120
-    ports:
-      - "8092:8000"  # ReactPHP server port
-    volumes:
-      - ./phase2/results:/var/www/html/results
-      - ./phase2/config:/var/www/html/config:ro
-    environment:
-      - APP_ENV=benchmark
-      - APP_DEBUG=false
-      - BENCHMARK_PHASE=2
-      - PIVOTPHP_VERSION=1.2.0
-      - PIVOTPHP_PHILOSOPHY="Simplicidade sobre Otimização Prematura"
-      - EXTENSION_TYPE=reactphp
-      - REACTPHP_ENABLED=true
-      - OPENAPI_ENABLED=true
-      - SWAGGER_UI_ENABLED=true
-      - SIMPLIFIED_REACTPHP=true
-      - REACTPHP_HOST=0.0.0.0
-      - REACTPHP_PORT=8000
-      - CONTINUOUS_RUNTIME=true
-    networks:
-      - benchmark-network-v120
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 1G
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 25s
-    labels:
-      - "pivotphp.version=1.2.0"
-      - "pivotphp.extension=reactphp"
-      - "benchmark.phase=2"
-      - "benchmark.type=reactphp"
-      - "reactphp.continuous=true"
-
   # === MYSQL Database v8.0 (Para testes ORM) ===
   mysql-v120:
     image: mysql:8.0
@@ -230,13 +184,10 @@ services:
       - SIMPLIFIED_VALIDATION=true
       - CORE_URL=http://pivotphp-core-v120
       - ORM_URL=http://pivotphp-orm-v120  
-      - REACTPHP_URL=http://pivotphp-reactphp-v120:8000
     depends_on:
       pivotphp-core-v120:
         condition: service_healthy
       pivotphp-orm-v120:
-        condition: service_healthy
-      pivotphp-reactphp-v120:
         condition: service_healthy
     networks:
       - benchmark-network-v120
@@ -274,14 +225,11 @@ services:
       - WARMUP=1000
       - CORE_URL=http://pivotphp-core-v120
       - ORM_URL=http://pivotphp-orm-v120
-      - REACTPHP_URL=http://pivotphp-reactphp-v120:8000
       - ECOSYSTEM_URL=http://pivotphp-ecosystem-v120
     depends_on:
       pivotphp-core-v120:
         condition: service_healthy
       pivotphp-orm-v120:
-        condition: service_healthy
-      pivotphp-reactphp-v120:
         condition: service_healthy
       pivotphp-ecosystem-v120:
         condition: service_healthy

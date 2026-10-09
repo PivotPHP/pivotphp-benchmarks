@@ -87,47 +87,6 @@ services:
       - "benchmark.phase=2"
       - "benchmark.type=orm"
 
-  # === PHASE 2: PivotPHP + ReactPHP v1.1.4 ===
-  pivotphp-reactphp-v114:
-    build:
-      context: ./phase2
-      dockerfile: docker/Dockerfile-reactphp
-    container_name: pivotphp-reactphp-v114
-    ports:
-      - "8082:8000"
-    volumes:
-      - ./phase2/results:/var/www/html/results
-      - ./phase2/config:/var/www/html/config:ro
-    environment:
-      - APP_ENV=benchmark
-      - APP_DEBUG=false
-      - BENCHMARK_PHASE=2
-      - PIVOTPHP_VERSION=1.1.4
-      - REACTPHP_HOST=0.0.0.0
-      - REACTPHP_PORT=8000
-      - PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
-    networks:
-      - benchmark-network
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 1G
-        reservations:
-          cpus: '1.0'
-          memory: 512M
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-    labels:
-      - "pivotphp.version=1.1.4"
-      - "pivotphp.edition=Enhanced"
-      - "benchmark.phase=2"
-      - "benchmark.type=reactphp"
 
   # === INFRAESTRUTURA ===
 
@@ -210,7 +169,6 @@ services:
     depends_on:
       - pivotphp-core-v114
       - pivotphp-orm-v114
-      - pivotphp-reactphp-v114
     profiles:
       - tools
     command: tail -f /dev/null

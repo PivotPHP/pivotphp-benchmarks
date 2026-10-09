@@ -21,7 +21,6 @@
         "psr-4": {
             "PivotPHP\\Benchmark\\Phase2\\": "src/",
             "PivotPHP\\Benchmark\\Phase2\\ORM\\": "src/orm/",
-            "PivotPHP\\Benchmark\\Phase2\\ReactPHP\\": "src/reactphp/",
             "PivotPHP\\Benchmark\\Phase2\\HighPerformance\\": "src/high-performance/",
             "PivotPHP\\Benchmark\\Shared\\": "../phase1/src/"
         }
