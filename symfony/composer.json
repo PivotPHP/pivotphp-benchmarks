@@ -1,0 +1,29 @@
+{
+    "name": "bench/symfony-app",
+    "description": "Voting API implemented with Symfony microkernel (benchmark)",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-json": "*",
+        "symfony/http-kernel": "^7.0",
+        "symfony/routing": "^7.0",
+        "symfony/http-foundation": "^7.0",
+        "symfony/event-dispatcher": "^7.0",
+        "predis/predis": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bench\\": "app/src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "platform": {
+            "php": "8.3.0"
+        }
+    }
+}
