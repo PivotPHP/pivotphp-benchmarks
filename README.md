@@ -1,6 +1,10 @@
 # PivotPHP Benchmarks
 
-Suite de benchmarks Docker-isolada que compara variantes do [PivotPHP](https://github.com/PivotPHP) (Core, Core+Cycle ORM, Core+ReactPHP) entre si e contra outros microframeworks PHP (Slim 4, Lumen, Flight, Symfony), usando métricas HTTP reais (throughput, latência, uso de memória).
+Suite de benchmarks Docker-isolada que compara variantes do [PivotPHP](https://github.com/PivotPHP) (Core, Core+Cycle ORM) entre si e contra outros microframeworks PHP (Slim 4, Lumen, Flight, Symfony), usando métricas HTTP reais (throughput, latência, uso de memória).
+
+> ⚠️ **Registro histórico — extensão ReactPHP descontinuada em 2026-10-09.** A variante
+> Core+ReactPHP foi removida desta suíte (pacote `pivotphp/reactphp` arquivado). Relatórios
+> e scripts históricos que ainda citam ReactPHP são mantidos apenas como registro.
 
 > Este README descreve a linha **v1.2.0** (`Makefile-v120` / `docker-compose-v120.yml`), a mais atual no repositório hoje. A linha **v1.1.4** (`Makefile-v114` / `docker-compose-v114.yml`) continua presente e funcional para comparação histórica de versões — veja a seção [Linha v1.1.4](#linha-v114-comparação-histórica).
 
