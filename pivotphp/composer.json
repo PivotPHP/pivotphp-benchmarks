@@ -1,0 +1,24 @@
+{
+    "name": "bench/pivotphp-app",
+    "description": "Voting API implemented with PivotPHP (benchmark)",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-json": "*",
+        "pivotphp/core": "^2.3.0",
+        "pivotphp/core-routing": "^1.2.0",
+        "predis/predis": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bench\\": "app/src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
