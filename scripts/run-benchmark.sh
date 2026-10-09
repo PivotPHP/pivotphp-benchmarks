@@ -11,6 +11,9 @@
 
 set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT_DIR"
+
 FRAMEWORKS=("pivotphp" "slim" "mezzio" "symfony" "webman")
 SCENARIO="${2:-vote-load}"
 
@@ -18,7 +21,7 @@ if [[ $# -ge 1 && "${1:-}" != "" && " ${FRAMEWORKS[*]} " == *" ${1} "* ]]; then
     FRAMEWORKS=("$1")
 fi
 
-RESULTS_DIR="./results/$(date +%Y%m%d_%H%M%S)"
+RESULTS_DIR="$ROOT_DIR/results/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$RESULTS_DIR"
 
 echo "== Benchmark ($SCENARIO) — $(date) =="
