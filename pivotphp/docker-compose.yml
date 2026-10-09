@@ -67,10 +67,10 @@ services:
     image: grafana/k6:latest
     container_name: pivotphp-k6
     volumes:
-      - ../k6/scripts:/scripts
+      - ../k6:/scripts
     environment:
       BASE_URL: http://app:8080
-    working_dir: /scripts
+    working_dir: /scripts/scripts
     depends_on:
       app:
         condition: service_started
