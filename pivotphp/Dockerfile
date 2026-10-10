@@ -26,7 +26,9 @@ COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 WORKDIR /var/www/html
 
 COPY --from=builder /app/vendor ./vendor
-COPY app ./app
+COPY config ./config
+COPY public ./public
+COPY src ./src
 
 EXPOSE 8080
 
