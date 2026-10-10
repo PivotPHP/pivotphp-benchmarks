@@ -5,13 +5,13 @@ FROM composer:2 AS builder
 WORKDIR /app
 COPY composer.json ./
 RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader \
-    --ignore-platform-req=ext-pdo --ignore-platform-req=ext-pdo_pgsql
+    --ignore-platform-req=ext-pdo --ignore-platform-req=ext-pdo_pgsql --ignore-platform-req=ext-mbstring
 
 # ---- Runtime: PHP-FPM + Nginx ----
 FROM php:8.3-fpm
 
-RUN apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev \
-    && docker-php-ext-install -j"$(nproc)" pdo_pgsql opcache \
+RUN apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev libonig-dev \
+    && docker-php-ext-install -j"$(nproc)" pdo_pgsql opcache mbstring \
     && rm -rf /var/lib/apt/lists/*
 
 # Tuning PHP (OPcache).

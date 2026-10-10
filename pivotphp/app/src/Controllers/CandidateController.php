@@ -6,8 +6,9 @@ namespace Bench\Controllers;
 
 use Bench\Support\Cache;
 use PDO;
-use PivotPHP\Core\Http\Request;
-use PivotPHP\Core\Http\Response;
+use PivotPHP\Http\ExpressRequest;
+use PivotPHP\Http\ExpressResponse;
+use Psr\Http\Message\ResponseInterface;
 
 class CandidateController
 {
@@ -17,7 +18,7 @@ class CandidateController
     {
     }
 
-    public function index(Request $req, Response $res): Response
+    public function index(ExpressRequest $req, ExpressResponse $res): ResponseInterface
     {
         $cached = $this->cache->get(self::CACHE_KEY);
 
@@ -36,7 +37,7 @@ class CandidateController
         return $res->json($candidates);
     }
 
-    public function show(Request $req, Response $res): Response
+    public function show(ExpressRequest $req, ExpressResponse $res): ResponseInterface
     {
         $stmt = $this->pdo->prepare('SELECT id, name, position FROM candidates WHERE id = ?');
         $stmt->execute([$req->param('id')]);
