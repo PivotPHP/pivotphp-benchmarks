@@ -7,8 +7,9 @@ namespace Bench\Controllers;
 use Bench\Support\Cache;
 use Bench\Support\CpfValidator;
 use PDO;
-use PivotPHP\Core\Http\Request;
-use PivotPHP\Core\Http\Response;
+use PivotPHP\Http\ExpressRequest;
+use PivotPHP\Http\ExpressResponse;
+use Psr\Http\Message\ResponseInterface;
 
 class VoteController
 {
@@ -21,7 +22,7 @@ class VoteController
     /**
      * POST /api/votes — registra um voto.
      */
-    public function store(Request $req, Response $res): Response
+    public function store(ExpressRequest $req, ExpressResponse $res): ResponseInterface
     {
         $candidateId = $req->input('candidateId');
         $cpf         = $req->input('cpf');
@@ -73,7 +74,7 @@ class VoteController
     /**
      * GET /api/votes/results — resultados agregados.
      */
-    public function results(Request $req, Response $res): Response
+    public function results(ExpressRequest $req, ExpressResponse $res): ResponseInterface
     {
         $cached = $this->cache->get(self::RESULTS_CACHE_KEY);
 
@@ -98,7 +99,7 @@ class VoteController
     /**
      * GET /api/votes/results/{candidateId} — resultado de um candidato.
      */
-    public function resultForCandidate(Request $req, Response $res): Response
+    public function resultForCandidate(ExpressRequest $req, ExpressResponse $res): ResponseInterface
     {
         $stmt = $this->pdo->prepare(
             'SELECT c.id, c.name, COUNT(v.id) AS votes
@@ -123,7 +124,7 @@ class VoteController
     /**
      * DELETE /api/votes — limpa os votos (apenas para ambiente de teste).
      */
-    public function destroy(Request $req, Response $res): Response
+    public function destroy(ExpressRequest $req, ExpressResponse $res): ResponseInterface
     {
         $this->pdo->exec('TRUNCATE votes RESTART IDENTITY');
         $this->cache->del(self::RESULTS_CACHE_KEY);
