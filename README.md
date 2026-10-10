@@ -31,6 +31,10 @@ Limites estritos de recursos são garantidos via cgroups e Docker Compose:
 
 A suíte divide os testes em três grupos de medição (ver [Metodologia detalhada](reports/methodology.md)):
 
+> **Estado atual:** os grupos **A** e **B** estão implementados **apenas na variante PivotPHP** — ainda não
+> há comparação entre frameworks para eles (pendente: SPEC-109). O grupo **C** (votação) é o único
+> comparável entre os 5 frameworks.
+
 ### Grupo A — Overhead Mínimo do Framework (sem banco)
 - `GET /api/health` — JSON simples (`{"status":"ok"}`)
 - `GET /api/ping` — Resposta em texto puro (`pong`)

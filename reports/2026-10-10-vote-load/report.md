@@ -1,5 +1,9 @@
 # Relatório de Benchmark — VOTE-LOAD (SPEC-106)
 
+> **Origem dos dados:** relatório regerado pelo `scripts/generate-report.py` a partir dos logs brutos da
+> rodada da SPEC-037 (2026-10-10), quando a variante PivotPHP usava **`pivotphp/core` ^4.0**. Não é uma
+> medição do core 5.0 e a rodada não tem `metadata.json` — por isso data e host aparecem como desconhecidos.
+
 - **Data da Execução**: `desconhecido`
 - **Cenário**: `vote-load`
 - **Host**: Desconhecido (— núcleos), — MB RAM, Linux
