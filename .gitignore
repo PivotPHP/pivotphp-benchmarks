@@ -173,3 +173,6 @@ CLAUDE.md
 !*/docker-compose.yml
 !Dockerfile
 !*/Dockerfile
+# Publicados: relatórios de benchmark (commitáveis)
+!reports/
+!reports/**

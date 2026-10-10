@@ -1,0 +1,22 @@
+{
+    "name": "bench/webman-app",
+    "description": "Voting API implemented with Webman (benchmark)",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "workerman/webman-framework": "^2.1",
+        "monolog/monolog": "^2.0",
+        "predis/predis": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "./",
+            "app\\": "./app"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

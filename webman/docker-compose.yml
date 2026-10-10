@@ -1,0 +1,78 @@
+# Ambiente isolado do framework PivotPHP.
+# Cada framework tem seu próprio postgres + redis + app (um medido por vez).
+#
+# Limites de recursos (`deploy.resources`) valem em Swarm mode ou
+# `docker compose --compatibility`. Para o smoke test, `docker compose up` basta.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: webman-postgres
+    environment:
+      POSTGRES_DB: voting_db
+      POSTGRES_USER: bench
+      POSTGRES_PASSWORD: bench_secret
+    volumes:
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bench -d voting_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+
+  redis:
+    image: redis:7-alpine
+    container_name: webman-redis
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  app:
+    build: .
+    container_name: webman-app
+    environment:
+      APP_ENV: benchmark
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: voting_db
+      DB_USER: bench
+      DB_PASSWORD: bench_secret
+      REDIS_HOST: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8084:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "1.0"
+          memory: 256M
+
+  k6:
+    image: grafana/k6:latest
+    container_name: webman-k6
+    volumes:
+      - ../k6:/scripts
+    environment:
+      BASE_URL: http://app:8080
+    working_dir: /scripts/scripts
+    depends_on:
+      app:
+        condition: service_started
+    profiles:
+      - loadtest
