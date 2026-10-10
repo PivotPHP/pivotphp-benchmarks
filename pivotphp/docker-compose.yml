@@ -20,6 +20,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    cpus: 2.0
+    mem_limit: 2048m
     deploy:
       resources:
         limits:
@@ -30,6 +32,8 @@ services:
     image: redis:7-alpine
     container_name: pivotphp-redis
     command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    cpus: 0.5
+    mem_limit: 256m
     deploy:
       resources:
         limits:
@@ -54,6 +58,8 @@ services:
         condition: service_started
     ports:
       - "8080:8080"
+    cpus: 1.0
+    mem_limit: 512m
     deploy:
       resources:
         limits:
