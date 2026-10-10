@@ -42,5 +42,15 @@ export default function () {
   const results = http.get(`${BASE_URL}/api/votes/results`);
   check(results, { 'results: 200': (r) => r.status === 200 });
 
+  // Produtos CRUD (Grupo B)
+  const products = http.get(`${BASE_URL}/api/products?page=1&limit=5`);
+  check(products, { 'products list: 200': (r) => r.status === 200 });
+
+  const productOne = http.get(`${BASE_URL}/api/products/1`);
+  check(productOne, { 'product detail: 200': (r) => r.status === 200 });
+
+  const dashboard = http.get(`${BASE_URL}/api/dashboard`);
+  check(dashboard, { 'dashboard: 200': (r) => r.status === 200 });
+
   sleep(1);
 }

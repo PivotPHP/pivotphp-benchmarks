@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 use Bench\Controllers\CandidateController;
+use Bench\Controllers\ProductController;
 use Bench\Controllers\VoteController;
 use Bench\Support\Cache;
 use PivotPHP\Core\Core\Application;
 use Predis\Client;
 
 /**
- * Monta a aplicação da API de votação (PivotPHP) — mesma estrutura do pivotphp/skeleton 4.x.
+ * Monta a aplicação da API de benchmark (PivotPHP) — mesma estrutura do pivotphp/skeleton.
  *
  * Fica em config/bootstrap/: o core carrega todo config/*.php (um nível) como configuração.
  */
@@ -34,7 +35,7 @@ $app->singleton(PDO::class, function (): PDO {
     ]);
 });
 
-// Redis (cache de candidatos/resultados).
+// Redis (cache de candidatos/resultados/dashboard).
 $app->singleton(Cache::class, function (): Cache {
     try {
         $redis = new Client([
@@ -52,6 +53,7 @@ $app->singleton(Cache::class, function (): Cache {
 // Controllers.
 $app->singleton(CandidateController::class, fn () => new CandidateController($app->make(PDO::class), $app->make(Cache::class)));
 $app->singleton(VoteController::class, fn () => new VoteController($app->make(PDO::class), $app->make(Cache::class)));
+$app->singleton(ProductController::class, fn () => new ProductController($app->make(PDO::class), $app->make(Cache::class)));
 
 require __DIR__ . '/../../src/Routers/api.php';
 
