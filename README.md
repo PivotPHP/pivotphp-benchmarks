@@ -18,28 +18,41 @@ sustentado, taxa de erro e eficiência de recursos.
 | Symfony (microkernel) | `symfony/` | 8083 | ✅ |
 | Webman (async) | `webman/` | 8084 | ✅ |
 
-Cada framework é **autocontido**: `Dockerfile`, `docker/` (nginx/php configs), `app/`
+Cada framework é **autocontido**: `Dockerfile`, `docker/` (nginx/php configs), `app/` ou `src/`
 (código da API), `database/` (schema + seed) e `docker-compose.yml` próprios. O ambiente de
 cada framework é **isolado** (banco e cache próprios), e um framework é medido por vez.
 
-## Contrato da API
+Limites estritos de recursos são garantidos via cgroups e Docker Compose:
+- **Aplicação**: 1.0 vCPU / 512 MB RAM
+- **PostgreSQL**: 2.0 vCPU / 2048 MB RAM
+- **Redis**: 0.5 vCPU / 256 MB RAM
 
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/api/health` | Health check (sem dependências) |
-| `GET` | `/api/candidates` | Lista candidatos (cache Redis → banco) |
-| `GET` | `/api/candidates/{id}` | Detalhe de um candidato |
-| `POST` | `/api/votes` | Registra voto (valida CPF, voto duplicado, transação, invalida cache) |
-| `GET` | `/api/votes/results` | Resultados agregados |
-| `GET` | `/api/votes/results/{candidateId}` | Resultado de um candidato |
-| `DELETE` | `/api/votes` | Limpa votos (teste) |
+## Grupos de Avaliação Arquitetural
 
-Regras:
+A suíte divide os testes em três grupos de medição (ver [Metodologia detalhada](reports/methodology.md)):
 
-- `POST /api/votes` recebe `{"candidateId": int, "cpf": string}`.
-- CPF validado com dígitos verificadores.
-- Voto duplicado (mesmo CPF) → `409`; candidato inexistente → `404`; entrada inválida → `422`.
-- Resultados agregados via `COUNT` + `GROUP BY`, com cache Redis invalidado a cada voto.
+> **Estado atual:** os grupos **A** e **B** estão implementados **apenas na variante PivotPHP** — ainda não
+> há comparação entre frameworks para eles (pendente: SPEC-109). O grupo **C** (votação) é o único
+> comparável entre os 5 frameworks.
+
+### Grupo A — Overhead Mínimo do Framework (sem banco)
+- `GET /api/health` — JSON simples (`{"status":"ok"}`)
+- `GET /api/ping` — Resposta em texto puro (`pong`)
+
+### Grupo B — CRUD com Persistência Relacional e Cache
+- `GET /api/products` — Listagem paginada (`page`, `limit`) e ordenada por id
+- `GET /api/products/{id}` — Detalhe de produto por chave primária
+- `POST /api/products` — Cadastro com validação de payload e inserção relacional
+- `PATCH /api/products/{id}` — Atualização parcial com invalidação de cache
+- `DELETE /api/products/{id}` — Exclusão física com invalidação de cache
+- `GET /api/dashboard` — Agregação analítica (`COUNT`, `AVG`, `SUM`, agrupamento por categoria) com cache no Redis
+
+### Grupo C — Regras de Negócio e Concorrência (Votação)
+- `GET /api/candidates` — Lista candidatos (cache Redis → PostgreSQL)
+- `GET /api/candidates/{id}` — Detalhe de candidato
+- `POST /api/votes` — Voto concorrente (validação de CPF, transação ACID com detecção de unicidade `409`)
+- `GET /api/votes/results` — Resultados consolidados por candidato
+- `DELETE /api/votes` — Limpeza determinística para testes
 
 ## Estrutura
 
