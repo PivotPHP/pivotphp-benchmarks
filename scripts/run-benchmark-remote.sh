@@ -94,15 +94,22 @@ echo ""
 
 # ---------- Latência base ----------
 # ping.exe do Windows (via Git Bash) localizado em EN ("Average = Xms") ou PT-BR
-# ("Média = Xms"); ping do Linux/macOS usa "rtt min/avg/max/mdev = .../AVG/...".
+# ("Média = Xms", às vezes com vírgula decimal e/ou encoding OEM no console);
+# ping do Linux/macOS usa "rtt min/avg/max/mdev = .../AVG/...".
+# Se nenhum padrão bater, PING_AVG fica "desconhecido" e a saída crua é salva em
+# ping-raw.txt para conferência manual — a rodada não é interrompida por isso.
 REMOTE_IP="${REMOTE_HOST##*@}"
 echo ">> Medindo latência base da rede ($REMOTE_IP)..."
 PING_OUT="$(ping -n 20 "$REMOTE_IP" 2>/dev/null || ping -c 20 "$REMOTE_IP" 2>/dev/null || echo "")"
-PING_AVG="$(echo "$PING_OUT" | grep -ioE '(Average|Média) = [0-9]+ ?ms' | grep -oE '[0-9]+')"
+echo "$PING_OUT" > "$RESULTS_DIR/ping-raw.txt" 2>/dev/null || true
+PING_AVG="$(echo "$PING_OUT" | grep -ioE '(Average|Média) = [0-9]+[,.]?[0-9]*ms' | grep -oE '[0-9]+[,.]?[0-9]*' | tr ',' '.')"
 if [[ -z "$PING_AVG" ]]; then
     PING_AVG="$(echo "$PING_OUT" | grep -oE 'rtt [a-z/]+ = [0-9.]+/[0-9.]+/[0-9.]+' | sed -E 's#.*/([0-9.]+)/[0-9.]+$#\1#')"
 fi
-PING_AVG="${PING_AVG:-desconhecido}"
+if [[ -z "$PING_AVG" ]]; then
+    echo "   Não consegui extrair a média automaticamente (saída em ping-raw.txt)."
+    PING_AVG="desconhecido"
+fi
 echo "   Latência média: ${PING_AVG}ms"
 echo ""
 
