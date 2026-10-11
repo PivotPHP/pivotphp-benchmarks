@@ -120,13 +120,18 @@ echo "   Latência média: ${PING_AVG}ms"
 echo ""
 
 # ---------- Metadados do host remoto (VM) ----------
+# Uma chamada SSH por dado (em vez de um comando composto com ';' e awk com
+# escape de '$'): mais lento, mas evita diferenças de parsing de aspas entre
+# o SSH do OpenSSH-Windows (Git Bash) e o do OpenSSH-Linux.
 echo ">> Coletando metadados da VM..."
-VM_INFO="$(ssh "$REMOTE_HOST" "nproc; grep MemTotal /proc/meminfo | awk '{print \$2}'; uname -sr; docker --version")"
-VM_CPU_CORES="$(echo "$VM_INFO" | sed -n 1p)"
-VM_RAM_KB="$(echo "$VM_INFO" | sed -n 2p)"
+SSH_TIMEOUT="ssh -o ConnectTimeout=10 -o BatchMode=yes"
+VM_CPU_CORES="$($SSH_TIMEOUT "$REMOTE_HOST" nproc 2>/dev/null || echo 0)"
+VM_RAM_LINE="$($SSH_TIMEOUT "$REMOTE_HOST" grep MemTotal /proc/meminfo 2>/dev/null || echo "MemTotal: 0 kB")"
+VM_RAM_KB="$(echo "$VM_RAM_LINE" | grep -oE '[0-9]+' | head -1)"
+VM_RAM_KB="${VM_RAM_KB:-0}"
 VM_RAM_MB=$((VM_RAM_KB / 1024))
-VM_OS="$(echo "$VM_INFO" | sed -n 3p)"
-VM_DOCKER="$(echo "$VM_INFO" | sed -n 4p)"
+VM_OS="$($SSH_TIMEOUT "$REMOTE_HOST" uname -sr 2>/dev/null || echo desconhecido)"
+VM_DOCKER="$($SSH_TIMEOUT "$REMOTE_HOST" docker --version 2>/dev/null || echo desconhecido)"
 
 GEN_CPU_MODEL="$(grep -m1 "model name" /proc/cpuinfo 2>/dev/null | cut -d: -f2 | sed 's/^[ \t]*//' || echo "Desconhecido (Windows)")"
 GEN_OS="$(uname -s 2>/dev/null || echo "Windows")"
@@ -169,13 +174,15 @@ echo "   VM: $VM_CPU_CORES vCPU, ${VM_RAM_MB}MB RAM, $VM_OS, $VM_DOCKER"
 echo ""
 
 remote_up() {
+    # ConnectTimeout só limita o handshake SSH, não a execução remota: um
+    # 'docker compose up' legitimamente demorado (build/pull) não é cortado.
     local fw="$1"
-    ssh "$REMOTE_HOST" "cd $REMOTE_PATH/$fw && docker compose up -d postgres redis app" >/dev/null
+    $SSH_TIMEOUT "$REMOTE_HOST" "cd $REMOTE_PATH/$fw && docker compose up -d postgres redis app" >/dev/null
 }
 
 remote_down() {
     local fw="$1"
-    ssh "$REMOTE_HOST" "cd $REMOTE_PATH/$fw && docker compose down -v" >/dev/null 2>&1 || true
+    $SSH_TIMEOUT "$REMOTE_HOST" "cd $REMOTE_PATH/$fw && docker compose down -v" >/dev/null 2>&1 || true
 }
 
 wait_health() {
@@ -187,14 +194,49 @@ wait_health() {
     return 1
 }
 
-# VM CPU total (idle% da primeira linha de `mpstat` ou /proc/stat snapshot) e CPU
-# somada dos containers do benchmark; a diferença é CPU "externa" ao benchmark.
+# Todos os comandos remotos abaixo são simples (sem ';', '|' nem aspas aninhadas
+# dentro da string enviada ao ssh) — o parsing acontece aqui no shell LOCAL, não
+# no remoto, para não depender de como cada SSH (Windows/Linux) repassa escapes.
+
+# "/proc/stat" cru (2 linhas 'cpu ...', 0.3s de intervalo) para calcular %CPU
+# total da VM localmente, sem depender do formato de saída do `top`.
+remote_proc_stat() {
+    $SSH_TIMEOUT "$REMOTE_HOST" sh -c 'grep "^cpu " /proc/stat; sleep 0.3; grep "^cpu " /proc/stat' 2>/dev/null
+}
+
+# % de CPU ocupado entre duas leituras de /proc/stat (campos: user nice system
+# idle iowait irq softirq ...). Portável entre distros, ao contrário do `top`.
+cpu_percent_from_proc_stat() {
+    local raw="$1"
+    awk '
+        NR==1 { for (i=2;i<=NF;i++) a[i]=$i; next }
+        NR==2 {
+            idle1 = a[5] + a[6]; idle2 = $5 + $6
+            total1 = 0; total2 = 0
+            for (i=2;i<=NF;i++) { total1 += a[i]; total2 += $i }
+            dt = total2 - total1; di = idle2 - idle1
+            if (dt <= 0) { print "0"; exit }
+            printf "%.1f", 100 * (dt - di) / dt
+        }
+    ' <<< "$raw"
+}
+
+remote_docker_stats_raw() {
+    $SSH_TIMEOUT "$REMOTE_HOST" docker stats --no-stream --format '{{.Name}},{{.CPUPerc}},{{.MemUsage}},{{.MemPerc}},{{.NetIO}},{{.BlockIO}}' 2>/dev/null
+}
+
 sample_host_cpu() {
     local fw="$1" rep="$2"
-    local now vm_total containers_sum external
+    local now vm_total containers_sum external stat_raw
     now=$(date +%s)
-    vm_total=$(ssh "$REMOTE_HOST" "top -bn2 -d0.3 | grep '^%Cpu' | tail -1 | awk -F'[,: ]+' '{for(i=1;i<=NF;i++) if(\$i==\"id\") print 100-\$(i-1)}'" 2>/dev/null || echo "0")
-    containers_sum=$(ssh "$REMOTE_HOST" "docker stats --no-stream --format '{{.CPUPerc}}' 2>/dev/null | tr -d '%' | awk '{s+=\$1} END{print s+0}'" 2>/dev/null || echo "0")
+    stat_raw="$(remote_proc_stat)"
+    if [[ -n "$stat_raw" ]]; then
+        vm_total="$(cpu_percent_from_proc_stat "$stat_raw")"
+    else
+        vm_total="0"
+    fi
+    containers_sum="$(remote_docker_stats_raw | awk -F',' '{gsub(/%/,"",$2); s+=$2} END{printf "%.1f", s+0}')"
+    [[ -z "$containers_sum" ]] && containers_sum="0"
     external=$(awk -v t="$vm_total" -v c="$containers_sum" 'BEGIN{d=t-c; if(d<0) d=0; printf "%.1f", d}')
     echo "${now},${rep},${fw},${vm_total},${containers_sum},${external}" >> "$HOST_CPU_CSV"
     echo "$external"
@@ -208,10 +250,9 @@ sample_containers() {
     [[ -f "$csv" ]] || echo "timestamp,framework,container,cpu_perc,mem_usage,mem_perc,net_io,block_io" > "$csv"
     local now
     now=$(date +%s)
-    ssh "$REMOTE_HOST" "docker stats --no-stream --format '{{.Name}},{{.CPUPerc}},{{.MemUsage}},{{.MemPerc}},{{.NetIO}},{{.BlockIO}}'" 2>/dev/null | \
-        while IFS= read -r line; do
-            [[ -n "$line" ]] && echo "${now},${fw},${line}" >> "$csv"
-        done
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && echo "${now},${fw},${line}" >> "$csv"
+    done <<< "$(remote_docker_stats_raw)"
 }
 
 run_one() {
@@ -223,7 +264,7 @@ run_one() {
     remote_up "$fw"
     if ! wait_health "$fw"; then
         echo "     FALHA: $fw não respondeu em /api/health"
-        ssh "$REMOTE_HOST" "cd $REMOTE_PATH/$fw && docker compose logs --tail=40 app" > "$out_dir/${fw}_boot-failure.log" 2>&1 || true
+        $SSH_TIMEOUT "$REMOTE_HOST" "cd $REMOTE_PATH/$fw && docker compose logs --tail=40 app" > "$out_dir/${fw}_boot-failure.log" 2>&1 || true
         remote_down "$fw"
         return 1
     fi
