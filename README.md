@@ -112,18 +112,26 @@ docker compose --profile loadtest run --rm k6 run /scripts/smoke.js
 Os relatórios consolidados ficam em [`reports/`](reports/) e os dados brutos (k6 + smoke) em
 `results/<timestamp>/` (ignorados no git).
 
-**Linha de base — PivotPHP 5.0** (`vote-load`, 2026-10-10, host WSL2 · Docker 29.7.2):
+**Prévia — core 5.0, `vote-load` × 5 repetições** (2026-10-10, host local WSL2 ·
+[relatório](reports/2026-10-10-vote-load-5x-preview/README.md)):
 
-| Métrica | valor |
-|---|---|
-| Smoke | ✅ aprovado — `http_req_failed 0.00%` (funcionalmente correto) |
-| Throughput | 160,93 req/s (`http_reqs 43226`) |
-| Latência (voto) | avg 1,01 s · med 784 ms · p95 **3,05 s** · p99 3,29 s |
-| Erros | 0,02% (`9/43226`; nenhum 500) |
+| Framework | req/s (média ± IC95) | p50 | p95 | Erros | CPU app |
+|---|---:|---:|---:|---:|---:|
+| Slim 4 | 179,14 ± 3,70 | 675 ms | 2,59 s | 0,012% | 82% |
+| Symfony | 178,95 ± 3,57 | 675 ms | 2,61 s | 0,016% | 80% |
+| Mezzio | 178,80 ± 3,95 | 672 ms | 2,60 s | 0,016% | 80% |
+| PivotPHP 5.0 | 175,21 ± 6,84 | 698 ms | 2,67 s | 0,018% | 80% |
+| Webman *(worker persistente — ranking separado)* | 511,85 ± 16,18 | 7 ms | 0,35 s | 0,002% | 23% |
 
-> O `vote-load` **satura** o ambiente (p95 ~3 s ≫ thresholds) — os números indicam o ponto de
-> degradação sob essa carga, **não** a capacidade no SLO. Sem regressão vs. o core 4.0 (~165 req/s no
-> mesmo cenário). Parte de `reports/2026-10-10-vote-load/`.
+> **Empate técnico no grupo PHP-FPM**: os intervalos de confiança se sobrepõem e a diferença pareada do
+> PivotPHP (−2%) não é estatisticamente significativa. É uma **prévia**: o host estava em uso durante a
+> rodada, o k6 rodou na mesma máquina e a ordem dos frameworks era fixa. A rodada de referência será feita
+> com as APIs numa VM dedicada e a carga gerada em outra máquina (SPEC-110).
+>
+> O `vote-load` **satura** os frameworks PHP-FPM (p95 > 2,5 s, acima dos thresholds): os números indicam
+> capacidade sob fila, não latência dentro do SLO.
+
+Consolidar repetições: `python3 scripts/consolidate-runs.py --scenario vote-load results/<run1> results/<run2> ...`
 
 ## Limites de recursos (justiça entre frameworks)
 

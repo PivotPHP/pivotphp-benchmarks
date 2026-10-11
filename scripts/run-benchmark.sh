@@ -155,7 +155,9 @@ for fw in "${FRAMEWORKS[@]}"; do
 
         # Cenário principal com exportação de summary JSON
         echo "  -> Executando cenário de carga ($SCENARIO)..."
+        # --user: a imagem do k6 roda como UID 12345 e não consegue gravar no volume do host.
         docker compose --profile loadtest run --rm \
+            --user "$(id -u):$(id -g)" \
             -v "$RESULTS_DIR":/out \
             k6 run --summary-export "/out/${fw}_${SCENARIO}_summary.json" "$SCENARIO.js" \
             > "$RESULTS_DIR/${fw}_${SCENARIO}.txt" 2>&1 || true
