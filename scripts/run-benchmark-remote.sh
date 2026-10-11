@@ -26,7 +26,7 @@
 set -uo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT_DIR"
+cd "$ROOT_DIR" || { echo "Não foi possível entrar em $ROOT_DIR" >&2; exit 1; }
 
 # ---------- Argumentos ----------
 REMOTE_HOST=""
