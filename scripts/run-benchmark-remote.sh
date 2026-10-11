@@ -20,7 +20,10 @@
 # <fw>_<cenario>_summary.json, report.md. Repetições com interferência de CPU acima
 # do limiar são marcadas e re-executadas automaticamente.
 
-set -euo pipefail
+# Sem 'set -e' de propósito: vários passos (grep sem resultado, uma repetição com
+# aviso, uma amostra de docker stats vazia) retornam != 0 em situação normal e
+# derrubariam a rodada em silêncio. Cada erro relevante é tratado explicitamente.
+set -uo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
@@ -108,9 +111,11 @@ else
     PING_OUT="$(ping -n 20 "$REMOTE_IP" 2>&1 || ping -c 20 "$REMOTE_IP" 2>&1 || echo "")"
 fi
 echo "$PING_OUT" > "$RESULTS_DIR/ping-raw.txt" 2>/dev/null || true
-PING_AVG="$(echo "$PING_OUT" | grep -ioE '(Average|Média) = [0-9]+[,.]?[0-9]*ms' | grep -oE '[0-9]+[,.]?[0-9]*' | tr ',' '.')"
+# Independente do idioma/codificação do console: no Windows o resumo termina em
+# "... = Xms, ... = Yms, <Média|Average> = Zms" — o último "= Nms" é a média.
+PING_AVG="$(echo "$PING_OUT" | tr -d '\r' | grep -oE '= *[0-9]+[,.]?[0-9]* ?ms' | tail -1 | grep -oE '[0-9]+[,.]?[0-9]*' | tr ',' '.' || true)"
 if [[ -z "$PING_AVG" ]]; then
-    PING_AVG="$(echo "$PING_OUT" | grep -oE 'rtt [a-z/]+ = [0-9.]+/[0-9.]+/[0-9.]+' | sed -E 's#.*/([0-9.]+)/[0-9.]+$#\1#')"
+    PING_AVG="$(echo "$PING_OUT" | grep -oE 'rtt [a-z/]+ = [0-9.]+/[0-9.]+/[0-9.]+' | sed -E 's#.*/([0-9.]+)/[0-9.]+$#\1#' || true)"
 fi
 if [[ -z "$PING_AVG" ]]; then
     echo "   Não consegui extrair a média automaticamente (saída em ping-raw.txt)."
@@ -127,7 +132,7 @@ echo ">> Coletando metadados da VM..."
 SSH_TIMEOUT="ssh -o ConnectTimeout=10 -o BatchMode=yes"
 VM_CPU_CORES="$($SSH_TIMEOUT "$REMOTE_HOST" nproc 2>/dev/null || echo 0)"
 VM_RAM_LINE="$($SSH_TIMEOUT "$REMOTE_HOST" grep MemTotal /proc/meminfo 2>/dev/null || echo "MemTotal: 0 kB")"
-VM_RAM_KB="$(echo "$VM_RAM_LINE" | grep -oE '[0-9]+' | head -1)"
+VM_RAM_KB="$(echo "$VM_RAM_LINE" | grep -oE '[0-9]+' | head -1 || true)"
 VM_RAM_KB="${VM_RAM_KB:-0}"
 VM_RAM_MB=$((VM_RAM_KB / 1024))
 VM_OS="$($SSH_TIMEOUT "$REMOTE_HOST" uname -sr 2>/dev/null || echo desconhecido)"
@@ -251,8 +256,9 @@ sample_containers() {
     local now
     now=$(date +%s)
     while IFS= read -r line; do
-        [[ -n "$line" ]] && echo "${now},${fw},${line}" >> "$csv"
+        if [[ -n "$line" ]]; then echo "${now},${fw},${line}" >> "$csv"; fi
     done <<< "$(remote_docker_stats_raw)"
+    return 0
 }
 
 run_one() {
