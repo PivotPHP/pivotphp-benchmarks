@@ -1,0 +1,36 @@
+{
+  "run_id": "20261010_214738",
+  "scenario": "vote-load",
+  "timestamp": "2026-10-11T00:47:38Z",
+  "git": {
+    "commit": "ed0636ce0a298187651d3ef1c826adc783c25876",
+    "branch": "main"
+  },
+  "host": {
+    "os": "Linux 6.18.40.1-microsoft-standard-WSL2",
+    "cpu_model": "13th Gen Intel(R) Core(TM) i7-13700H",
+    "cpu_cores": 5,
+    "ram_total_mb": 19869
+  },
+  "limits": {
+    "app": {
+      "cpus": 1.0,
+      "memory": "512M"
+    },
+    "postgres": {
+      "cpus": 2.0,
+      "memory": "2G"
+    },
+    "redis": {
+      "cpus": 0.5,
+      "memory": "256M"
+    }
+  },
+  "frameworks": [
+  "pivotphp",
+  "slim",
+  "mezzio",
+  "symfony",
+  "webman"
+]
+}
