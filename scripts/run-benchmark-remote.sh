@@ -98,9 +98,15 @@ echo ""
 # ping do Linux/macOS usa "rtt min/avg/max/mdev = .../AVG/...".
 # Se nenhum padrão bater, PING_AVG fica "desconhecido" e a saída crua é salva em
 # ping-raw.txt para conferência manual — a rodada não é interrompida por isso.
+# Timeout explícito (45s): ping.exe no Windows pode não retornar código de saída
+# != 0 em timeout, então o fallback "|| ping -c" nunca dispara sozinho.
 REMOTE_IP="${REMOTE_HOST##*@}"
-echo ">> Medindo latência base da rede ($REMOTE_IP)..."
-PING_OUT="$(ping -n 20 "$REMOTE_IP" 2>/dev/null || ping -c 20 "$REMOTE_IP" 2>/dev/null || echo "")"
+echo ">> Medindo latência base da rede ($REMOTE_IP, timeout de 45s)..."
+if command -v timeout >/dev/null 2>&1; then
+    PING_OUT="$(timeout 45 ping -n 20 "$REMOTE_IP" 2>&1 || timeout 45 ping -c 20 "$REMOTE_IP" 2>&1 || echo "")"
+else
+    PING_OUT="$(ping -n 20 "$REMOTE_IP" 2>&1 || ping -c 20 "$REMOTE_IP" 2>&1 || echo "")"
+fi
 echo "$PING_OUT" > "$RESULTS_DIR/ping-raw.txt" 2>/dev/null || true
 PING_AVG="$(echo "$PING_OUT" | grep -ioE '(Average|Média) = [0-9]+[,.]?[0-9]*ms' | grep -oE '[0-9]+[,.]?[0-9]*' | tr ',' '.')"
 if [[ -z "$PING_AVG" ]]; then
