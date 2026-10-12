@@ -9,7 +9,7 @@
         "ext-pdo_pgsql": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "pivotphp/core": "^5.0",
+        "pivotphp/core": "^5.1",
         "pivotphp/http": "^1.0",
         "predis/predis": "^2.2"
     },
