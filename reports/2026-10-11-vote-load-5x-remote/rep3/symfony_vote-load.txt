@@ -1,0 +1,57 @@
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{endpoint:results}
+    ✗ 'p(95)<300' p(95)=2.31s
+    ✗ 'p(99)<600' p(99)=2.52s
+
+    http_req_duration{endpoint:vote}
+    ✗ 'p(95)<500' p(95)=2.35s
+    ✗ 'p(99)<1000' p(99)=2.58s
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.01%
+
+    vote_success_rate
+    ✓ 'rate>0.99' rate=99.97%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 75736  280.280182/s
+    checks_succeeded...: 99.99% 75729 out of 75736
+    checks_failed......: 0.00%  7 out of 75736
+
+    ✗ vote: 201
+      ↳  99% — ✓ 25163 / ✗ 7
+    ✓ vote: não é 500
+    ✓ results: 200
+    ✓ candidates: 200
+
+    CUSTOM
+    results_duration_ms............: avg=785.62ms min=304.39µs med=636.9ms  max=2.73s p(90)=2.06s p(95)=2.31s p(99)=2.52s p(99.9)=2.65s
+    vote_duration_ms...............: avg=815.88ms min=325.6µs  med=685.09ms max=2.81s p(90)=2.1s  p(95)=2.35s p(99)=2.58s p(99.9)=2.72s
+    vote_success_rate..............: 99.97% 25163 out of 25170
+
+    HTTP
+    http_req_duration..............: avg=796.76ms min=300.5µs  med=652.84ms max=2.81s p(90)=2.07s p(95)=2.32s p(99)=2.55s p(99.9)=2.69s
+      { endpoint:results }.........: avg=785.62ms min=304.39µs med=636.9ms  max=2.73s p(90)=2.06s p(95)=2.31s p(99)=2.52s p(99.9)=2.65s
+      { endpoint:vote }............: avg=815.88ms min=325.6µs  med=685.09ms max=2.81s p(90)=2.1s  p(95)=2.35s p(99)=2.58s p(99.9)=2.72s
+      { expected_response:true }...: avg=796.87ms min=300.5µs  med=652.99ms max=2.81s p(90)=2.07s p(95)=2.32s p(99)=2.55s p(99.9)=2.69s
+    http_req_failed................: 0.01%  7 out of 50566
+    http_reqs......................: 50566  187.132245/s
+
+    EXECUTION
+    iteration_duration.............: avg=1.14s    min=103.87ms med=969.47ms max=3.35s p(90)=2.44s p(95)=2.67s p(99)=2.97s p(99.9)=3.17s
+    iterations.....................: 50566  187.132245/s
+    vus............................: 8      min=1              max=800
+    vus_max........................: 800    min=800            max=800
+
+    NETWORK
+    data_received..................: 18 MB  67 kB/s
+    data_sent......................: 6.7 MB 25 kB/s
+
+
+
+time="2026-10-11T14:46:51-03:00" level=error msg="thresholds on metrics 'http_req_duration{endpoint:results}, http_req_duration{endpoint:vote}' have been crossed"

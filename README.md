@@ -112,24 +112,28 @@ docker compose --profile loadtest run --rm k6 run /scripts/smoke.js
 Os relatórios consolidados ficam em [`reports/`](reports/) e os dados brutos (k6 + smoke) em
 `results/<timestamp>/` (ignorados no git).
 
-**Prévia — core 5.0, `vote-load` × 5 repetições** (2026-10-10, host local WSL2 ·
-[relatório](reports/2026-10-10-vote-load-5x-preview/README.md)):
+**Referência — core 5.0, `vote-load` × 5 repetições** (2026-10-11, APIs numa VM dedicada e carga gerada em
+outro computador, ordem rotacionada · [relatório](reports/2026-10-11-vote-load-5x-remote/README.md)):
 
 | Framework | req/s (média ± IC95) | p50 | p95 | Erros | CPU app |
 |---|---:|---:|---:|---:|---:|
-| Slim 4 | 179,14 ± 3,70 | 675 ms | 2,59 s | 0,012% | 82% |
-| Symfony | 178,95 ± 3,57 | 675 ms | 2,61 s | 0,016% | 80% |
-| Mezzio | 178,80 ± 3,95 | 672 ms | 2,60 s | 0,016% | 80% |
-| PivotPHP 5.0 | 175,21 ± 6,84 | 698 ms | 2,67 s | 0,018% | 80% |
-| Webman *(worker persistente — ranking separado)* | 511,85 ± 16,18 | 7 ms | 0,35 s | 0,002% | 23% |
+| Mezzio | 186,85 ± 1,00 | 640 ms | 2,34 s | 0,014% | 80% |
+| Slim 4 | 186,21 ± 2,14 | 646 ms | 2,36 s | 0,012% | 80% |
+| Symfony | 186,16 ± 0,87 | 651 ms | 2,35 s | 0,012% | 79% |
+| PivotPHP 5.0 | 185,09 ± 0,82 | 657 ms | 2,38 s | 0,014% | 80% |
+| Webman *(worker persistente — ranking separado)* | 523,26 ± 3,39 | 8 ms | 0,28 s | 0,000% | 18% |
 
-> **Empate técnico no grupo PHP-FPM**: os intervalos de confiança se sobrepõem e a diferença pareada do
-> PivotPHP (−2%) não é estatisticamente significativa. É uma **prévia**: o host estava em uso durante a
-> rodada, o k6 rodou na mesma máquina e a ordem dos frameworks era fixa. A rodada de referência será feita
-> com as APIs numa VM dedicada e a carga gerada em outra máquina (SPEC-110).
->
-> O `vote-load` **satura** os frameworks PHP-FPM (p95 > 2,5 s, acima dos thresholds): os números indicam
-> capacidade sob fila, não latência dentro do SLO.
+> **Grupo PHP-FPM praticamente equivalente** (185–187 req/s). O PivotPHP fica 0,6–0,9% abaixo dos demais;
+> a diferença é estatisticamente significativa só contra o Mezzio (−0,9%) e indica um custo de CPU por
+> requisição ligeiramente maior. O `vote-load` **satura** os frameworks PHP-FPM (p95 > 2,3 s, acima dos
+> thresholds): os números indicam capacidade sob fila, não latência dentro do SLO. Limitações da rodada no
+> relatório.
+
+Rodadas anteriores: [prévia local de 2026-10-10](reports/2026-10-10-vote-load-5x-preview/README.md) (host em
+uso, k6 no mesmo host e ordem fixa — superada por esta).
+
+Execução remota (APIs numa VM, k6 em outro computador): [`reports/remote-setup.md`](reports/remote-setup.md) e
+`./scripts/run-benchmark-remote.sh --host usuario@ip-da-vm --repeats 5 --warmup 1`.
 
 Consolidar repetições: `python3 scripts/consolidate-runs.py --scenario vote-load results/<run1> results/<run2> ...`
 
