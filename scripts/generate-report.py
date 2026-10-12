@@ -72,17 +72,37 @@ def parse_json_summary(filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
         metrics = data.get("metrics", {})
-        http_reqs = metrics.get("http_reqs", {}).get("values", {})
-        http_failed = metrics.get("http_req_failed", {}).get("values", {})
-        duration = metrics.get("vote_duration_ms", {}).get("values", {}) or metrics.get("http_req_duration", {}).get("values", {})
+        http_reqs = metrics.get("http_reqs", {})
+        if "values" in http_reqs:
+            http_reqs = http_reqs["values"]
+
+        http_failed = metrics.get("http_req_failed", {})
+        if "values" in http_failed:
+            http_failed = http_failed["values"]
+
+        duration = metrics.get("vote_duration_ms", {}) or metrics.get("http_req_duration", {})
+        if "values" in duration:
+            duration = duration["values"]
+
+        rate_val = http_failed.get("rate")
+        if rate_val is None:
+            rate_val = http_failed.get("value", 0)
+
+        rps = f"{http_reqs.get('rate', 0):.2f}" if "rate" in http_reqs else "—"
+        p50 = f"{duration.get('med', 0):.2f}ms" if "med" in duration else "—"
+        p95 = f"{duration.get('p(95)', 0):.2f}ms" if "p(95)" in duration else "—"
+        p99 = f"{duration.get('p(99)', 0):.2f}ms" if "p(99)" in duration else "—"
+
+        if rps == "—" and p50 == "—":
+            return None
 
         return {
-            "reqs_per_sec": f"{http_reqs.get('rate', 0):.2f}" if "rate" in http_reqs else "—",
+            "reqs_per_sec": rps,
             "total_reqs": str(int(http_reqs.get("count", 0))),
-            "p50": f"{duration.get('med', 0):.2f}ms" if "med" in duration else "—",
-            "p95": f"{duration.get('p(95)', 0):.2f}ms" if "p(95)" in duration else "—",
-            "p99": f"{duration.get('p(99)', 0):.2f}ms" if "p(99)" in duration else "—",
-            "error_rate": f"{http_failed.get('rate', 0) * 100:.2f}%",
+            "p50": p50,
+            "p95": p95,
+            "p99": p99,
+            "error_rate": f"{float(rate_val) * 100:.2f}%",
             "status": "Concluído"
         }
     except Exception:
