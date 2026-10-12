@@ -82,6 +82,7 @@ mkdir -p "$RESULTS_DIR"
 # resource-usage.csv é por REPETIÇÃO (consolidate-runs.py lê "<rep_dir>/resource-usage.csv");
 # host-cpu-usage.csv é global, extra, para auditar interferência por rodada inteira.
 HOST_CPU_CSV="$RESULTS_DIR/host-cpu-usage.csv"
+# Unidade das colunas de CPU: "% de 1 vCPU" (100 = um núcleo inteiro), igual ao docker stats.
 echo "timestamp,repetition,framework,vm_cpu_total_perc,containers_cpu_perc,external_cpu_perc" > "$HOST_CPU_CSV"
 
 echo "=========================================================="
@@ -206,7 +207,10 @@ wait_health() {
 # "/proc/stat" cru (2 linhas 'cpu ...', 0.3s de intervalo) para calcular %CPU
 # total da VM localmente, sem depender do formato de saída do `top`.
 remote_proc_stat() {
-    $SSH_TIMEOUT "$REMOTE_HOST" sh -c 'grep "^cpu " /proc/stat; sleep 0.3; grep "^cpu " /proc/stat' 2>/dev/null
+    # O comando remoto vai como UM argumento: o ssh junta os argumentos com espaços
+    # e o shell remoto reinterpreta tudo — em vários pedaços, as aspas se perdem
+    # (com 'sh -c' separado, só a segunda leitura chegava e o cálculo ficava vazio).
+    $SSH_TIMEOUT "$REMOTE_HOST" 'grep "^cpu " /proc/stat; sleep 0.5; grep "^cpu " /proc/stat' 2>/dev/null
 }
 
 # % de CPU ocupado entre duas leituras de /proc/stat (campos: user nice system
@@ -234,15 +238,23 @@ sample_host_cpu() {
     local fw="$1" rep="$2"
     local now vm_total containers_sum external stat_raw
     now=$(date +%s)
+    # Unidade comum: "% de 1 vCPU" (a do docker stats, ex.: 227% = 2,27 vCPUs).
+    # O /proc/stat dá % das N vCPUs da VM, então é multiplicado por VM_CPU_CORES.
     stat_raw="$(remote_proc_stat)"
-    if [[ -n "$stat_raw" ]]; then
-        vm_total="$(cpu_percent_from_proc_stat "$stat_raw")"
+    vm_total="$(cpu_percent_from_proc_stat "$stat_raw")"
+    if [[ -z "$vm_total" ]]; then
+        echo "     AVISO: leitura de /proc/stat da VM falhou (CPU externa não medida)" >&2
+        vm_total="NA"
     else
-        vm_total="0"
+        vm_total="$(awk -v p="$vm_total" -v n="$VM_CPU_CORES" 'BEGIN{printf "%.1f", p*n}')"
     fi
     containers_sum="$(remote_docker_stats_raw | awk -F',' '{gsub(/%/,"",$2); s+=$2} END{printf "%.1f", s+0}')"
     [[ -z "$containers_sum" ]] && containers_sum="0"
-    external=$(awk -v t="$vm_total" -v c="$containers_sum" 'BEGIN{d=t-c; if(d<0) d=0; printf "%.1f", d}')
+    if [[ "$vm_total" == "NA" ]]; then
+        external="NA"
+    else
+        external=$(awk -v t="$vm_total" -v c="$containers_sum" 'BEGIN{d=t-c; if(d<0) d=0; printf "%.1f", d}')
+    fi
     echo "${now},${rep},${fw},${vm_total},${containers_sum},${external}" >> "$HOST_CPU_CSV"
     echo "$external"
 }
@@ -303,7 +315,8 @@ run_one() {
 
     remote_down "$fw"
 
-    if awk -v t="$CPU_THRESHOLD" -v x="$idle_external" 'BEGIN{exit !(x>t)}'; then
+    # "NA" = leitura falhou: avisa (em sample_host_cpu) mas não força nova tentativa.
+    if [[ "$idle_external" != "NA" ]] && awk -v t="$CPU_THRESHOLD" -v x="$idle_external" 'BEGIN{exit !(x+0>t+0)}'; then
         echo "     AVISO: CPU externa de ${idle_external}% na VM antes da carga (limiar ${CPU_THRESHOLD}%)"
         return 2
     fi
