@@ -1,0 +1,28 @@
+
+Disparando 192.168.18.113 com 32 bytes de dados:
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo<1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo<1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo<1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+Resposta de 192.168.18.113: bytes=32 tempo=1ms TTL=64
+
+Estat¡sticas do Ping para 192.168.18.113:
+    Pacotes: Enviados = 20, Recebidos = 20, Perdidos = 0 (0% de
+             perda),
+Aproximar um n£mero redondo de vezes em milissegundos:
+    M¡nimo = 0ms, M ximo = 1ms, M‚dia = 0ms

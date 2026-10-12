@@ -1,0 +1,56 @@
+
+
+  █ THRESHOLDS 
+
+    http_req_duration{endpoint:results}
+    ✓ 'p(95)<300' p(95)=292.46ms
+    ✓ 'p(99)<600' p(99)=427.19ms
+
+    http_req_duration{endpoint:vote}
+    ✓ 'p(95)<500' p(95)=292.8ms
+    ✓ 'p(99)<1000' p(99)=428.26ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+    vote_success_rate
+    ✓ 'rate>0.99' rate=99.99%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 212051 784.29275/s
+    checks_succeeded...: 99.99% 212044 out of 212051
+    checks_failed......: 0.00%  7 out of 212051
+
+    ✗ vote: 201
+      ↳  99% — ✓ 70962 / ✗ 7
+    ✓ vote: não é 500
+    ✓ candidates: 200
+    ✓ results: 200
+
+    CUSTOM
+    results_duration_ms............: avg=57.64ms  min=0s       med=7.62ms   max=886.09ms p(90)=209.92ms p(95)=292.46ms p(99)=427.19ms p(99.9)=548.25ms
+    vote_duration_ms...............: avg=58.38ms  min=304.59µs med=8.53ms   max=918.66ms p(90)=206.91ms p(95)=292.8ms  p(99)=428.26ms p(99.9)=557.18ms
+    vote_success_rate..............: 99.99% 70962 out of 70969
+
+    HTTP
+    http_req_duration..............: avg=57.64ms  min=0s       med=7.7ms    max=918.66ms p(90)=207.74ms p(95)=292.46ms p(99)=427.16ms p(99.9)=552.08ms
+      { endpoint:results }.........: avg=57.64ms  min=0s       med=7.62ms   max=886.09ms p(90)=209.92ms p(95)=292.46ms p(99)=427.19ms p(99.9)=548.25ms
+      { endpoint:vote }............: avg=58.38ms  min=304.59µs med=8.53ms   max=918.66ms p(90)=206.91ms p(95)=292.8ms  p(99)=428.26ms p(99.9)=557.18ms
+      { expected_response:true }...: avg=57.64ms  min=0s       med=7.71ms   max=918.66ms p(90)=207.74ms p(95)=292.46ms p(99)=427.16ms p(99.9)=552.08ms
+    http_req_failed................: 0.00%  7 out of 141082
+    http_reqs......................: 141082 521.806498/s
+
+    EXECUTION
+    iteration_duration.............: avg=408.08ms min=100.76ms med=404.41ms max=1.33s    p(90)=613.22ms p(95)=704.91ms p(99)=879.87ms p(99.9)=1.03s   
+    iterations.....................: 141082 521.806498/s
+    vus............................: 8      min=1              max=798
+    vus_max........................: 800    min=800            max=800
+
+    NETWORK
+    data_received..................: 35 MB  131 kB/s
+    data_sent......................: 19 MB  69 kB/s
+
+
+

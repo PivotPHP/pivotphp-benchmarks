@@ -1,0 +1,40 @@
+
+
+  █ THRESHOLDS 
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 140     6.664126/s
+    checks_succeeded...: 100.00% 140 out of 140
+    checks_failed......: 0.00%   0 out of 140
+
+    ✓ health: 200
+    ✓ candidates: 200
+    ✓ vote: 201
+    ✓ results: 200
+    ✓ products list: 200
+    ✓ product detail: 200
+    ✓ dashboard: 200
+
+    HTTP
+    http_req_duration..............: avg=5.79ms min=316.09µs med=5.53ms max=16.55ms p(90)=10.11ms p(95)=10.92ms
+      { expected_response:true }...: avg=5.79ms min=316.09µs med=5.53ms max=16.55ms p(90)=10.11ms p(95)=10.92ms
+    http_req_failed................: 0.00%  0 out of 141
+    http_reqs......................: 141    6.711727/s
+
+    EXECUTION
+    iteration_duration.............: avg=1.05s  min=1.04s    med=1.04s  max=1.08s   p(90)=1.05s   p(95)=1.05s  
+    iterations.....................: 20     0.952018/s
+    vus............................: 1      min=1        max=1
+    vus_max........................: 1      min=1        max=1
+
+    NETWORK
+    data_received..................: 184 kB 8.7 kB/s
+    data_sent......................: 15 kB  689 B/s
+
+
+

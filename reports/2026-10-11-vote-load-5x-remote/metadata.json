@@ -1,0 +1,31 @@
+{
+  "run_id": "20261011_132303_remote",
+  "scenario": "vote-load",
+  "mode": "remote",
+  "timestamp": "2026-10-11T16:23:24Z",
+  "git_commit": "89518af3bab58a7c2628228adb44eea98c4fdc06",
+  "k6_version": "k6.exe v2.3.0 (commit/e088784614, go1.26.8, windows/amd64)",
+  "network": {
+    "ping_avg_ms": "0"
+  },
+  "sut_vm": {
+    "host": "bench@192.168.18.113",
+    "os": "Linux 5.15.0-198-generic",
+    "docker": "Docker version 29.9.0, build f415da8",
+    "cpu_cores": 6,
+    "ram_total_mb": 11956
+  },
+  "generator": {
+    "os": "MINGW64_NT-10.0-26300",
+    "cpu_model": "Intel(R) Core(TM) i5-9300HF CPU @ 2.40GHz"
+  },
+  "limits": {
+    "app": { "cpus": 1.0, "memory": "512M" },
+    "postgres": { "cpus": 2.0, "memory": "2G" },
+    "redis": { "cpus": 0.5, "memory": "256M" }
+  },
+  "frameworks": ["pivotphp","slim","mezzio","symfony","webman"],
+  "repeats": 5,
+  "warmup_repeats": 1,
+  "cpu_interference_threshold_pct": 5
+}
