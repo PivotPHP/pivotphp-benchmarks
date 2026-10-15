@@ -5,8 +5,8 @@ Benchmark realista comparando frameworks PHP executando a **mesma API de votaç�
 sustentado, taxa de erro e eficiência de recursos.
 
 > **Status**: todos os 5 frameworks implementados e validados (smoke test 0% falhas).
-> A variante **PivotPHP** usa o core **5.0** (`pivotphp/core ^5.0`, core-routing 3.0 — roteador por
-> instância); os demais estão inalterados.
+> A variante **PivotPHP** usa o core **5.2** (`pivotphp/core ^5.2`, com pipeline pré-compilado,
+> roteador tipado por instância e logging desacoplado); os demais estão inalterados.
 
 ## Frameworks
 
