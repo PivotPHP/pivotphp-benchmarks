@@ -1,0 +1,12 @@
+{
+  "run_id": "20261029_131728_microbench-routing",
+  "git_commit": "1fb1be0090d89bde3146aae979d3523ecff1e274",
+  "host_cpu": "13th Gen Intel(R) Core(TM) i7-13700H",
+  "docker": "Docker version 29.7.2, build a7dcaa6",
+  "container_cpus": 1.0,
+  "versions": ["3.0.0", "3.1.0"],
+  "routes": "18 100 500",
+  "rounds": 5,
+  "samples": 30,
+  "iterations": 2000
+}

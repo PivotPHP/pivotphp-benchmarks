@@ -176,3 +176,6 @@ CLAUDE.md
 # Publicados: relatórios de benchmark (commitáveis)
 !reports/
 !reports/**
+# Microbench: versões fixadas por composer.json + composer.lock (reprodutível)
+!microbench/**/composer.json
+!microbench/**/composer.lock

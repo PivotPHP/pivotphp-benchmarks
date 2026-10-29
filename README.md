@@ -70,6 +70,7 @@ pivotphp-benchmarks/
 ├── symfony/               # Symfony microkernel (idêntica estrutura)
 ├── webman/                # Webman async (own server, sem Nginx/PHP-FPM)
 ├── k6/                    # smoke.js, vote-load.js, vote-spike.js, vote-soak.js
+├── microbench/routing/    # microbench do pivotphp/core-routing (uma versão por versions/<x.y.z>)
 ├── scripts/run-benchmark.sh  # orquestrador
 └── results/               # saídas (ignoradas no git)
 ```
@@ -106,6 +107,28 @@ curl http://localhost:8080/api/votes/results
 # Smoke via k6
 docker compose --profile loadtest run --rm k6 run /scripts/smoke.js
 ```
+
+## Microbench de roteamento
+
+Mede só o `pivotphp/core-routing`, sem HTTP nem banco, para comparar versões do roteador. Cada versão
+fica em `microbench/routing/versions/<versão>/` com `composer.json` e `composer.lock` próprios.
+O `bench.php` chama o router como o core daquela versão chama: `resolve()` na 3.1+ (core 5.2) e
+`identify()` seguido de `allowedMethods()` na 3.0 (core 5.0).
+
+```bash
+./scripts/run-microbench-routing.sh                       # 5 rodadas; 18, 100 e 500 rotas
+./scripts/run-microbench-routing.sh --rounds 10 --routes "500"
+```
+
+- Cenários: rota estática, dinâmica, `HEAD` (fallback para `GET`), `OPTIONS` automático, `405`, `404` e o
+  registro completo das N rotas. O alvo é o último recurso registrado (pior caso de busca linear).
+- Cada medição roda num container novo (PHP 8.3 CLI, OPcache ligado, JIT desligado, 1 vCPU), com as versões
+  alternadas a cada rodada. O relatório (`results/<run>/report.md`, gerado por
+  `scripts/compare-microbench-routing.py`) traz µs por operação ± IC95 e o ganho pareado por rodada.
+- Antes de medir, o script confere que cada cenário tem o mesmo desfecho (casou, 405/OPTIONS ou 404) nas duas
+  versões; se não tiver, a rodada falha.
+
+Resultado de referência: [core-routing 3.0.0 × 3.1.0](reports/2026-10-29-microbench-routing/README.md).
 
 ## Resultados
 

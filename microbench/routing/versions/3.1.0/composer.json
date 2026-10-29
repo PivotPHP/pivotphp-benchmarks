@@ -1,0 +1,14 @@
+{
+    "name": "pivotphp/benchmarks-microbench-routing-3.1.0",
+    "description": "Ambiente isolado do microbench de roteamento: pivotphp/core-routing 3.1.0",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "pivotphp/core-routing": "3.1.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
