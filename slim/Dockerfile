@@ -8,7 +8,7 @@ RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader \
     --ignore-platform-req=ext-pdo --ignore-platform-req=ext-pdo_pgsql
 
 # ---- Runtime: PHP-FPM + Nginx ----
-FROM php:8.3-fpm
+FROM php:8.3.36-fpm
 
 RUN apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev \
     && docker-php-ext-install -j"$(nproc)" pdo_pgsql opcache \
