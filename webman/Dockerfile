@@ -2,7 +2,7 @@
 
 FROM composer:2 AS builder
 WORKDIR /app
-COPY composer.json ./
+COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader \
     --ignore-platform-req=ext-pdo --ignore-platform-req=ext-pdo_pgsql
 

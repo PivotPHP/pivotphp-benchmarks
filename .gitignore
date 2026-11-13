@@ -176,3 +176,5 @@ CLAUDE.md
 # Publicados: relatórios de benchmark (commitáveis)
 !reports/
 !reports/**
+# Variantes: composer.lock versionado para builds reprodutíveis (mesmas versões em toda rodada)
+!*/composer.lock
