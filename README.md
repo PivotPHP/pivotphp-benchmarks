@@ -54,6 +54,23 @@ A suíte divide os testes em três grupos de medição (ver [Metodologia detalha
 - `GET /api/votes/results` — Resultados consolidados por candidato
 - `DELETE /api/votes` — Limpeza determinística para testes
 
+<!-- BENCHMARK-LEADERBOARD-START -->
+## Leaderboard — Resultados Oficiais (SPEC-115)
+
+> Resultados medidos em ambiente Docker isolado com limites estritos (1.0 vCPU / 512 MB RAM).
+
+### Cenário: Bare GET (Hello World) (`bare-get`)
+
+| Pos | Framework | Runtime | Throughput (req/s) | Latência p50 | Latência p95 | Latência p99 | Erros | RAM RSS |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Webman | CLI Async / Workerman | 56,072.08 | 0.35ms | 2.04ms | 61.78ms | 0.00% | 22.4MiB |
+| 2 | Symfony 7 | Nginx + PHP-FPM 8.3 | 2,233.05 | 5.55ms | 97.98ms | 100.73ms | 0.00% | 55.14MiB |
+| 3 | Slim 4 | Nginx + PHP-FPM 8.3 | 1,922.30 | 6.99ms | 98.62ms | 101.56ms | 0.00% | 55.86MiB |
+| 4 | Mezzio 3 | Nginx + PHP-FPM 8.3 | 1,852.69 | 7.17ms | 98.98ms | 102.49ms | 0.00% | 56.82MiB |
+| 5 | **PivotPHP** | Nginx + PHP-FPM 8.3 | **1,569.21** | 91.76ms | 100.70ms | 105.15ms | 0.00% | 56.99MiB |
+
+<!-- BENCHMARK-LEADERBOARD-END -->
+
 ## Estrutura
 
 ```
@@ -74,7 +91,32 @@ pivotphp-benchmarks/
 └── results/               # saídas (ignoradas no git)
 ```
 
-## Como rodar (orquestrador)
+## Como rodar — Runner CLI Unificado (SPEC-115)
+
+Inspirado na arquitetura do [fastify/benchmarks](https://github.com/fastify/benchmarks), o repositório conta com um runner CLI em PHP com aquecimento prévio de OPcache/JIT, orquestração Docker automática e coleta detalhada de métricas:
+
+```bash
+# Listar frameworks e cenários suportados
+php bin/benchmark.php list
+
+# Benchmark de um framework específico em um cenário (ex: 15s carga + 3s warm-up)
+php bin/benchmark.php bench pivotphp bare-get
+php bin/benchmark.php bench slim params
+
+# Comparativo de todos os 5 frameworks em um cenário
+php bin/benchmark.php compare bare-get
+php bin/benchmark.php compare params
+php bin/benchmark.php compare middleware
+php bin/benchmark.php compare post-json
+
+# Executar todos os cenários modulares sequencialmente
+php bin/benchmark.php run-all
+
+# Atualizar este README.md com o leaderboard do último comparativo
+php bin/benchmark.php update-readme
+```
+
+## Como rodar — Suíte Legada (Votação Completa)
 
 ```bash
 # Todos os frameworks, cenário vote-load
