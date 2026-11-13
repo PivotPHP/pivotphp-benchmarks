@@ -1,0 +1,15 @@
+{
+  "run_id": "20261113_185430_microbench-core",
+  "git_commit": "9534d0f9e5c333b35d6141afd13bdb3e06b16ed2",
+  "core_released": "v5.2.0",
+  "core_candidate_commit": "d37d097+alterações locais",
+  "php": "8.3.36",
+  "host_cpu": "13th Gen Intel(R) Core(TM) i7-13700H",
+  "docker": "Docker version 29.7.2, build a7dcaa6",
+  "k6_image": "grafana/k6:2.3.0",
+  "container_cpus": 1.0,
+  "route": "/api/bare",
+  "rounds": 5,
+  "requests": 20000,
+  "vus": 8
+}

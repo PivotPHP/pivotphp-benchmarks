@@ -1,0 +1,5 @@
+# Variante "candidate": a imagem do benchmark com o src/ de um checkout local do pivotphp/core
+# no lugar do instalado pelo composer. Contexto de build: o diretório src/ do core.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+COPY . /var/www/html/vendor/pivotphp/core/src/

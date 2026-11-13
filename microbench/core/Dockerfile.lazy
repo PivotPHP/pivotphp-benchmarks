@@ -1,0 +1,5 @@
+# Variante "candidate-lazy": a "candidate" com Application::lazyHandlers() ligado no bootstrap.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+RUN sed -i 's/^\$app = new Application(.*$/&\n$app->lazyHandlers();/' config/bootstrap/app.php \
+    && grep -q 'lazyHandlers' config/bootstrap/app.php

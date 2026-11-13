@@ -1,0 +1,6 @@
+# Variante "floor": o mesmo Nginx + PHP-FPM respondendo com PHP puro, sem autoload nem framework.
+# É o piso da medição: o que sobra acima dele é o custo do framework.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+RUN printf '<?php\nheader("Content-Type: application/json");\necho json_encode(["hello" => "world"]);\n' \
+    > public/index.php

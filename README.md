@@ -149,6 +149,28 @@ curl http://localhost:8080/api/votes/results
 docker compose --profile loadtest run --rm k6 run /scripts/smoke.js
 ```
 
+## Microbench do core
+
+Mede a **CPU por requisição** da variante PivotPHP no PHP-FPM real (Nginx + PHP-FPM, 1 vCPU), lendo o
+contador de CPU do cgroup do container antes e depois de um número fixo de requisições. Serve para comparar
+a versão instalada do `pivotphp/core` com um checkout local, sem depender do gerador de carga.
+
+```bash
+./scripts/run-microbench-core.sh                                   # versão instalada + piso
+./scripts/run-microbench-core.sh --core-src ../pivotphp-core       # + checkout local do core
+./scripts/run-microbench-core.sh --core-src ../pivotphp-core --with-frameworks --rounds 5
+```
+
+- Variantes: `released` (core do `composer.lock`), `candidate` (o `src/` do checkout local), `candidate-lazy`
+  (`candidate` com `Application::lazyHandlers()`), `floor` (PHP puro no mesmo Nginx + PHP-FPM) e, com
+  `--with-frameworks`, Slim e Symfony.
+- A ordem das variantes é rotacionada a cada rodada. O relatório (`results/<run>/report.md`, gerado por
+  `scripts/report-microbench-core.py`) traz µs por requisição ± IC95, o custo acima do piso e a diferença
+  pareada contra a versão instalada.
+- A rodada falha se algum check do k6 não for 100%.
+
+Resultado de referência: [core 5.2.0 × SPEC-116](reports/2026-11-13-microbench-core/README.md).
+
 ## Resultados
 
 Os relatórios consolidados ficam em [`reports/`](reports/) e os dados brutos (k6 + smoke) em
