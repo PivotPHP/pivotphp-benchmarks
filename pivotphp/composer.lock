@@ -152,16 +152,16 @@
         },
         {
             "name": "pivotphp/core",
-            "version": "v5.2.0",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PivotPHP/pivotphp-core.git",
-                "reference": "4987b4d01e4e0409d634179ebe0e5a7e07a9a670"
+                "reference": "860cde637b513ed2aeb5a036c836eae6cbc21079"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PivotPHP/pivotphp-core/zipball/4987b4d01e4e0409d634179ebe0e5a7e07a9a670",
-                "reference": "4987b4d01e4e0409d634179ebe0e5a7e07a9a670",
+                "url": "https://api.github.com/repos/PivotPHP/pivotphp-core/zipball/860cde637b513ed2aeb5a036c836eae6cbc21079",
+                "reference": "860cde637b513ed2aeb5a036c836eae6cbc21079",
                 "shasum": ""
             },
             "require": {
@@ -240,7 +240,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-12T21:31:05+00:00"
+            "time": "2026-11-13T22:14:47+00:00"
         },
         {
             "name": "pivotphp/core-routing",

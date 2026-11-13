@@ -18,6 +18,7 @@ use Predis\Client;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 $app = new Application(dirname(__DIR__, 2));
+$app->lazyHandlers();
 
 // Banco PostgreSQL.
 $app->singleton(PDO::class, function (): PDO {

@@ -63,11 +63,11 @@ A suíte divide os testes em três grupos de medição (ver [Metodologia detalha
 
 | Pos | Framework | Runtime | Throughput (req/s) | Latência p50 | Latência p95 | Latência p99 | Erros | RAM RSS |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Webman | CLI Async / Workerman | 56,072.08 | 0.35ms | 2.04ms | 61.78ms | 0.00% | 22.4MiB |
-| 2 | Symfony 7 | Nginx + PHP-FPM 8.3 | 2,233.05 | 5.55ms | 97.98ms | 100.73ms | 0.00% | 55.14MiB |
-| 3 | Slim 4 | Nginx + PHP-FPM 8.3 | 1,922.30 | 6.99ms | 98.62ms | 101.56ms | 0.00% | 55.86MiB |
-| 4 | Mezzio 3 | Nginx + PHP-FPM 8.3 | 1,852.69 | 7.17ms | 98.98ms | 102.49ms | 0.00% | 56.82MiB |
-| 5 | **PivotPHP** | Nginx + PHP-FPM 8.3 | **1,569.21** | 91.76ms | 100.70ms | 105.15ms | 0.00% | 56.99MiB |
+| 1 | Webman | CLI Async / Workerman | 54,559.32 | 0.34ms | 1.88ms | 63.00ms | 0.00% | 22.52MiB |
+| 2 | Symfony 7 | Nginx + PHP-FPM 8.3 | 2,133.72 | 5.32ms | 98.21ms | 100.96ms | 0.00% | 56.19MiB |
+| 3 | Slim 4 | Nginx + PHP-FPM 8.3 | 1,963.89 | 6.44ms | 98.93ms | 101.82ms | 0.00% | 55.95MiB |
+| 4 | Mezzio 3 | Nginx + PHP-FPM 8.3 | 1,879.59 | 6.86ms | 98.83ms | 102.01ms | 0.00% | 56.98MiB |
+| 5 | **PivotPHP** | Nginx + PHP-FPM 8.3 | **1,848.99** | 9.37ms | 98.72ms | 102.25ms | 0.00% | 55.92MiB |
 
 <!-- BENCHMARK-LEADERBOARD-END -->
 
