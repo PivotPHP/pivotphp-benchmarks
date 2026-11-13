@@ -11,7 +11,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
@@ -21,42 +20,86 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-// Banco (PDO, mesmo SQL em todos os frameworks).
-$pdo = new PDO(
-    sprintf(
-        'pgsql:host=%s;port=%s;dbname=%s',
-        getenv('DB_HOST') ?: '127.0.0.1',
-        getenv('DB_PORT') ?: '5432',
-        getenv('DB_NAME') ?: 'voting_db'
-    ),
-    getenv('DB_USER') ?: 'bench',
-    getenv('DB_PASSWORD') ?: 'bench_secret',
-    [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]
-);
+// Banco & Cache (lazy initialization para não onerar rotas sem banco).
+$getPdo = static function (): PDO {
+    static $pdo = null;
+    if ($pdo === null) {
+        $pdo = new PDO(
+            sprintf(
+                'pgsql:host=%s;port=%s;dbname=%s',
+                getenv('DB_HOST') ?: '127.0.0.1',
+                getenv('DB_PORT') ?: '5432',
+                getenv('DB_NAME') ?: 'voting_db'
+            ),
+            getenv('DB_USER') ?: 'bench',
+            getenv('DB_PASSWORD') ?: 'bench_secret',
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ]
+        );
+    }
+    return $pdo;
+};
 
-$cache = new Cache(new Client([
-    'scheme' => 'tcp',
-    'host'   => getenv('REDIS_HOST') ?: '127.0.0.1',
-    'port'   => 6379,
-]));
+$getCache = static function (): Cache {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = new Cache(new Client([
+            'scheme' => 'tcp',
+            'host'   => getenv('REDIS_HOST') ?: '127.0.0.1',
+            'port'   => 6379,
+        ]));
+    }
+    return $cache;
+};
 
 $routes = new RouteCollection();
 
+// SPEC-115 — Cenários Modulares (estilo Fastify)
+$routes->add('bare', new Route('/api/bare', [
+    '_controller' => static fn (): JsonResponse => new JsonResponse(['hello' => 'world']),
+]));
+
+$routes->add('user_param', new Route('/api/user/{id}', [
+    '_controller' => static fn (string $id): JsonResponse => new JsonResponse(['id' => (string) $id]),
+]));
+
+$routes->add('middleware', new Route('/api/middleware', [
+    '_controller' => static function (Request $request): JsonResponse {
+        $mw = static fn ($req, $next) => $next($req);
+        $final = static fn ($req) => new JsonResponse(['hello' => 'world']);
+        $pipeline = array_reduce(
+            array_fill(0, 5, $mw),
+            static fn ($next, $current) => static fn ($req) => $current($req, $next),
+            $final
+        );
+        return $pipeline($request);
+    },
+]));
+
+$routes->add('echo', new Route('/api/echo', [
+    '_controller' => static function (Request $request): JsonResponse {
+        $body = json_decode($request->getContent(), true) ?? [];
+        return new JsonResponse((array) $body);
+    },
+], methods: ['POST']));
+
+// Rotas do app completo (votação)
 $routes->add('health', new Route('/api/health', [
     '_controller' => static fn (): JsonResponse => new JsonResponse(['status' => 'ok']),
 ]));
 
 $routes->add('candidates', new Route('/api/candidates', [
-    '_controller' => static function () use ($pdo, $cache): JsonResponse {
+    '_controller' => static function () use ($getPdo, $getCache): JsonResponse {
+        $cache = $getCache();
         $cached = $cache->get('candidates');
         if ($cached !== null) {
             return JsonResponse::fromJsonString($cached);
         }
 
+        $pdo = $getPdo();
         $candidates = $pdo->query('SELECT id, name, position FROM candidates ORDER BY id')->fetchAll();
         $cache->set('candidates', (string) json_encode($candidates, JSON_UNESCAPED_UNICODE));
 
@@ -65,7 +108,8 @@ $routes->add('candidates', new Route('/api/candidates', [
 ]));
 
 $routes->add('candidate_show', new Route('/api/candidates/{id}', [
-    '_controller' => static function (int $id) use ($pdo): JsonResponse {
+    '_controller' => static function (int $id) use ($getPdo): JsonResponse {
+        $pdo = $getPdo();
         $stmt = $pdo->prepare('SELECT id, name, position FROM candidates WHERE id = ?');
         $stmt->execute([$id]);
         $candidate = $stmt->fetch();
@@ -79,7 +123,7 @@ $routes->add('candidate_show', new Route('/api/candidates/{id}', [
 ]));
 
 $routes->add('vote', new Route('/api/votes', [
-    '_controller' => static function (Request $request) use ($pdo, $cache): JsonResponse {
+    '_controller' => static function (Request $request) use ($getPdo, $getCache): JsonResponse {
         $body = json_decode($request->getContent(), true) ?? [];
         $candidateId = $body['candidateId'] ?? null;
         $cpf = $body['cpf'] ?? null;
@@ -92,6 +136,7 @@ $routes->add('vote', new Route('/api/votes', [
             return new JsonResponse(['error' => 'CPF inválido'], 422);
         }
 
+        $pdo = $getPdo();
         $stmt = $pdo->prepare('SELECT id FROM candidates WHERE id = ?');
         $stmt->execute([(int) $candidateId]);
         if ($stmt->fetch() === false) {
@@ -115,6 +160,7 @@ $routes->add('vote', new Route('/api/votes', [
             throw $e;
         }
 
+        $cache = $getCache();
         $cache->del('votes:results');
 
         return new JsonResponse(['candidateId' => (int) $candidateId, 'voted' => true], 201);
@@ -122,12 +168,14 @@ $routes->add('vote', new Route('/api/votes', [
 ], methods: ['POST']));
 
 $routes->add('results', new Route('/api/votes/results', [
-    '_controller' => static function () use ($pdo, $cache): JsonResponse {
+    '_controller' => static function () use ($getPdo, $getCache): JsonResponse {
+        $cache = $getCache();
         $cached = $cache->get('votes:results');
         if ($cached !== null) {
             return JsonResponse::fromJsonString($cached);
         }
 
+        $pdo = $getPdo();
         $rows = $pdo->query(
             'SELECT c.id, c.name, COUNT(v.id) AS votes
              FROM candidates c
@@ -152,7 +200,8 @@ $routes->add('results', new Route('/api/votes/results', [
 ]));
 
 $routes->add('result_candidate', new Route('/api/votes/results/{candidateId}', [
-    '_controller' => static function (int $candidateId) use ($pdo): JsonResponse {
+    '_controller' => static function (int $candidateId) use ($getPdo): JsonResponse {
+        $pdo = $getPdo();
         $stmt = $pdo->prepare(
             'SELECT c.id, c.name, COUNT(v.id) AS votes
              FROM candidates c
@@ -174,8 +223,10 @@ $routes->add('result_candidate', new Route('/api/votes/results/{candidateId}', [
 ]));
 
 $routes->add('clear', new Route('/api/votes', [
-    '_controller' => static function () use ($pdo, $cache): JsonResponse {
+    '_controller' => static function () use ($getPdo, $getCache): JsonResponse {
+        $pdo = $getPdo();
         $pdo->exec('TRUNCATE votes RESTART IDENTITY');
+        $cache = $getCache();
         $cache->del('votes:results');
 
         return new JsonResponse(['cleared' => true]);

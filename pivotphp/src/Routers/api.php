@@ -20,6 +20,22 @@ $app->get('/api/ping', function ($req, $res) {
     return $res->send('pong');
 });
 
+// SPEC-115 — Cenários Modulares (estilo Fastify)
+$app->get('/api/bare', function ($req, $res) {
+    return $res->json(['hello' => 'world']);
+});
+$app->get('/api/user/:id', function ($req, $res) {
+    return $res->json(['id' => (string) $req->param('id')]);
+});
+$mwPass = fn ($req, $res, $next) => $next($req, $res);
+$app->get('/api/middleware', function ($req, $res) {
+    return $res->json(['hello' => 'world']);
+}, [], $mwPass, $mwPass, $mwPass, $mwPass, $mwPass);
+
+$app->post('/api/echo', function ($req, $res) {
+    return $res->json($req->json());
+});
+
 // Grupo B — CRUD de Produtos com persistência relacional e agregação em cache
 $app->get('/api/products', [ProductController::class, 'index']);
 $app->get('/api/products/{id}', [ProductController::class, 'show']);

@@ -14,28 +14,40 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 
-// ---- Banco (PDO, mesmo SQL em todos os frameworks) ----
-$pdo = new PDO(
-    sprintf(
-        'pgsql:host=%s;port=%s;dbname=%s',
-        getenv('DB_HOST') ?: '127.0.0.1',
-        getenv('DB_PORT') ?: '5432',
-        getenv('DB_NAME') ?: 'voting_db'
-    ),
-    getenv('DB_USER') ?: 'bench',
-    getenv('DB_PASSWORD') ?: 'bench_secret',
-    [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]
-);
+// ---- Banco & Cache (lazy initialization para não onerar rotas sem banco) ----
+$getPdo = static function (): PDO {
+    static $pdo = null;
+    if ($pdo === null) {
+        $pdo = new PDO(
+            sprintf(
+                'pgsql:host=%s;port=%s;dbname=%s',
+                getenv('DB_HOST') ?: '127.0.0.1',
+                getenv('DB_PORT') ?: '5432',
+                getenv('DB_NAME') ?: 'voting_db'
+            ),
+            getenv('DB_USER') ?: 'bench',
+            getenv('DB_PASSWORD') ?: 'bench_secret',
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ]
+        );
+    }
+    return $pdo;
+};
 
-$cache = new Cache(new Client([
-    'scheme' => 'tcp',
-    'host'   => getenv('REDIS_HOST') ?: '127.0.0.1',
-    'port'   => 6379,
-]));
+$getCache = static function (): Cache {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = new Cache(new Client([
+            'scheme' => 'tcp',
+            'host'   => getenv('REDIS_HOST') ?: '127.0.0.1',
+            'port'   => 6379,
+        ]));
+    }
+    return $cache;
+};
 
 function jsonResponse(Response $res, mixed $data, int $status = 200): Response
 {
@@ -46,11 +58,33 @@ function jsonResponse(Response $res, mixed $data, int $status = 200): Response
         ->withStatus($status);
 }
 
+// SPEC-115 — Cenários Modulares (estilo Fastify)
+$app->get('/api/bare', function (Request $req, Response $res): Response {
+    return jsonResponse($res, ['hello' => 'world']);
+});
+
+$app->get('/api/user/{id}', function (Request $req, Response $res, array $args): Response {
+    return jsonResponse($res, ['id' => (string) ($args['id'] ?? '')]);
+});
+
+$mwPass = function (Request $request, $handler): Response {
+    return $handler->handle($request);
+};
+$app->get('/api/middleware', function (Request $req, Response $res): Response {
+    return jsonResponse($res, ['hello' => 'world']);
+})->add($mwPass)->add($mwPass)->add($mwPass)->add($mwPass)->add($mwPass);
+
+$app->post('/api/echo', function (Request $req, Response $res): Response {
+    $data = (array) $req->getParsedBody();
+    return jsonResponse($res, $data);
+});
+
 $app->get('/api/health', function (Request $req, Response $res): Response {
     return jsonResponse($res, ['status' => 'ok']);
 });
 
-$app->get('/api/candidates', function (Request $req, Response $res) use ($pdo, $cache): Response {
+$app->get('/api/candidates', function (Request $req, Response $res) use ($getPdo, $getCache): Response {
+    $cache = $getCache();
     $cached = $cache->get('candidates');
 
     if ($cached !== null) {
@@ -59,13 +93,15 @@ $app->get('/api/candidates', function (Request $req, Response $res) use ($pdo, $
         return $res->withHeader('Content-Type', 'application/json');
     }
 
+    $pdo = $getPdo();
     $candidates = $pdo->query('SELECT id, name, position FROM candidates ORDER BY id')->fetchAll();
     $cache->set('candidates', (string) json_encode($candidates, JSON_UNESCAPED_UNICODE));
 
     return jsonResponse($res, $candidates);
 });
 
-$app->get('/api/candidates/{id}', function (Request $req, Response $res, array $args) use ($pdo): Response {
+$app->get('/api/candidates/{id}', function (Request $req, Response $res, array $args) use ($getPdo): Response {
+    $pdo = $getPdo();
     $stmt = $pdo->prepare('SELECT id, name, position FROM candidates WHERE id = ?');
     $stmt->execute([$args['id']]);
     $candidate = $stmt->fetch();
@@ -77,7 +113,7 @@ $app->get('/api/candidates/{id}', function (Request $req, Response $res, array $
     return jsonResponse($res, $candidate);
 });
 
-$app->post('/api/votes', function (Request $req, Response $res) use ($pdo, $cache): Response {
+$app->post('/api/votes', function (Request $req, Response $res) use ($getPdo, $getCache): Response {
     $body = (array) $req->getParsedBody();
     $candidateId = $body['candidateId'] ?? null;
     $cpf = $body['cpf'] ?? null;
@@ -90,6 +126,7 @@ $app->post('/api/votes', function (Request $req, Response $res) use ($pdo, $cach
         return jsonResponse($res, ['error' => 'CPF inválido'], 422);
     }
 
+    $pdo = $getPdo();
     $stmt = $pdo->prepare('SELECT id FROM candidates WHERE id = ?');
     $stmt->execute([(int) $candidateId]);
     if ($stmt->fetch() === false) {
@@ -113,12 +150,14 @@ $app->post('/api/votes', function (Request $req, Response $res) use ($pdo, $cach
         throw $e;
     }
 
+    $cache = $getCache();
     $cache->del('votes:results');
 
     return jsonResponse($res, ['candidateId' => (int) $candidateId, 'voted' => true], 201);
 });
 
-$app->get('/api/votes/results', function (Request $req, Response $res) use ($pdo, $cache): Response {
+$app->get('/api/votes/results', function (Request $req, Response $res) use ($getPdo, $getCache): Response {
+    $cache = $getCache();
     $cached = $cache->get('votes:results');
 
     if ($cached !== null) {
@@ -127,6 +166,7 @@ $app->get('/api/votes/results', function (Request $req, Response $res) use ($pdo
         return $res->withHeader('Content-Type', 'application/json');
     }
 
+    $pdo = $getPdo();
     $rows = $pdo->query(
         'SELECT c.id, c.name, COUNT(v.id) AS votes
          FROM candidates c
@@ -149,7 +189,8 @@ $app->get('/api/votes/results', function (Request $req, Response $res) use ($pdo
     return jsonResponse($res, $payload);
 });
 
-$app->get('/api/votes/results/{candidateId}', function (Request $req, Response $res, array $args) use ($pdo): Response {
+$app->get('/api/votes/results/{candidateId}', function (Request $req, Response $res, array $args) use ($getPdo): Response {
+    $pdo = $getPdo();
     $stmt = $pdo->prepare(
         'SELECT c.id, c.name, COUNT(v.id) AS votes
          FROM candidates c
@@ -169,8 +210,10 @@ $app->get('/api/votes/results/{candidateId}', function (Request $req, Response $
     return jsonResponse($res, $row);
 });
 
-$app->delete('/api/votes', function (Request $req, Response $res) use ($pdo, $cache): Response {
+$app->delete('/api/votes', function (Request $req, Response $res) use ($getPdo, $getCache): Response {
+    $pdo = $getPdo();
     $pdo->exec('TRUNCATE votes RESTART IDENTITY');
+    $cache = $getCache();
     $cache->del('votes:results');
 
     return jsonResponse($res, ['cleared' => true]);

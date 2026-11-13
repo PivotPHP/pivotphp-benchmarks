@@ -25,6 +25,8 @@ use Predis\Client;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 // PSR-11 container mínimo.
 $container = new class implements ContainerInterface {
@@ -41,28 +43,40 @@ $container = new class implements ContainerInterface {
     }
 };
 
-// Banco (PDO, mesmo SQL em todos os frameworks).
-$pdo = new PDO(
-    sprintf(
-        'pgsql:host=%s;port=%s;dbname=%s',
-        getenv('DB_HOST') ?: '127.0.0.1',
-        getenv('DB_PORT') ?: '5432',
-        getenv('DB_NAME') ?: 'voting_db'
-    ),
-    getenv('DB_USER') ?: 'bench',
-    getenv('DB_PASSWORD') ?: 'bench_secret',
-    [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]
-);
+// Banco & Cache (lazy initialization para não onerar rotas sem banco).
+$getPdo = static function (): PDO {
+    static $pdo = null;
+    if ($pdo === null) {
+        $pdo = new PDO(
+            sprintf(
+                'pgsql:host=%s;port=%s;dbname=%s',
+                getenv('DB_HOST') ?: '127.0.0.1',
+                getenv('DB_PORT') ?: '5432',
+                getenv('DB_NAME') ?: 'voting_db'
+            ),
+            getenv('DB_USER') ?: 'bench',
+            getenv('DB_PASSWORD') ?: 'bench_secret',
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ]
+        );
+    }
+    return $pdo;
+};
 
-$cache = new Cache(new Client([
-    'scheme' => 'tcp',
-    'host'   => getenv('REDIS_HOST') ?: '127.0.0.1',
-    'port'   => 6379,
-]));
+$getCache = static function (): Cache {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = new Cache(new Client([
+            'scheme' => 'tcp',
+            'host'   => getenv('REDIS_HOST') ?: '127.0.0.1',
+            'port'   => 6379,
+        ]));
+    }
+    return $cache;
+};
 
 $json = static function (mixed $data, int $status = 200): ResponseInterface {
     $response = new Response();
@@ -95,10 +109,40 @@ $runner = new RequestHandlerRunner(
 
 $app = new Application($factory, $pipeline, $routes, $runner);
 
+// SPEC-115 — Cenários Modulares (estilo Fastify)
+$app->get('/api/bare', static fn (ServerRequestInterface $req): ResponseInterface => $json(['hello' => 'world']));
+
+$app->get('/api/user/{id}', static function (ServerRequestInterface $req) use ($json, $params): ResponseInterface {
+    return $json(['id' => (string) ($params($req)['id'] ?? '')]);
+});
+
+$passThrough = new class implements MiddlewareInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        return $handler->handle($request);
+    }
+};
+
+$app->get('/api/middleware', [
+    $passThrough,
+    $passThrough,
+    $passThrough,
+    $passThrough,
+    $passThrough,
+    static fn (ServerRequestInterface $req): ResponseInterface => $json(['hello' => 'world']),
+]);
+
+$app->post('/api/echo', static function (ServerRequestInterface $req) use ($json): ResponseInterface {
+    $raw = (string) $req->getBody();
+    $data = json_decode($raw, true) ?? [];
+    return $json((array) $data);
+});
+
 // ---- Rotas (mesmo contrato/SQL da votação) ----
 $app->get('/api/health', static fn (ServerRequestInterface $req): ResponseInterface => $json(['status' => 'ok']));
 
-$app->get('/api/candidates', static function (ServerRequestInterface $req) use ($pdo, $cache, $json): ResponseInterface {
+$app->get('/api/candidates', static function (ServerRequestInterface $req) use ($getPdo, $getCache, $json): ResponseInterface {
+    $cache = $getCache();
     $cached = $cache->get('candidates');
     if ($cached !== null) {
         $res = new Response();
@@ -107,13 +151,15 @@ $app->get('/api/candidates', static function (ServerRequestInterface $req) use (
         return $res->withHeader('Content-Type', 'application/json');
     }
 
+    $pdo = $getPdo();
     $candidates = $pdo->query('SELECT id, name, position FROM candidates ORDER BY id')->fetchAll();
     $cache->set('candidates', (string) json_encode($candidates, JSON_UNESCAPED_UNICODE));
 
     return $json($candidates);
 });
 
-$app->get('/api/candidates/{id}', static function (ServerRequestInterface $req) use ($pdo, $json, $params): ResponseInterface {
+$app->get('/api/candidates/{id}', static function (ServerRequestInterface $req) use ($getPdo, $json, $params): ResponseInterface {
+    $pdo = $getPdo();
     $stmt = $pdo->prepare('SELECT id, name, position FROM candidates WHERE id = ?');
     $stmt->execute([$params($req)['id']]);
     $candidate = $stmt->fetch();
@@ -125,7 +171,7 @@ $app->get('/api/candidates/{id}', static function (ServerRequestInterface $req) 
     return $json($candidate);
 });
 
-$app->post('/api/votes', static function (ServerRequestInterface $req) use ($pdo, $cache, $json): ResponseInterface {
+$app->post('/api/votes', static function (ServerRequestInterface $req) use ($getPdo, $getCache, $json): ResponseInterface {
     $body = json_decode((string) $req->getBody(), true) ?? [];
     $candidateId = $body['candidateId'] ?? null;
     $cpf = $body['cpf'] ?? null;
@@ -138,6 +184,7 @@ $app->post('/api/votes', static function (ServerRequestInterface $req) use ($pdo
         return $json(['error' => 'CPF inválido'], 422);
     }
 
+    $pdo = $getPdo();
     $stmt = $pdo->prepare('SELECT id FROM candidates WHERE id = ?');
     $stmt->execute([(int) $candidateId]);
     if ($stmt->fetch() === false) {
@@ -161,12 +208,14 @@ $app->post('/api/votes', static function (ServerRequestInterface $req) use ($pdo
         throw $e;
     }
 
+    $cache = $getCache();
     $cache->del('votes:results');
 
     return $json(['candidateId' => (int) $candidateId, 'voted' => true], 201);
 });
 
-$app->get('/api/votes/results', static function (ServerRequestInterface $req) use ($pdo, $cache, $json): ResponseInterface {
+$app->get('/api/votes/results', static function (ServerRequestInterface $req) use ($getPdo, $getCache, $json): ResponseInterface {
+    $cache = $getCache();
     $cached = $cache->get('votes:results');
     if ($cached !== null) {
         $res = new Response();
@@ -175,6 +224,7 @@ $app->get('/api/votes/results', static function (ServerRequestInterface $req) us
         return $res->withHeader('Content-Type', 'application/json');
     }
 
+    $pdo = $getPdo();
     $rows = $pdo->query(
         'SELECT c.id, c.name, COUNT(v.id) AS votes
          FROM candidates c
@@ -197,7 +247,8 @@ $app->get('/api/votes/results', static function (ServerRequestInterface $req) us
     return $json($payload);
 });
 
-$app->get('/api/votes/results/{candidateId}', static function (ServerRequestInterface $req) use ($pdo, $json, $params): ResponseInterface {
+$app->get('/api/votes/results/{candidateId}', static function (ServerRequestInterface $req) use ($getPdo, $json, $params): ResponseInterface {
+    $pdo = $getPdo();
     $stmt = $pdo->prepare(
         'SELECT c.id, c.name, COUNT(v.id) AS votes
          FROM candidates c
@@ -217,8 +268,10 @@ $app->get('/api/votes/results/{candidateId}', static function (ServerRequestInte
     return $json($row);
 });
 
-$app->delete('/api/votes', static function (ServerRequestInterface $req) use ($pdo, $cache, $json): ResponseInterface {
+$app->delete('/api/votes', static function (ServerRequestInterface $req) use ($getPdo, $getCache, $json): ResponseInterface {
+    $pdo = $getPdo();
     $pdo->exec('TRUNCATE votes RESTART IDENTITY');
+    $cache = $getCache();
     $cache->del('votes:results');
 
     return $json(['cleared' => true]);
